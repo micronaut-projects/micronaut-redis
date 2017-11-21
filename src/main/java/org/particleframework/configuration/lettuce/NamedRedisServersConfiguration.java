@@ -15,7 +15,6 @@
  */
 package org.particleframework.configuration.lettuce;
 
-import io.lettuce.core.RedisURI;
 import org.particleframework.context.annotation.Argument;
 import org.particleframework.context.annotation.ForEach;
 
@@ -26,9 +25,9 @@ import org.particleframework.context.annotation.ForEach;
  * @since 1.0
  */
 @ForEach(property = "particle.redis.servers")
-public class RedisServersConfiguration extends NamedRedisURI {
+public class NamedRedisServersConfiguration extends NamedRedisURI {
 
-    public RedisServersConfiguration(@Argument String name) {
+    public NamedRedisServersConfiguration(@Argument String name) {
         super(name);
     }
 }

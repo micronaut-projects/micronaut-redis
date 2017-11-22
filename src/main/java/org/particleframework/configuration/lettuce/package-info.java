@@ -20,9 +20,11 @@
  * @author Graeme Rocher
  * @since 1.0
  */
+@Configuration
 @Requires(classes = RedisURI.class)
 @Requires(property = "particle.redis")
 package org.particleframework.configuration.lettuce;
 
 import io.lettuce.core.RedisURI;
+import org.particleframework.context.annotation.Configuration;
 import org.particleframework.context.annotation.Requires;

@@ -20,7 +20,7 @@
  * @since 1.0
  */
 @Configuration
-@Requires(property = "particle.redis.session.enabled", value = StringUtils.TRUE)
+@Requires(property = "particle.session.http.redis.enabled", value = StringUtils.TRUE)
 @Requires(classes = SessionStore.class)
 package org.particleframework.configuration.lettuce.session;
 

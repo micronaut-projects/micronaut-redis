@@ -1,0 +1,46 @@
+[TIP]
+.Using the CLI
+====
+If you are creating your project using the Micronaut CLI, supply the `redis-lettuce` feature to configure the Lettuce driver in your project:
+----
+$ mn create-app my-app --features redis-lettuce
+----
+====
+
+
+To configure the Lettuce driver you should first add the `redis-lettuce` module to your classpath:
+
+dependency:micronaut-redis-lettuce[groupId="io.micronaut.configuration"]
+
+You should then configure the URI of the Redis server you wish to communicate with in `application.yml`:
+
+.Configuring `redis.uri`
+[source,yaml]
+----
+redis:
+    uri: redis://localhost
+----
+
+TIP: The `redis.uri` setting should be in the format as described in the https://github.com/lettuce-io/lettuce-core/wiki/Redis-URI-and-connection-details[Connection URIs] section of the Lettuce wiki
+
+You can also specify multiple Redis URIs using `redis.uris` in which case a `RedisClusterClient` is created instead.
+
+=== Available Lettuce Beans
+
+Once you have the above configuration in place you can inject one of the following beans:
+
+* `io.lettuce.core.RedisClient` - The main client interface
+* `io.lettuce.core.api.StatefulRedisConnection` - A connection interface that features synchronous, reactive (based on Reactor) and async APIs that operate on `String` values
+* `io.lettuce.core.pubsub.StatefulRedisPubSubConnection` - A connection interface for dealing with Redis Pub/Sub
+
+The following example demonstrates the use of the `StatefulRedisConnection` interface's synchronous API:
+
+.Using StatefulRedisConnection
+[source,groovy]
+----
+@Inject StatefulRedisConnection<String, String> connection
+...
+include::{testsredis}/RedisClientFactorySpec.groovy[tags=commands, indent=0]
+----
+
+NOTE: The Lettuce driver's `StatefulRedisConnection` interface is designed to be long-lived and there is no need to close the connection. It will be closed automatically when the application shuts down.

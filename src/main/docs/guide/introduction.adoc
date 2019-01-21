@@ -1,0 +1,1 @@
+Micronaut features automatic configuration of the https://lettuce.io[Lettuce] driver for https://redis.io[Redis] via the `redis-lettuce` module.

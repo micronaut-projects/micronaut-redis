@@ -1,0 +1,43 @@
+=== Customizing The Redis Configuration
+
+You can customize the Redis configuration using any properties exposed by the api:configuration.lettuce.DefaultRedisConfiguration[] class. For example, in `application.yml`:
+
+.Customizing Redis Configuration
+[source,yaml]
+----
+redis:
+    uri: redis://localhost
+    ssl: true
+    timeout: 30s
+----
+
+=== Multiple Redis Connections
+
+You can configure multiple Redis connections using the `redis.servers` setting. For example:
+
+.Customizing Redis Configuration
+[source,yaml]
+----
+redis:
+    servers:
+        foo:
+            uri: redis://foo
+        bar:
+            uri: redis://bar
+----
+
+In which case the same beans will be created for each entry under `redis.servers` but exposed as `@Named` beans.
+
+.Using StatefulRedisConnection
+[source,groovy]
+----
+@Inject @Named("foo") StatefulRedisConnection<String, String> connection;
+----
+
+The above example will inject the connection named `foo`.
+
+== Redis Health Checks
+
+When the `redis-lettuce` module is activated a api:configuration.lettuce.health.RedisHealthIndicator[] is activated resulting in the `/health` endpoint and https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html[CurrentHealthStatus] interface resolving the health of the Redis connection or connections.
+
+See the section on the https://docs.micronaut.io/latest/guide/index.html#healthEndpoint[Health Endpoint] for more information.

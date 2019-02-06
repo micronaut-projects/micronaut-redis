@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2 Setting up the Redis Lettuce Driver 1.1.0.RC1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut Redis
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/setup.html"><strong>2</strong><span>Setting up the Redis Lettuce Driver</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/config.html"><strong>3</strong><span>Configuring the Redis Lettuce Driver</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/testing.html"><strong>4</strong><span>Redis and Testing</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cache.html"><strong>5</strong><span>Redis for Caching</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/sessions.html"><strong>6</strong><span>Session State with Redis</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/config.html"><strong>3</strong><span>Configuring the Redis Lettuce Driver</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2 Setting up the Redis Lettuce Driver</h1>
+
+                    <p><strong>Version:</strong> 1.1.0.RC1</p>
+                </div>
+
+                
+
+                
+
+<h1 id="setup">2 Setting up the Redis Lettuce Driver</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/setup.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Using the CLI</div>
+<div class="paragraph">
+<p>If you are creating your project using the Micronaut CLI, supply the <code>redis-lettuce</code> feature to configure the Lettuce driver in your project:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ mn create-app my-app --features redis-lettuce</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To configure the Lettuce driver you should first add the <code>redis-lettuce</code> module to your classpath:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-redis-lettuce'</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-redis-lettuce&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>You should then configure the URI of the Redis server you wish to communicate with in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring <code>redis.uri</code></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+    uri: redis://localhost</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <code>redis.uri</code> setting should be in the format as described in the <a href="https://github.com/lettuce-io/lettuce-core/wiki/Redis-URI-and-connection-details">Connection URIs</a> section of the Lettuce wiki
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can also specify multiple Redis URIs using <code>redis.uris</code> in which case a <code>RedisClusterClient</code> is created instead.</p>
+</div>
+<div class="sect2">
+<h3 id="_available_lettuce_beans">Available Lettuce Beans</h3>
+<div class="paragraph">
+<p>Once you have the above configuration in place you can inject one of the following beans:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>io.lettuce.core.RedisClient</code> - The main client interface</p>
+</li>
+<li>
+<p><code>io.lettuce.core.api.StatefulRedisConnection</code> - A connection interface that features synchronous, reactive (based on Reactor) and async APIs that operate on <code>String</code> values</p>
+</li>
+<li>
+<p><code>io.lettuce.core.pubsub.StatefulRedisPubSubConnection</code> - A connection interface for dealing with Redis Pub/Sub</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following example demonstrates the use of the <code>StatefulRedisConnection</code> interface&#8217;s synchronous API:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using StatefulRedisConnection</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Inject StatefulRedisConnection&lt;String, String&gt; connection
+...
+RedisCommands&lt;String, String&gt; commands = connection.sync()
+commands.set("foo", "bar")
+commands.get("foo") == "bar"</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The Lettuce driver&#8217;s <code>StatefulRedisConnection</code> interface is designed to be long-lived and there is no need to close the connection. It will be closed automatically when the application shuts down.
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/config.html"><strong>3</strong><span>Configuring the Redis Lettuce Driver</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

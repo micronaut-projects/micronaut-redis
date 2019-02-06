@@ -1,4 +1,4 @@
-rootProject.name = 'mongodb'
+rootProject.name = 'redis'
 
 include 'redis-lettuce'
 

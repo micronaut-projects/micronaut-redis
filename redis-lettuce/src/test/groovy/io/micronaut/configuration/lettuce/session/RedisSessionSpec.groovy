@@ -29,6 +29,7 @@ import spock.util.concurrent.PollingConditions
 import javax.inject.Singleton
 import java.time.Duration
 import java.time.Instant
+import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 
 /**
@@ -99,8 +100,8 @@ class RedisSessionSpec extends Specification {
         retrieved != null
         !retrieved.isExpired()
         retrieved.maxInactiveInterval == Duration.of(10, ChronoUnit.MINUTES)
-        retrieved.creationTime == saved.creationTime
-        retrieved.lastAccessedTime == now
+        retrieved.creationTime.getLong(ChronoField.MILLI_OF_SECOND) == saved.creationTime.getLong(ChronoField.MILLI_OF_SECOND)
+        retrieved.lastAccessedTime.getLong(ChronoField.MILLI_OF_SECOND) == now.getLong(ChronoField.MILLI_OF_SECOND)
         retrieved.id
         !retrieved.contains("username")
         retrieved.get("more", String).get() == "stuff"

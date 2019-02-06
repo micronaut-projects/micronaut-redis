@@ -12,7 +12,7 @@ dependencies {
     compileOnly "com.github.kstyrc:embedded-redis:0.6"
 
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
-
+    testCompile "io.micronaut:micronaut-inject-java"
     testCompile "io.micronaut:micronaut-management"
     testCompile "io.micronaut:micronaut-inject-groovy"
     testCompile "io.micronaut:micronaut-function-web"

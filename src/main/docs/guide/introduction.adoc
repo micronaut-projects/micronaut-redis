@@ -1,1 +1,11 @@
 Micronaut features automatic configuration of the https://lettuce.io[Lettuce] driver for https://redis.io[Redis] via the `redis-lettuce` module.
+
+=== Release History
+
+==== 1.0.0
+
+* Initial Release
+
+==== 1.1.0
+
+* Upgrade Lettuce `5.0.4.RELEASE` -> `5.1.3.RELEASE`

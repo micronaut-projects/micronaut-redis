@@ -69,8 +69,8 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
             throw new IllegalArgumentException("Redis cache configuration cannot be null");
         }
         this.redisCacheConfiguration = redisCacheConfiguration;
-        this.expireAfterWrite = redisCacheConfiguration.getExpireAfterWrite().map(Duration::toMillis).orElse(null);
-        this.expireAfterAccess = redisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null);
+        this.expireAfterWrite = redisCacheConfiguration.getExpireAfterWrite().map(Duration::getSeconds).orElse(null);
+        this.expireAfterAccess = redisCacheConfiguration.getExpireAfterAccess().map(Duration::getSeconds).orElse(null);
         this.keySerializer = redisCacheConfiguration
             .getKeySerializer()
             .flatMap(beanLocator::findOrInstantiateBean)

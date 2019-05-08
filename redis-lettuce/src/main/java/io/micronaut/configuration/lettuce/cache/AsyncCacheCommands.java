@@ -66,17 +66,17 @@ public interface AsyncCacheCommands extends Commands {
      * @param timeout The timeout
      * @return result of completion
      */
-    @Command("SET :key :value EX :timeout")
+    @Command("SET :key :value PX :timeout")
     RedisFuture<Void> put(@Param("key") byte[] key, @Param("value") byte[] value, @Param("timeout") long timeout);
 
     /**
-     * See https://redis.io/commands/expire.
+     * See https://redis.io/commands/pexpire.
      *
      * @param key     The key to expire
      * @param timeout The timeout
      * @return result of completion
      */
-    @Command("EXPIRE :key :timeout")
+    @Command("PEXPIRE :key :timeout")
     RedisFuture<Void> expire(@Param("key") byte[] key, @Param("timeout") long timeout);
 
     /**

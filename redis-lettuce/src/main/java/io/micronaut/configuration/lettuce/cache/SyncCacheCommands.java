@@ -62,16 +62,16 @@ public interface SyncCacheCommands extends Commands {
      * @param value   The value
      * @param timeout The timeout
      */
-    @Command("SET :key :value EX :timeout")
+    @Command("SET :key :value PX :timeout")
     void put(@Param("key") byte[] key, @Param("value") byte[] value, @Param("timeout") long timeout);
 
     /**
-     * See https://redis.io/commands/expire.
+     * See https://redis.io/commands/pexpire.
      *
      * @param key     The key to expire
      * @param timeout The timeout
      */
-    @Command("EXPIRE :key :timeout")
+    @Command("PEXPIRE :key :timeout")
     void expire(@Param("key") byte[] key, @Param("timeout") long timeout);
 
     /**

@@ -33,22 +33,19 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
 
     @Bean(preDestroy = "shutdown")
     @EachBean(NamedRedisServersConfiguration.class)
-    @Override
-    public RedisClient redisClient(AbstractRedisConfiguration config) {
+    public RedisClient redisClient(NamedRedisServersConfiguration config) {
         return super.redisClient(config);
     }
 
-    @Override
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
-    public StatefulRedisConnection<String, String> redisConnection(RedisClient client) {
-        return super.redisConnection(client);
+    public StatefulRedisConnection<String, String> redisConnection(NamedRedisServersConfiguration config) {
+        return super.redisConnection(super.redisClient(config));
     }
 
-    @Override
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
-    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(RedisClient redisClient) {
-        return super.redisPubSubConnection(redisClient);
+    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(NamedRedisServersConfiguration config) {
+        return super.redisPubSubConnection(super.redisClient(config));
     }
 }

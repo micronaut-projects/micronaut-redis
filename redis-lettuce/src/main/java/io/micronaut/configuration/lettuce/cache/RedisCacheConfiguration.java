@@ -15,13 +15,14 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
-import io.micronaut.cache.CacheConfiguration;
 import io.micronaut.configuration.lettuce.RedisSetting;
 import io.micronaut.context.annotation.EachProperty;
 import io.micronaut.context.annotation.Parameter;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.runtime.ApplicationConfiguration;
 
+import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.Optional;
 
 /**
@@ -31,11 +32,15 @@ import java.util.Optional;
  * @since 1.0
  */
 @EachProperty(RedisSetting.REDIS_CACHES)
-public class RedisCacheConfiguration extends CacheConfiguration {
+public class RedisCacheConfiguration {
 
     protected String server;
     protected Class<ObjectSerializer> keySerializer;
     protected Class<ObjectSerializer> valueSerializer;
+    protected Charset charset;
+    protected Duration expireAfterWrite;
+    protected Duration expireAfterAccess;
+    protected final String cacheName;
 
     /**
      * Constructor.
@@ -43,7 +48,8 @@ public class RedisCacheConfiguration extends CacheConfiguration {
      * @param applicationConfiguration applicationConfiguration
      */
     public RedisCacheConfiguration(@Parameter String cacheName, ApplicationConfiguration applicationConfiguration) {
-        super(cacheName, applicationConfiguration);
+        this.cacheName = cacheName;
+        this.charset = applicationConfiguration.getDefaultCharset();
     }
 
     /**
@@ -74,4 +80,58 @@ public class RedisCacheConfiguration extends CacheConfiguration {
         return Optional.ofNullable(keySerializer);
     }
 
+    /**
+     * @return The name of the cache
+     */
+    public String getCacheName() {
+        return cacheName;
+    }
+
+
+    /**
+     * @return The expiry to use after the value is written
+     */
+    public Optional<Duration> getExpireAfterWrite() {
+        return Optional.ofNullable(expireAfterWrite);
+    }
+
+    /**
+     * Specifies that each entry should be automatically removed from the cache once a fixed duration
+     * has elapsed after the entry's creation, the most recent replacement of its value, or its last
+     * read.
+     *
+     * @return The {@link Duration}
+     */
+    public Optional<Duration> getExpireAfterAccess() {
+        return Optional.ofNullable(expireAfterAccess);
+    }
+
+    /**
+     * @return The charset used to serialize and deserialize values
+     */
+    public Charset getCharset() {
+        return charset;
+    }
+
+    /**
+     *
+     * @param expireAfterWrite The cache expiration duration after writing into it.
+     */
+    public void setExpireAfterWrite(Duration expireAfterWrite) {
+        this.expireAfterWrite = expireAfterWrite;
+    }
+
+    /**
+     * @param expireAfterAccess The cache expiration duration after accessing it
+     */
+    public void setExpireAfterAccess(Duration expireAfterAccess) {
+        this.expireAfterAccess = expireAfterAccess;
+    }
+
+    /**
+     * @param charset The charset used to serialize and deserialize values
+     */
+    public void setCharset(Charset charset) {
+        this.charset = charset;
+    }
 }

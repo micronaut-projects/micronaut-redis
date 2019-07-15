@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -98,12 +98,7 @@ var activeTableTab = "activeTableTab";
 <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
-<li>io.micronaut.cache.CacheConfiguration</li>
-<li>
-<ul class="inheritance">
 <li>io.micronaut.configuration.lettuce.cache.RedisCacheConfiguration</li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -114,7 +109,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>@EachProperty(value="redis.caches")
 public class <span class="typeNameLabel">RedisCacheConfiguration</span>
-extends io.micronaut.cache.CacheConfiguration</pre>
+extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
 <div class="block">Allows configuration of caches stored in Redis.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -141,6 +136,22 @@ extends io.micronaut.cache.CacheConfiguration</pre>
 <th class="colLast" scope="col">Field and Description</th>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#cacheName">cacheName</a></span></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html?is-external=true" title="class or interface in java.nio.charset">Charset</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#charset">charset</a></span></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#expireAfterAccess">expireAfterAccess</a></span></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#expireAfterWrite">expireAfterWrite</a></span></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;io.micronaut.core.serialize.ObjectSerializer&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#keySerializer">keySerializer</a></span></code>&nbsp;</td>
 </tr>
@@ -153,13 +164,6 @@ extends io.micronaut.cache.CacheConfiguration</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#valueSerializer">valueSerializer</a></span></code>&nbsp;</td>
 </tr>
 </table>
-<ul class="blockList">
-<li class="blockList"><a name="fields.inherited.from.class.io.micronaut.cache.CacheConfiguration">
-<!--   -->
-</a>
-<h3>Fields inherited from class&nbsp;io.micronaut.cache.CacheConfiguration</h3>
-<code>charset, DEFAULT_TESTMODE, PREFIX</code></li>
-</ul>
 </li>
 </ul>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -195,27 +199,52 @@ extends io.micronaut.cache.CacheConfiguration</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#getCacheName--">getCacheName</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html?is-external=true" title="class or interface in java.nio.charset">Charset</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#getCharset--">getCharset</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util">Optional</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#getExpireAfterAccess--">getExpireAfterAccess</a></span>()</code>
+<div class="block">Specifies that each entry should be automatically removed from the cache once a fixed duration
+ has elapsed after the entry's creation, the most recent replacement of its value, or its last
+ read.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util">Optional</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#getExpireAfterWrite--">getExpireAfterWrite</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util">Optional</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;io.micronaut.core.serialize.ObjectSerializer&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#getKeySerializer--">getKeySerializer</a></span>()</code>
 <div class="block">The <code>ObjectSerializer</code> to use for serializing keys.</div>
 </td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util">Optional</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#getServer--">getServer</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util">Optional</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;io.micronaut.core.serialize.ObjectSerializer&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#getValueSerializer--">getValueSerializer</a></span>()</code>&nbsp;</td>
 </tr>
+<tr id="i7" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#setCharset-java.nio.charset.Charset-">setCharset</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html?is-external=true" title="class or interface in java.nio.charset">Charset</a>&nbsp;charset)</code>&nbsp;</td>
+</tr>
+<tr id="i8" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#setExpireAfterAccess-java.time.Duration-">setExpireAfterAccess</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a>&nbsp;expireAfterAccess)</code>&nbsp;</td>
+</tr>
+<tr id="i9" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#setExpireAfterWrite-java.time.Duration-">setExpireAfterWrite</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a>&nbsp;expireAfterWrite)</code>&nbsp;</td>
+</tr>
 </table>
-<ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.io.micronaut.cache.CacheConfiguration">
-<!--   -->
-</a>
-<h3>Methods inherited from class&nbsp;io.micronaut.cache.CacheConfiguration</h3>
-<code>getCacheName, getCharset, getExpireAfterAccess, getExpireAfterWrite, getInitialCapacity, getMaximumSize, getMaximumWeight, isTestMode, setCharset, setExpireAfterAccess, setExpireAfterWrite, setInitialCapacity, setMaximumSize, setMaximumWeight, setTestMode</code></li>
-</ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
 <!--   -->
@@ -258,10 +287,46 @@ extends io.micronaut.cache.CacheConfiguration</pre>
 <a name="valueSerializer">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>valueSerializer</h4>
 <pre>protected&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;io.micronaut.core.serialize.ObjectSerializer&gt; valueSerializer</pre>
+</li>
+</ul>
+<a name="charset">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>charset</h4>
+<pre>protected&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html?is-external=true" title="class or interface in java.nio.charset">Charset</a> charset</pre>
+</li>
+</ul>
+<a name="expireAfterWrite">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>expireAfterWrite</h4>
+<pre>protected&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a> expireAfterWrite</pre>
+</li>
+</ul>
+<a name="expireAfterAccess">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>expireAfterAccess</h4>
+<pre>protected&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a> expireAfterAccess</pre>
+</li>
+</ul>
+<a name="cacheName">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>cacheName</h4>
+<pre>protected final&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a> cacheName</pre>
 </li>
 </ul>
 </li>
@@ -328,7 +393,7 @@ extends io.micronaut.cache.CacheConfiguration</pre>
 <a name="getKeySerializer--">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getKeySerializer</h4>
 <pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util">Optional</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;io.micronaut.core.serialize.ObjectSerializer&gt;&gt;&nbsp;getKeySerializer()</pre>
@@ -336,6 +401,100 @@ extends io.micronaut.cache.CacheConfiguration</pre>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The optional <code>ObjectSerializer</code> class</dd>
+</dl>
+</li>
+</ul>
+<a name="getCacheName--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getCacheName</h4>
+<pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;getCacheName()</pre>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The name of the cache</dd>
+</dl>
+</li>
+</ul>
+<a name="getExpireAfterWrite--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getExpireAfterWrite</h4>
+<pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util">Optional</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a>&gt;&nbsp;getExpireAfterWrite()</pre>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The expiry to use after the value is written</dd>
+</dl>
+</li>
+</ul>
+<a name="getExpireAfterAccess--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getExpireAfterAccess</h4>
+<pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util">Optional</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a>&gt;&nbsp;getExpireAfterAccess()</pre>
+<div class="block">Specifies that each entry should be automatically removed from the cache once a fixed duration
+ has elapsed after the entry's creation, the most recent replacement of its value, or its last
+ read.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time"><code>Duration</code></a></dd>
+</dl>
+</li>
+</ul>
+<a name="getCharset--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getCharset</h4>
+<pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html?is-external=true" title="class or interface in java.nio.charset">Charset</a>&nbsp;getCharset()</pre>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The charset used to serialize and deserialize values</dd>
+</dl>
+</li>
+</ul>
+<a name="setExpireAfterWrite-java.time.Duration-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setExpireAfterWrite</h4>
+<pre>public&nbsp;void&nbsp;setExpireAfterWrite(<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a>&nbsp;expireAfterWrite)</pre>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>expireAfterWrite</code> - The cache expiration duration after writing into it.</dd>
+</dl>
+</li>
+</ul>
+<a name="setExpireAfterAccess-java.time.Duration-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setExpireAfterAccess</h4>
+<pre>public&nbsp;void&nbsp;setExpireAfterAccess(<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time">Duration</a>&nbsp;expireAfterAccess)</pre>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>expireAfterAccess</code> - The cache expiration duration after accessing it</dd>
+</dl>
+</li>
+</ul>
+<a name="setCharset-java.nio.charset.Charset-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>setCharset</h4>
+<pre>public&nbsp;void&nbsp;setCharset(<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html?is-external=true" title="class or interface in java.nio.charset">Charset</a>&nbsp;charset)</pre>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>charset</code> - The charset used to serialize and deserialize values</dd>
 </dl>
 </li>
 </ul>

@@ -102,6 +102,10 @@
 </a>
 <h2 class="title">C</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#cacheName">cacheName</a></span> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#charset">charset</a></span> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/test/EmbeddedRedisServer.html#close--">close()</a></span> - Method in class io.micronaut.configuration.lettuce.test.<a href="io/micronaut/configuration/lettuce/test/EmbeddedRedisServer.html" title="class in io.micronaut.configuration.lettuce.test">EmbeddedRedisServer</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisSessionCommands.html#configSet-java.lang.String-java.lang.String-">configSet(String, String)</a></span> - Method in interface io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisSessionCommands.html" title="interface in io.micronaut.configuration.lettuce.session">RedisSessionCommands</a></dt>
@@ -182,6 +186,10 @@
 <dd>
 <div class="block">Set a key's time to live in seconds.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#expireAfterAccess">expireAfterAccess</a></span> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#expireAfterWrite">expireAfterWrite</a></span> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <a name="I:F">
 <!--   -->
@@ -226,7 +234,19 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#getActiveSessionsKey--">getActiveSessionsKey()</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#getCacheName--">getCacheName()</a></span> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#getCharset--">getCharset()</a></span> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#getCharset--">getCharset()</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#getExpireAfterAccess--">getExpireAfterAccess()</a></span> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
+<dd>
+<div class="block">Specifies that each entry should be automatically removed from the cache once a fixed duration
+ has elapsed after the entry's creation, the most recent replacement of its value, or its last
+ read.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#getExpireAfterWrite--">getExpireAfterWrite()</a></span> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#getExpiredSessionCheck--">getExpiredSessionCheck()</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>&nbsp;</dd>
@@ -568,6 +588,8 @@
 <dd>
 <div class="block">Set a single attribute of a session.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#setCharset-java.nio.charset.Charset-">setCharset(Charset)</a></span> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#setCharset-java.nio.charset.Charset-">setCharset(Charset)</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>
 <div class="block">Sets the charset to use to serialize values.</div>
@@ -576,6 +598,10 @@
 <dd>
 <div class="block">Sets whether keyspace events should be enabled at startup.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#setExpireAfterAccess-java.time.Duration-">setExpireAfterAccess(Duration)</a></span> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#setExpireAfterWrite-java.time.Duration-">setExpireAfterWrite(Duration)</a></span> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#setExpiredSessionCheck-java.time.Duration-">setExpiredSessionCheck(Duration)</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>
 <div class="block">Sets the duration to check for expired sessions.</div>

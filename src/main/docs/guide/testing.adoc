@@ -7,4 +7,4 @@ You can run an embedded version of Redis for testing and CI scenarios by adding 
 testCompile "com.github.kstyrc:embedded-redis:0.6"
 ----
 
-If Redis is unavailable for the configured Redis URI an embedded instance of Redis will be automatically be started and then shutdown at the end of the test (when `stop` is called on the `ApplicationContext`).
+If Redis is unavailable for the configured Redis URI an embedded instance of Redis will be automatically started and then shutdown at the end of the test (when `stop` is called on the `ApplicationContext`).

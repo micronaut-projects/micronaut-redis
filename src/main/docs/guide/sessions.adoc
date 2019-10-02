@@ -1,8 +1,8 @@
-Storing https://docs.micronaut.io/latest/api/io/micronaut/session/Session.html[Session] instances is Redis requires special considerations.
+Storing https://docs.micronaut.io/latest/api/io/micronaut/session/Session.html[Session] instances in Redis requires special considerations.
 
 You can configure how sessions are stored in Redis using api:configuration.lettuce.session.RedisHttpSessionConfiguration[].
 
-The following represents an example configuration in `application.yml`.
+The following represents an example configuration in `application.yml`:
 
 .Configuring Redis Sessions
 [source,yaml]

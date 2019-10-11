@@ -50,8 +50,9 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     private final Long expireAfterWrite;
     private final Long expireAfterAccess;
     private final RedisAsyncCache asyncCache;
-    private final SyncCacheCommands commands;
     private final StatefulConnection<String, String> connection;
+
+    private SyncCacheCommands commands;
 
     /**
      * Creates a new redis cache for the given arguments.
@@ -83,8 +84,16 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
         Optional<String> server = redisCacheConfiguration.getServer();
         this.connection = RedisConnectionUtil.findRedisConnection(beanLocator, server, "No Redis server configured to allow caching");
-        this.commands = syncCommands(this.connection);
         this.asyncCache = new RedisAsyncCache();
+    }
+
+    private SyncCacheCommands getCommands() {
+        if (commands == null) {
+            // syncCommands internally runs `command` command on Redis
+            commands = syncCommands(connection);
+        }
+
+        return commands;
     }
 
     @Override
@@ -100,13 +109,13 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     @Override
     public <T> Optional<T> get(Object key, Argument<T> requiredType) {
         byte[] serializedKey = serializeKey(key);
-        return getValue(requiredType, commands, serializedKey);
+        return getValue(requiredType, getCommands(), serializedKey);
     }
 
     @Override
     public <T> T get(Object key, Argument<T> requiredType, Supplier<T> supplier) {
         byte[] serializedKey = serializeKey(key);
-        byte[] data = commands.get(serializedKey);
+        byte[] data = getCommands().get(serializedKey);
         if (data != null) {
             Optional<T> deserialized = valueSerializer.deserialize(data, requiredType.getType());
             if (deserialized.isPresent()) {
@@ -115,7 +124,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         }
 
         T value = supplier.get();
-        putValue(commands, serializedKey, value);
+        putValue(getCommands(), serializedKey, value);
         return value;
     }
 
@@ -127,9 +136,9 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         }
 
         byte[] serializedKey = serializeKey(key);
-        Optional<T> existing = getValue(Argument.of((Class<T>) value.getClass()), commands, serializedKey);
+        Optional<T> existing = getValue(Argument.of((Class<T>) value.getClass()), getCommands(), serializedKey);
         if (!existing.isPresent()) {
-            putValue(commands, serializedKey, value);
+            putValue(getCommands(), serializedKey, value);
             return Optional.empty();
         } else {
             return existing;
@@ -139,19 +148,19 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     @Override
     public void put(Object key, Object value) {
         byte[] serializedKey = serializeKey(key);
-        putValue(commands, serializedKey, value);
+        putValue(getCommands(), serializedKey, value);
     }
 
     @Override
     public void invalidate(Object key) {
         byte[] serializedKey = serializeKey(key);
-        commands.remove(serializedKey);
+        getCommands().remove(serializedKey);
     }
 
     @Override
     public void invalidateAll() {
-        List<byte[]> keys = commands.keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
-        commands.del(keys.toArray(new byte[keys.size()][]));
+        List<byte[]> keys = getCommands().keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
+        getCommands().del(keys.toArray(new byte[keys.size()][]));
     }
 
     @Override
@@ -246,13 +255,24 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
      */
     protected class RedisAsyncCache implements AsyncCache<StatefulConnection<?, ?>> {
 
-        private final AsyncCacheCommands async = asyncCommands(connection);
+        private AsyncCacheCommands asyncCacheCommands;
+
+        private CompletableFuture<AsyncCacheCommands> getAsync() {
+            if (asyncCacheCommands == null) {
+                return CompletableFuture.supplyAsync(() -> {
+                    asyncCacheCommands = asyncCommands(connection);
+                    return asyncCacheCommands;
+                });
+            }
+
+            return CompletableFuture.completedFuture(asyncCacheCommands);
+        }
 
         @Override
         public <T> CompletableFuture<Optional<T>> get(Object key, Argument<T> requiredType) {
             CompletableFuture<Optional<T>> result = new CompletableFuture<>();
             byte[] serializedKey = serializeKey(key);
-            async.get(serializedKey).whenComplete((data, throwable) -> {
+            getAsync().thenAccept(async -> async.get(serializedKey).whenComplete((data, throwable) -> {
                 if (throwable != null) {
                     result.completeExceptionally(throwable);
                 } else {
@@ -262,7 +282,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                         result.complete(Optional.empty());
                     }
                 }
-            });
+            }));
             return result;
         }
 
@@ -270,7 +290,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         public <T> CompletableFuture<T> get(Object key, Argument<T> requiredType, Supplier<T> supplier) {
             CompletableFuture<T> result = new CompletableFuture<>();
             byte[] serializedKey = serializeKey(key);
-            async.get(serializedKey).whenComplete((data, throwable) -> {
+            getAsync().thenAccept(async -> async.get(serializedKey).whenComplete((data, throwable) -> {
                 if (throwable != null) {
                     result.completeExceptionally(throwable);
                 } else {
@@ -296,7 +316,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                         invokeSupplier(serializedKey, supplier, async, result);
                     }
                 }
-            });
+            }));
             return result;
         }
 
@@ -304,7 +324,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         public <T> CompletableFuture<Optional<T>> putIfAbsent(Object key, T value) {
             CompletableFuture<Optional<T>> result = new CompletableFuture<>();
             byte[] serializedKey = serializeKey(key);
-            async.get(serializedKey).whenComplete((data, throwable) -> {
+            getAsync().thenAccept(async -> async.get(serializedKey).whenComplete((data, throwable) -> {
                 if (throwable != null) {
                     result.completeExceptionally(throwable);
                 } else {
@@ -324,7 +344,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                         }
                     }
                 }
-            });
+            }));
             return result;
         }
 
@@ -341,16 +361,18 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
             byte[] serializedKey = serializeKey(key);
             Optional<byte[]> serialized = valueSerializer.serialize(value);
             if (serialized.isPresent()) {
-                RedisFuture<String> future = newPutOperation(async, serializedKey, serialized.get());
-                future.whenComplete(booleanConsumer);
+                 getAsync().thenAccept(async -> {
+                     RedisFuture<String> future =  newPutOperation(async, serializedKey, serialized.get());
+                     future.whenComplete(booleanConsumer);
+                });
             } else {
-                async.remove(serializedKey).whenComplete((aLong, throwable) -> {
+                getAsync().thenAccept(async -> async.remove(serializedKey).whenComplete((aLong, throwable) -> {
                     if (throwable == null) {
                         result.complete(true);
                     } else {
                         result.completeExceptionally(throwable);
                     }
-                });
+                }));
             }
             return result;
         }
@@ -358,20 +380,20 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         @Override
         public CompletableFuture<Boolean> invalidate(Object key) {
             CompletableFuture<Boolean> result = new CompletableFuture<>();
-            async.remove(serializeKey(key)).whenComplete((status, throwable) -> {
+            getAsync().thenAccept(async -> async.remove(serializeKey(key)).whenComplete((status, throwable) -> {
                 if (throwable != null) {
                     result.completeExceptionally(throwable);
                 } else {
                     result.complete(true);
                 }
-            });
+            }));
             return result;
         }
 
         @Override
         public CompletableFuture<Boolean> invalidateAll() {
             CompletableFuture<Boolean> result = new CompletableFuture<>();
-            async.keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset())).whenComplete((keys, throwable) -> {
+            getAsync().thenAccept(async -> async.keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset())).whenComplete((keys, throwable) -> {
                 if (throwable != null) {
                     result.completeExceptionally(throwable);
                 } else {
@@ -383,7 +405,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                         }
                     });
                 }
-            });
+            }));
             return result;
         }
 

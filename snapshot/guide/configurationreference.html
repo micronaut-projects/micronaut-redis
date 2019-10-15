@@ -53,53 +53,9 @@
             </div>
 <div class="sect2">
 <h3 id="_redis_lettuce_config_properties">Redis Lettuce Config Properties</h3>
-<a id="io.micronaut.configuration.lettuce.test.EmbeddedRedisServer$Configuration" href="#io.micronaut.configuration.lettuce.test.EmbeddedRedisServer$Configuration">&#128279;</a>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/configuration/lettuce/test/EmbeddedRedisServer.Configuration.html">EmbeddedRedisServer$Configuration</a></caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.embedded.redis-exec-provider</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">redis.embedded.RedisExecProvider</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.embedded.port</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Integer</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.embedded.slave-of</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.net.InetSocketAddress</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.embedded.config-file</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.embedded.setting</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-</tbody>
-</table>
-<div style="page-break-after: always;"></div>
 <a id="io.micronaut.configuration.lettuce.NamedRedisServersConfiguration" href="#io.micronaut.configuration.lettuce.NamedRedisServersConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 2. Configuration Properties for <a href="../api/io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.html">NamedRedisServersConfiguration</a></caption>
+<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.html">NamedRedisServersConfiguration</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -177,6 +133,50 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.servers.*.uris</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.net.URI[]</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the Redis URIs for cluster configuration.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.configuration.lettuce.test.EmbeddedRedisServer$Configuration" href="#io.micronaut.configuration.lettuce.test.EmbeddedRedisServer$Configuration">&#128279;</a>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. Configuration Properties for <a href="../api/io/micronaut/configuration/lettuce/test/EmbeddedRedisServer.Configuration.html">EmbeddedRedisServer$Configuration</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.embedded.redis-exec-provider</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">redis.embedded.RedisExecProvider</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.embedded.port</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Integer</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.embedded.slave-of</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.net.InetSocketAddress</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.embedded.config-file</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.embedded.setting</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
 </table>

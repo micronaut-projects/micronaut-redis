@@ -87,7 +87,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         this.asyncCache = new RedisAsyncCache();
     }
 
-    private SyncCacheCommands getCommands() {
+    private synchronized SyncCacheCommands getCommands() {
         if (commands == null) {
             // syncCommands internally runs `command` command on Redis
             commands = syncCommands(connection);
@@ -257,15 +257,16 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
         private AsyncCacheCommands asyncCacheCommands;
 
-        private CompletableFuture<AsyncCacheCommands> getAsync() {
+        private synchronized AsyncCacheCommands getAsyncCacheCommands() {
             if (asyncCacheCommands == null) {
-                return CompletableFuture.supplyAsync(() -> {
-                    asyncCacheCommands = asyncCommands(connection);
-                    return asyncCacheCommands;
-                });
+                asyncCacheCommands = asyncCommands(connection);
             }
 
-            return CompletableFuture.completedFuture(asyncCacheCommands);
+            return asyncCacheCommands;
+        }
+
+        private CompletableFuture<AsyncCacheCommands> getAsync() {
+            return CompletableFuture.supplyAsync(this::getAsyncCacheCommands);
         }
 
         @Override

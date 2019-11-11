@@ -31,18 +31,36 @@ import io.micronaut.context.annotation.Factory;
 @Factory
 public class NamedRedisClientFactory extends AbstractRedisClientFactory {
 
+    /**
+     * Creates the {@link RedisClient} from the configuration.
+     *
+     * @param config The configuration
+     * @return The {@link RedisClient}
+     */
     @Bean(preDestroy = "shutdown")
     @EachBean(NamedRedisServersConfiguration.class)
     public RedisClient redisClient(NamedRedisServersConfiguration config) {
         return super.redisClient(config);
     }
 
+    /**
+     * Creates the {@link StatefulRedisConnection} from the {@link RedisClient}.
+     *
+     * @param config The {@link NamedRedisServersConfiguration}
+     * @return The {@link StatefulRedisConnection}
+     */
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
     public StatefulRedisConnection<String, String> redisConnection(NamedRedisServersConfiguration config) {
         return super.redisConnection(super.redisClient(config));
     }
 
+    /**
+     * Creates the {@link StatefulRedisPubSubConnection} from the {@link RedisClient}.
+     *
+     * @param config The {@link NamedRedisServersConfiguration}
+     * @return The {@link StatefulRedisPubSubConnection}
+     */
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
     public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(NamedRedisServersConfiguration config) {

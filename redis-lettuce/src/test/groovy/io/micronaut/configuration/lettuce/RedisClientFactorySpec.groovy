@@ -15,10 +15,12 @@
  */
 package io.micronaut.configuration.lettuce
 
+import io.lettuce.core.RedisClient
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.sync.RedisCommands
 import io.micronaut.context.ApplicationContext
 import io.micronaut.core.io.socket.SocketUtils
+import io.micronaut.inject.qualifiers.Qualifiers
 import redis.embedded.RedisServer
 import spock.lang.Specification
 
@@ -64,6 +66,32 @@ class RedisClientFactorySpec extends Specification{
         then:
         command.set("foo", "bar")
         command.get("foo") == "bar"
+
+        cleanup:redisServer.stop()
+    }
+
+    void "test multi redis server config by URI"() {
+        given:
+        def port = SocketUtils.findAvailableTcpPort()
+        RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
+        redisServer.start()
+
+        ApplicationContext applicationContext = ApplicationContext.run(['redis.servers.foo.uri':"redis://localhost:$port",'redis.servers.bar.uri':"redis://localhost:$port"])
+        when:
+        RedisClient clientFoo = applicationContext.getBean(RedisClient, Qualifiers.byName("foo"))
+        def innerRedisURI = clientFoo.@redisURI
+        def commandFoo = clientFoo.connect().sync()
+        then:
+        innerRedisURI.port == port
+        commandFoo.info().contains("tcp_port:$port")
+        commandFoo.set("foo", "bar")
+        commandFoo.get("foo") == "bar"
+
+        when:
+        StatefulRedisConnection clientBar = applicationContext.getBean(StatefulRedisConnection, Qualifiers.byName("bar"))
+        def commandBar = clientBar.sync()
+        then:
+        commandBar.info().contains("tcp_port:$port")
 
         cleanup:redisServer.stop()
     }

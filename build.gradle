@@ -51,14 +51,6 @@ subprojects { Project subproject ->
     
     apply plugin:"groovy"
     apply plugin:"java"
-    apply plugin: "io.spring.dependency-management"
-
-    dependencyManagement {
-        imports {
-            mavenBom "io.micronaut:micronaut-bom:$micronautVersion"
-        }
-    }
-
 
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
@@ -103,6 +95,12 @@ subprojects { Project subproject ->
         }
     }
     dependencies {
+
+        annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
+        testAnnotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
+        implementation platform("io.micronaut:micronaut-bom:$micronautVersion")
+        testImplementation platform("io.micronaut:micronaut-bom:$micronautVersion")
+
         documentation "org.codehaus.groovy:groovy-templates:$groovyVersion"
         documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
 

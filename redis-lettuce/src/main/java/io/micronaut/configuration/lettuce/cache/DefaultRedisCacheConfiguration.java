@@ -16,36 +16,23 @@
 package io.micronaut.configuration.lettuce.cache;
 
 import io.micronaut.configuration.lettuce.RedisSetting;
-import io.micronaut.context.annotation.EachProperty;
-import io.micronaut.context.annotation.Parameter;
+import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.runtime.ApplicationConfiguration;
 
 /**
- * Allows configuration of caches stored in Redis.
+ * Allows providing default configuration values for the actual caches.
  *
- * @author Graeme Rocher
- * @since 1.0
+ * @author Alex Katlein
+ * @since 1.3
  */
-@EachProperty(RedisSetting.REDIS_CACHES)
-public class RedisCacheConfiguration extends AbstractRedisCacheConfiguration {
-    protected final String cacheName;
-
+@ConfigurationProperties(RedisSetting.REDIS_CACHE)
+public class DefaultRedisCacheConfiguration extends AbstractRedisCacheConfiguration {
     /**
      * Constructor.
      *
-     * @param cacheName                cacheName
      * @param applicationConfiguration applicationConfiguration
      */
-    public RedisCacheConfiguration(@Parameter String cacheName, ApplicationConfiguration applicationConfiguration) {
+    public DefaultRedisCacheConfiguration(ApplicationConfiguration applicationConfiguration) {
         super(applicationConfiguration);
-
-        this.cacheName = cacheName;
-    }
-
-    /**
-     * @return The name of the cache
-     */
-    public String getCacheName() {
-        return cacheName;
     }
 }

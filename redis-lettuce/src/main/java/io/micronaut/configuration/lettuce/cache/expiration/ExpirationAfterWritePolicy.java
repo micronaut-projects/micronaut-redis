@@ -16,7 +16,7 @@
 package io.micronaut.configuration.lettuce.cache.expiration;
 
 /**
- * Interface that defines the TTL policy for the Redis document
+ * Interface that defines a TTL policy for a Redis cache.
  */
 public interface ExpirationAfterWritePolicy {
 

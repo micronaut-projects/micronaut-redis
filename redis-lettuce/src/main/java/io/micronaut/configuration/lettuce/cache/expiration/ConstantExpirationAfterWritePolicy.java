@@ -15,6 +15,9 @@
  */
 package io.micronaut.configuration.lettuce.cache.expiration;
 
+/**
+ * Provides a Cache TTL of constant time
+ */
 public class ConstantExpirationAfterWritePolicy implements ExpirationAfterWritePolicy {
     private final long expirationAfterWritePolicy;
 

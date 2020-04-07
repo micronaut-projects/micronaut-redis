@@ -16,7 +16,6 @@
 package io.micronaut.configuration.lettuce.cache;
 
 import io.micronaut.configuration.lettuce.RedisSetting;
-import io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy;
 import io.micronaut.context.annotation.EachProperty;
 import io.micronaut.context.annotation.Parameter;
 import io.micronaut.core.serialize.ObjectSerializer;
@@ -111,7 +110,7 @@ public class RedisCacheConfiguration {
 
 
     /**
-     * @return The class path for an implementation of {@link ExpirationAfterWritePolicy}
+     * @return The class path for an implementation of ExpirationAfterWritePolicy
      */
     public Optional<String> getExpirationAfterWritePolicy() {
         return Optional.ofNullable(expirationAfterWritePolicy);
@@ -146,7 +145,7 @@ public class RedisCacheConfiguration {
     }
 
     /**
-     * @param expirationAfterWritePolicy The class path for an implementation of {@link ExpirationAfterWritePolicy}
+     * @param expirationAfterWritePolicy The class path for an implementation of ExpirationAfterWritePolicy
      */
     public void setExpirationAfterWritePolicy(String expirationAfterWritePolicy) {
         this.expirationAfterWritePolicy = expirationAfterWritePolicy;

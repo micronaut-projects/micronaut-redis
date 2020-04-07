@@ -16,6 +16,7 @@
 package io.micronaut.configuration.lettuce.cache;
 
 import io.micronaut.configuration.lettuce.RedisSetting;
+import io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy;
 import io.micronaut.context.annotation.EachProperty;
 import io.micronaut.context.annotation.Parameter;
 import io.micronaut.core.serialize.ObjectSerializer;
@@ -40,11 +41,13 @@ public class RedisCacheConfiguration {
     protected Charset charset;
     protected Duration expireAfterWrite;
     protected Duration expireAfterAccess;
+    protected String expirationAfterWritePolicy;
     protected final String cacheName;
 
     /**
      * Constructor.
-     * @param cacheName cacheName
+     *
+     * @param cacheName                cacheName
      * @param applicationConfiguration applicationConfiguration
      */
     public RedisCacheConfiguration(@Parameter String cacheName, ApplicationConfiguration applicationConfiguration) {
@@ -53,8 +56,8 @@ public class RedisCacheConfiguration {
     }
 
     /**
-     * @see io.micronaut.configuration.lettuce.NamedRedisServersConfiguration
      * @return The name of the server to use.
+     * @see io.micronaut.configuration.lettuce.NamedRedisServersConfiguration
      */
     public Optional<String> getServer() {
         if (server != null) {
@@ -106,6 +109,14 @@ public class RedisCacheConfiguration {
         return Optional.ofNullable(expireAfterAccess);
     }
 
+
+    /**
+     * @return The class path for an implementation of {@link ExpirationAfterWritePolicy}
+     */
+    public Optional<String> getExpirationAfterWritePolicy() {
+        return Optional.ofNullable(expirationAfterWritePolicy);
+    }
+
     /**
      * @return The charset used to serialize and deserialize values
      */
@@ -114,7 +125,6 @@ public class RedisCacheConfiguration {
     }
 
     /**
-     *
      * @param expireAfterWrite The cache expiration duration after writing into it.
      */
     public void setExpireAfterWrite(Duration expireAfterWrite) {
@@ -133,5 +143,12 @@ public class RedisCacheConfiguration {
      */
     public void setCharset(Charset charset) {
         this.charset = charset;
+    }
+
+    /**
+     * @param expirationAfterWritePolicy The class path for an implementation of {@link ExpirationAfterWritePolicy}
+     */
+    public void setExpirationAfterWritePolicy(String expirationAfterWritePolicy) {
+        this.expirationAfterWritePolicy = expirationAfterWritePolicy;
     }
 }

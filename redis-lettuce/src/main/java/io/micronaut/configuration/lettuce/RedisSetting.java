@@ -42,6 +42,10 @@ public interface RedisSetting {
      */
     String REDIS_EMBEDDED = PREFIX + ".embedded";
     /**
+     * Default configuration for Redis caches.
+     */
+    String REDIS_CACHE = PREFIX + ".cache";
+    /**
      * Configured Redis caches.
      */
     String REDIS_CACHES = PREFIX + ".caches";

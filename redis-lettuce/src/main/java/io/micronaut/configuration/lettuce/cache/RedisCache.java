@@ -57,32 +57,60 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     /**
      * Creates a new redis cache for the given arguments.
      *
-     * @param redisCacheConfiguration The configuration
-     * @param conversionService       The conversion service
-     * @param beanLocator             The bean locator used to discover the redis connection from the configuration
+     * @param defaultRedisCacheConfiguration The default configuration
+     * @param redisCacheConfiguration        The configuration
+     * @param conversionService              The conversion service
+     * @param beanLocator                    The bean locator used to discover the redis connection from the configuration
      */
     @SuppressWarnings("unchecked")
     public RedisCache(
-        RedisCacheConfiguration redisCacheConfiguration,
-        ConversionService<?> conversionService,
-        BeanLocator beanLocator) {
+            DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
+            RedisCacheConfiguration redisCacheConfiguration,
+            ConversionService<?> conversionService,
+            BeanLocator beanLocator
+    ) {
         if (redisCacheConfiguration == null) {
             throw new IllegalArgumentException("Redis cache configuration cannot be null");
         }
+
         this.redisCacheConfiguration = redisCacheConfiguration;
-        this.expireAfterWrite = redisCacheConfiguration.getExpireAfterWrite().map(Duration::toMillis).orElse(null);
-        this.expireAfterAccess = redisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null);
+
+        this.expireAfterWrite = redisCacheConfiguration
+                .getExpireAfterWrite()
+                .map(Duration::toMillis)
+                .orElse(defaultRedisCacheConfiguration.getExpireAfterWrite().map(Duration::toMillis).orElse(null));
+
+        this.expireAfterAccess = redisCacheConfiguration
+                .getExpireAfterAccess()
+                .map(Duration::toMillis)
+                .orElse(defaultRedisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null));
+
         this.keySerializer = redisCacheConfiguration
-            .getKeySerializer()
-            .flatMap(beanLocator::findOrInstantiateBean)
-            .orElse(newDefaultKeySerializer(redisCacheConfiguration, conversionService));
+                .getKeySerializer()
+                .flatMap(beanLocator::findOrInstantiateBean)
+                .orElse(
+                        defaultRedisCacheConfiguration
+                                .getKeySerializer()
+                                .flatMap(beanLocator::findOrInstantiateBean)
+                                .orElse(newDefaultKeySerializer(redisCacheConfiguration, conversionService))
+                );
 
         this.valueSerializer = redisCacheConfiguration
-            .getValueSerializer()
-            .flatMap(beanLocator::findOrInstantiateBean)
-            .orElse(new JdkSerializer(conversionService));
+                .getValueSerializer()
+                .flatMap(beanLocator::findOrInstantiateBean)
+                .orElse(
+                        defaultRedisCacheConfiguration
+                                .getValueSerializer()
+                                .flatMap(beanLocator::findOrInstantiateBean)
+                                .orElse(new JdkSerializer(conversionService))
+                );
 
-        Optional<String> server = redisCacheConfiguration.getServer();
+        Optional<String> server = Optional.ofNullable(
+                redisCacheConfiguration
+                        .getServer()
+                        .orElse(defaultRedisCacheConfiguration.getServer().orElse(null))
+        );
+
         this.connection = RedisConnectionUtil.findRedisConnection(beanLocator, server, "No Redis server configured to allow caching");
         this.asyncCache = new RedisAsyncCache();
     }
@@ -170,10 +198,11 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
     /**
      * Get the value based on the parameters.
-     * @param requiredType requiredType
-     * @param commands commands
+     *
+     * @param requiredType  requiredType
+     * @param commands      commands
      * @param serializedKey serializedKey
-     * @param <T> type of the argument
+     * @param <T>           type of the argument
      * @return value
      */
     protected <T> Optional<T> getValue(Argument<T> requiredType, SyncCacheCommands commands, byte[] serializedKey) {
@@ -198,10 +227,11 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
     /**
      * Place the value in the cache.
-     * @param commands commands
+     *
+     * @param commands      commands
      * @param serializedKey serializedKey
-     * @param value value
-     * @param <T> type of the value
+     * @param value         value
+     * @param <T>           type of the value
      */
     protected <T> void putValue(SyncCacheCommands commands, byte[] serializedKey, T value) {
         Optional<byte[]> serialized = valueSerializer.serialize(value);
@@ -219,6 +249,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
     /**
      * Serialize the key.
+     *
      * @param key The key
      * @return bytes of the object
      */
@@ -228,6 +259,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
     /**
      * Get the synchronous commands for the stateful connection.
+     *
      * @param connection stateful connection
      * @return commands
      */
@@ -238,6 +270,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
     /**
      * Get the asynchronous commands for the stateful connection.
+     *
      * @param connection stateful connection
      * @return commands
      */
@@ -362,9 +395,9 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
             byte[] serializedKey = serializeKey(key);
             Optional<byte[]> serialized = valueSerializer.serialize(value);
             if (serialized.isPresent()) {
-                 getAsync().thenAccept(async -> {
-                     RedisFuture<String> future =  newPutOperation(async, serializedKey, serialized.get());
-                     future.whenComplete(booleanConsumer);
+                getAsync().thenAccept(async -> {
+                    RedisFuture<String> future = newPutOperation(async, serializedKey, serialized.get());
+                    future.whenComplete(booleanConsumer);
                 });
             } else {
                 getAsync().thenAccept(async -> async.remove(serializedKey).whenComplete((aLong, throwable) -> {

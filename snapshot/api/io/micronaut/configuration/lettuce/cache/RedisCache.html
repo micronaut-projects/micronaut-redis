@@ -47,7 +47,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../../io/micronaut/configuration/lettuce/cache/AsyncCacheCommands.html" title="interface in io.micronaut.configuration.lettuce.cache"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../../io/micronaut/configuration/lettuce/cache/DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.RedisAsyncCache.html" title="class in io.micronaut.configuration.lettuce.cache"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -161,7 +161,8 @@ implements io.micronaut.cache.SyncCache&lt;io.lettuce.core.api.StatefulConnectio
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#RedisCache-io.micronaut.configuration.lettuce.cache.RedisCacheConfiguration-io.micronaut.core.convert.ConversionService-io.micronaut.context.BeanLocator-">RedisCache</a></span>(<a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a>&nbsp;redisCacheConfiguration,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#RedisCache-io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration-io.micronaut.configuration.lettuce.cache.RedisCacheConfiguration-io.micronaut.core.convert.ConversionService-io.micronaut.context.BeanLocator-">RedisCache</a></span>(<a href="../../../../../io/micronaut/configuration/lettuce/cache/DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a>&nbsp;defaultRedisCacheConfiguration,
+          <a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a>&nbsp;redisCacheConfiguration,
           io.micronaut.core.convert.ConversionService&lt;?&gt;&nbsp;conversionService,
           io.micronaut.context.BeanLocator&nbsp;beanLocator)</code>
 <div class="block">Creates a new redis cache for the given arguments.</div>
@@ -297,18 +298,20 @@ implements io.micronaut.cache.SyncCache&lt;io.lettuce.core.api.StatefulConnectio
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="RedisCache-io.micronaut.configuration.lettuce.cache.RedisCacheConfiguration-io.micronaut.core.convert.ConversionService-io.micronaut.context.BeanLocator-">
+<a name="RedisCache-io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration-io.micronaut.configuration.lettuce.cache.RedisCacheConfiguration-io.micronaut.core.convert.ConversionService-io.micronaut.context.BeanLocator-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>RedisCache</h4>
-<pre>public&nbsp;RedisCache(<a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a>&nbsp;redisCacheConfiguration,
+<pre>public&nbsp;RedisCache(<a href="../../../../../io/micronaut/configuration/lettuce/cache/DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a>&nbsp;defaultRedisCacheConfiguration,
+                  <a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a>&nbsp;redisCacheConfiguration,
                   io.micronaut.core.convert.ConversionService&lt;?&gt;&nbsp;conversionService,
                   io.micronaut.context.BeanLocator&nbsp;beanLocator)</pre>
 <div class="block">Creates a new redis cache for the given arguments.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>defaultRedisCacheConfiguration</code> - The default configuration</dd>
 <dd><code>redisCacheConfiguration</code> - The configuration</dd>
 <dd><code>conversionService</code> - The conversion service</dd>
 <dd><code>beanLocator</code> - The bean locator used to discover the redis connection from the configuration</dd>
@@ -579,7 +582,7 @@ implements io.micronaut.cache.SyncCache&lt;io.lettuce.core.api.StatefulConnectio
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../../io/micronaut/configuration/lettuce/cache/AsyncCacheCommands.html" title="interface in io.micronaut.configuration.lettuce.cache"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../../io/micronaut/configuration/lettuce/cache/DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.RedisAsyncCache.html" title="class in io.micronaut.configuration.lettuce.cache"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">

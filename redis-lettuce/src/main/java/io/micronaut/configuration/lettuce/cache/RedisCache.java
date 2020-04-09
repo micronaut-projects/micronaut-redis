@@ -70,7 +70,8 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
             RedisCacheConfiguration redisCacheConfiguration,
             ConversionService<?> conversionService,
-            BeanLocator beanLocator) {
+            BeanLocator beanLocator
+    ) {
         if (redisCacheConfiguration == null) {
             throw new IllegalArgumentException("Redis cache configuration cannot be null");
         }

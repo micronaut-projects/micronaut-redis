@@ -67,7 +67,8 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
      */
     @SuppressWarnings("unchecked")
     public RedisCache(
-            DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,RedisCacheConfiguration redisCacheConfiguration,
+            DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
+            RedisCacheConfiguration redisCacheConfiguration,
             ConversionService<?> conversionService,
             BeanLocator beanLocator) {
         if (redisCacheConfiguration == null) {
@@ -88,8 +89,9 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                 .orElse(
                         defaultRedisCacheConfiguration
                                 .getKeySerializer()
-                .flatMap(beanLocator::findOrInstantiateBean)
-                .orElse(newDefaultKeySerializer(redisCacheConfiguration, conversionService)));
+                                .flatMap(beanLocator::findOrInstantiateBean)
+                                .orElse(newDefaultKeySerializer(redisCacheConfiguration, conversionService))
+                );
 
         this.valueSerializer = redisCacheConfiguration
                 .getValueSerializer()
@@ -97,8 +99,9 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                 .orElse(
                         defaultRedisCacheConfiguration
                                 .getValueSerializer()
-                .flatMap(beanLocator::findOrInstantiateBean)
-                .orElse(new JdkSerializer(conversionService)));
+                                .flatMap(beanLocator::findOrInstantiateBean)
+                                .orElse(new JdkSerializer(conversionService))
+                );
 
         Optional<String> server = Optional.ofNullable(
                 redisCacheConfiguration

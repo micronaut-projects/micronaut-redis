@@ -60,32 +60,52 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     /**
      * Creates a new redis cache for the given arguments.
      *
-     * @param redisCacheConfiguration The configuration
-     * @param conversionService       The conversion service
-     * @param beanLocator             The bean locator used to discover the redis connection from the configuration
+     * @param defaultRedisCacheConfiguration The default configuration
+     * @param redisCacheConfiguration        The configuration
+     * @param conversionService              The conversion service
+     * @param beanLocator                    The bean locator used to discover the redis connection from the configuration
      */
     @SuppressWarnings("unchecked")
     public RedisCache(
-            RedisCacheConfiguration redisCacheConfiguration,
+            DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,RedisCacheConfiguration redisCacheConfiguration,
             ConversionService<?> conversionService,
             BeanLocator beanLocator) {
         if (redisCacheConfiguration == null) {
             throw new IllegalArgumentException("Redis cache configuration cannot be null");
         }
+
         this.redisCacheConfiguration = redisCacheConfiguration;
         this.expireAfterWritePolicy = configureExpirationAfterWritePolicy(redisCacheConfiguration, beanLocator);
-        this.expireAfterAccess = redisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null);
+
+        this.expireAfterAccess = redisCacheConfiguration
+                .getExpireAfterAccess()
+                .map(Duration::toMillis)
+                .orElse(defaultRedisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null));
+
         this.keySerializer = redisCacheConfiguration
                 .getKeySerializer()
                 .flatMap(beanLocator::findOrInstantiateBean)
-                .orElse(newDefaultKeySerializer(redisCacheConfiguration, conversionService));
+                .orElse(
+                        defaultRedisCacheConfiguration
+                                .getKeySerializer()
+                .flatMap(beanLocator::findOrInstantiateBean)
+                .orElse(newDefaultKeySerializer(redisCacheConfiguration, conversionService)));
 
         this.valueSerializer = redisCacheConfiguration
                 .getValueSerializer()
                 .flatMap(beanLocator::findOrInstantiateBean)
-                .orElse(new JdkSerializer(conversionService));
+                .orElse(
+                        defaultRedisCacheConfiguration
+                                .getValueSerializer()
+                .flatMap(beanLocator::findOrInstantiateBean)
+                .orElse(new JdkSerializer(conversionService)));
 
-        Optional<String> server = redisCacheConfiguration.getServer();
+        Optional<String> server = Optional.ofNullable(
+                redisCacheConfiguration
+                        .getServer()
+                        .orElse(defaultRedisCacheConfiguration.getServer().orElse(null))
+        );
+
         this.connection = RedisConnectionUtil.findRedisConnection(beanLocator, server, "No Redis server configured to allow caching");
         this.asyncCache = new RedisAsyncCache();
     }

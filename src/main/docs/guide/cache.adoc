@@ -1,4 +1,5 @@
-If you wish to use Redis to cache results then you need to have the Lettuce configuration dependency on your classpath. Lettuce is a non-blocking, reactive Redis client implementation and Micronaut provides an implementation that allows cached results to be read reactively.
+If you wish to use Redis to cache results then you need to have the Lettuce configuration dependency on your classpath.
+Lettuce is a non-blocking, reactive Redis client implementation and Micronaut provides an implementation that allows cached results to be read reactively.
 
 Within your application configuration configure the Redis URL and Redis caches:
 
@@ -12,6 +13,17 @@ redis:
         my-cache:
             # expire one hour after write
             expire-after-write: 1h
+----
+
+.Cache Configuration Example with a Dynamic Expiration policy
+[source,yaml]
+----
+redis:
+    uri: redis://localhost
+    caches:
+        my-cache:
+            # expire based on result from class implementing ExpirationAfterWritePolicy
+            expiration-after-write-policy: <class path of class implementing ExpirationAfterWritePolicy>
 ----
 
 include::{includedir}configurationProperties/io.micronaut.configuration.lettuce.cache.RedisCacheConfiguration.adoc[]

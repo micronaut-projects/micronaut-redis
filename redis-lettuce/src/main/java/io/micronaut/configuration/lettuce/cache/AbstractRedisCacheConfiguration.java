@@ -36,6 +36,7 @@ public abstract class AbstractRedisCacheConfiguration {
     protected Charset charset;
     protected Duration expireAfterWrite;
     protected Duration expireAfterAccess;
+    protected String expirationAfterWritePolicy;
 
     /**
      * Constructor.
@@ -93,6 +94,13 @@ public abstract class AbstractRedisCacheConfiguration {
     }
 
     /**
+     * @return The class path for an implementation of ExpirationAfterWritePolicy
+     */
+    public Optional<String> getExpirationAfterWritePolicy() {
+        return Optional.ofNullable(expirationAfterWritePolicy);
+    }
+
+    /**
      * @return The charset used to serialize and deserialize values
      */
     public Charset getCharset() {
@@ -118,5 +126,12 @@ public abstract class AbstractRedisCacheConfiguration {
      */
     public void setCharset(Charset charset) {
         this.charset = charset;
+    }
+
+    /**
+     * @param expirationAfterWritePolicy The class path for an implementation of ExpirationAfterWritePolicy
+     */
+    public void setExpirationAfterWritePolicy(String expirationAfterWritePolicy) {
+        this.expirationAfterWritePolicy = expirationAfterWritePolicy;
     }
 }

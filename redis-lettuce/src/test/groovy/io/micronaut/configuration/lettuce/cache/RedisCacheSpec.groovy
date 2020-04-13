@@ -16,10 +16,16 @@
 package io.micronaut.configuration.lettuce.cache
 
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.BeanLocator
+import io.micronaut.context.exceptions.ConfigurationException
+import io.micronaut.core.convert.DefaultConversionService
 import io.micronaut.inject.qualifiers.Qualifiers
+import io.micronaut.runtime.ApplicationConfiguration
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
+
+import java.nio.charset.Charset
 
 /**
  * @author Graeme Rocher
@@ -86,6 +92,63 @@ class RedisCacheSpec extends Specification {
 
         cleanup:
         applicationContext.stop()
+    }
+
+    void "test creating expiration after write policy that is not of type ExpirationAfterWritePolicy"() {
+        given:
+        ApplicationConfiguration appConfig = new ApplicationConfiguration()
+        appConfig.setDefaultCharset(Charset.defaultCharset())
+        RedisCacheConfiguration cacheConfig = new RedisCacheConfiguration("test3", appConfig)
+        cacheConfig.setExpirationAfterWritePolicy("io.micronaut.configuration.lettuce.cache.TimeService")
+
+        when:
+        new RedisCache(
+                new DefaultRedisCacheConfiguration(appConfig),
+                cacheConfig,
+                new DefaultConversionService(),
+                applicationContext.getBean(BeanLocator.class)
+        )
+
+        then:
+        thrown ConfigurationException
+    }
+
+    void "test creating expiration after write policy that does not exist"() {
+        given:
+        ApplicationConfiguration appConfig = new ApplicationConfiguration()
+        appConfig.setDefaultCharset(Charset.defaultCharset())
+        RedisCacheConfiguration cacheConfig = new RedisCacheConfiguration("test3", appConfig)
+        cacheConfig.setExpirationAfterWritePolicy("io.micronaut.configuration.lettuce.cache.MissingClass")
+
+        when:
+        new RedisCache(
+                new DefaultRedisCacheConfiguration(appConfig),
+                cacheConfig,
+                new DefaultConversionService(),
+                applicationContext.getBean(BeanLocator.class)
+        )
+
+        then:
+        thrown ConfigurationException
+    }
+
+    void "test creating expiration after write policy that exists but has no bean"() {
+        given:
+        ApplicationConfiguration appConfig = new ApplicationConfiguration()
+        appConfig.setDefaultCharset(Charset.defaultCharset())
+        RedisCacheConfiguration cacheConfig = new RedisCacheConfiguration("test3", appConfig)
+        cacheConfig.setExpirationAfterWritePolicy("java.math.BigDecimal")
+
+        when:
+        new RedisCache(
+                new DefaultRedisCacheConfiguration(appConfig),
+                cacheConfig,
+                new DefaultConversionService(),
+                applicationContext.getBean(BeanLocator.class)
+        )
+
+        then:
+        thrown ConfigurationException
     }
 
     static class Foo implements Serializable {

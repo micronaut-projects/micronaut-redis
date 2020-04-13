@@ -188,7 +188,9 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     @Override
     public void invalidateAll() {
         List<byte[]> keys = getCommands().keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
-        getCommands().del(keys.toArray(new byte[keys.size()][]));
+        if (!keys.isEmpty()) {
+            getCommands().del(keys.toArray(new byte[keys.size()][]));
+        }
     }
 
     @Override

@@ -4,11 +4,11 @@ dependencies {
     compileOnly "io.micronaut:micronaut-inject-java"
     annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"    
 
-
+    api "io.lettuce:lettuce-core:5.2.2.RELEASE"
     implementation "io.micronaut:micronaut-runtime:$micronautVersion"
     compileOnly "io.micronaut:micronaut-session"
     compileOnly "io.micronaut:micronaut-management"
-    implementation "io.lettuce:lettuce-core:$lettuceVersion"
+    
     compileOnly "com.github.kstyrc:embedded-redis:0.6"
 
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"

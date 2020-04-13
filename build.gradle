@@ -37,7 +37,7 @@ ext {
 subprojects { Project subproject ->
 
     version project.projectVersion
-	group "io.micronaut.configuration"
+	group "io.micronaut.redis"
     ext {
         isConfiguration = subproject.projectDir.parentFile.name == 'configurations'
         isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")
@@ -50,7 +50,7 @@ subprojects { Project subproject ->
     }
     
     apply plugin:"groovy"
-    apply plugin:"java"
+    apply plugin:"java-library"
 
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'

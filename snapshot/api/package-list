@@ -1,5 +1,6 @@
 io.micronaut.configuration.lettuce
 io.micronaut.configuration.lettuce.cache
+io.micronaut.configuration.lettuce.cache.expiration
 io.micronaut.configuration.lettuce.health
 io.micronaut.configuration.lettuce.session
 io.micronaut.configuration.lettuce.test

@@ -90,6 +90,10 @@ class RedisCacheSpec extends Specification {
         !redisCache.get("test", Foo).isPresent()
         !redisCache.get("two", Foo).isPresent()
 
+        then:
+        // invalidate an empty cache should not fail
+        redisCache.invalidateAll()
+
         cleanup:
         applicationContext.stop()
     }

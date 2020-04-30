@@ -6,7 +6,7 @@ dependencies {
 
     api "io.lettuce:lettuce-core:5.2.2.RELEASE"
     implementation "io.micronaut:micronaut-runtime:$micronautVersion"
-    implementation "io.micronaut.cache:micronaut-cache-core:2.0.0.M1"
+    implementation "io.micronaut.cache:micronaut-cache-core"
 
     testRuntimeOnly "io.micronaut.reactor:micronaut-reactor"
 
@@ -26,4 +26,7 @@ dependencies {
     testImplementation "io.micronaut:micronaut-http-client"
 
     testImplementation "com.github.kstyrc:embedded-redis:0.6"
+
+    testRuntimeOnly "io.micronaut.reactor:micronaut-reactor"
+
 }

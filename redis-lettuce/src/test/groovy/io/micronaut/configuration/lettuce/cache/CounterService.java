@@ -100,18 +100,18 @@ public class CounterService {
         counters.clear();
     }
 
-    @CacheInvalidate
+    @CacheInvalidate(all = false)
     public void reset(String name) {
         counters.remove(name);
     }
 
-    @CacheInvalidate("counter")
-    @CacheInvalidate("counter2")
+    @CacheInvalidate(value = "counter", all = false)
+    @CacheInvalidate(value = "counter2", all = false)
     public void reset2(String name) {
         counters.remove(name);
     }
 
-    @CacheInvalidate(parameters = "name")
+    @CacheInvalidate(parameters = "name", all = false)
     public void set(String name, int val) {
         counters.put(name, val);
     }

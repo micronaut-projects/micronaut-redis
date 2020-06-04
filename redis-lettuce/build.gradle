@@ -4,7 +4,7 @@ dependencies {
     compileOnly "io.micronaut:micronaut-inject-java"
     annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"    
 
-    api "io.lettuce:lettuce-core:5.2.2.RELEASE"
+    api "io.lettuce:lettuce-core:$lettuceVersion"
     implementation "io.micronaut:micronaut-runtime:$micronautVersion"
     compileOnly "io.micronaut:micronaut-session"
     compileOnly "io.micronaut:micronaut-management"

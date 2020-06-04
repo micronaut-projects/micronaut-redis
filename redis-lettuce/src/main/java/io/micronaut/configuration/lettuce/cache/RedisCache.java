@@ -359,7 +359,14 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                     result.completeExceptionally(throwable);
                 } else {
                     if (data != null) {
-                        Optional<T> deserialized = valueSerializer.deserialize(data, requiredType.getType());
+                        Optional<T> deserialized;
+                        try {
+                            deserialized = valueSerializer.deserialize(data, requiredType.getType());
+                        } catch (Throwable t) {
+                            result.completeExceptionally(t);
+                            return;
+                        }
+
                         boolean hasValue = deserialized.isPresent();
                         if (expireAfterAccess != null && hasValue) {
                             async.expire(serializedKey, expireAfterAccess).whenComplete((s, throwable1) -> {
@@ -395,7 +402,14 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                     if (data != null) {
                         completeGet(Argument.of((Class<T>) value.getClass()), result, async, serializedKey, data);
                     } else {
-                        Optional<byte[]> serialized = valueSerializer.serialize(value);
+                        Optional<byte[]> serialized;
+                        try {
+                            serialized = valueSerializer.serialize(value);
+                        } catch (Throwable t) {
+                            result.completeExceptionally(t);
+                            return;
+                        }
+
                         if (serialized.isPresent()) {
                             RedisFuture<Void> putOperation = newPutOperation(async, serializedKey, serialized.get(), value);
                             putOperation.whenComplete((s, throwable12) -> {
@@ -423,21 +437,28 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                 }
             };
             byte[] serializedKey = serializeKey(key);
-            Optional<byte[]> serialized = valueSerializer.serialize(value);
-            if (serialized.isPresent()) {
-                getAsync().thenAccept(async -> {
-                    RedisFuture<Void> future = newPutOperation(async, serializedKey, serialized.get(), value);
-                    future.whenComplete(booleanConsumer);
-                });
-            } else {
-                getAsync().thenAccept(async -> async.remove(serializedKey).whenComplete((aLong, throwable) -> {
-                    if (throwable == null) {
-                        result.complete(true);
-                    } else {
-                        result.completeExceptionally(throwable);
-                    }
-                }));
+            Optional<byte[]> serialized;
+            try {
+                serialized = valueSerializer.serialize(value);
+
+                if (serialized.isPresent()) {
+                    getAsync().thenAccept(async -> {
+                        RedisFuture<Void> future = newPutOperation(async, serializedKey, serialized.get(), value);
+                        future.whenComplete(booleanConsumer);
+                    });
+                } else {
+                    getAsync().thenAccept(async -> async.remove(serializedKey).whenComplete((aLong, throwable) -> {
+                        if (throwable == null) {
+                            result.complete(true);
+                        } else {
+                            result.completeExceptionally(throwable);
+                        }
+                    }));
+                }
+            } catch (Throwable t) {
+                result.completeExceptionally(t);
             }
+
             return result;
         }
 
@@ -484,7 +505,14 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         }
 
         private <T> void completeGet(Argument<T> requiredType, CompletableFuture<Optional<T>> result, AsyncCacheCommands async, byte[] serializedKey, byte[] data) {
-            Optional<T> deserialized = valueSerializer.deserialize(data, requiredType.getType());
+            Optional<T> deserialized;
+            try {
+                deserialized = valueSerializer.deserialize(data, requiredType.getType());
+            } catch (Throwable t) {
+                result.completeExceptionally(t);
+                return;
+            }
+
             if (expireAfterAccess != null && deserialized.isPresent()) {
                 async.expire(serializedKey, expireAfterAccess).whenComplete((s, throwable1) -> {
                     if (throwable1 != null) {
@@ -509,7 +537,14 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
             }
             if (!hasSupplierError) {
 
-                Optional<byte[]> serialized = valueSerializer.serialize(value);
+                Optional<byte[]> serialized;
+                try {
+                    serialized = valueSerializer.serialize(value);
+                } catch (Throwable t) {
+                    result.completeExceptionally(t);
+                    return;
+                }
+
                 if (serialized.isPresent()) {
                     RedisFuture<Void> future = newPutOperation(async, serializedKey, serialized.get(), value);
                     T finalValue = value;
@@ -533,6 +568,5 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                 return async.put(serializedKey, serialized);
             }
         }
-
     }
 }

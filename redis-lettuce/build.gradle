@@ -18,7 +18,7 @@ dependencies {
     testImplementation "io.micronaut:micronaut-function-web"
 
     testImplementation "io.micronaut:micronaut-session"
-    testRuntime "io.micronaut:micronaut-http-server-netty"    
+    testRuntimeOnly "io.micronaut:micronaut-http-server-netty"    
     testImplementation "io.micronaut:micronaut-http-client"
 
     testImplementation "com.github.kstyrc:embedded-redis:0.6"

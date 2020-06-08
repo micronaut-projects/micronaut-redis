@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2020 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,24 +31,39 @@ import io.micronaut.context.annotation.Factory;
 @Factory
 public class NamedRedisClientFactory extends AbstractRedisClientFactory {
 
+    /**
+     * Creates the {@link RedisClient} from the configuration.
+     *
+     * @param config The configuration
+     * @return The {@link RedisClient}
+     */
     @Bean(preDestroy = "shutdown")
     @EachBean(NamedRedisServersConfiguration.class)
-    @Override
-    public RedisClient redisClient(AbstractRedisConfiguration config) {
+    public RedisClient redisClient(NamedRedisServersConfiguration config) {
         return super.redisClient(config);
     }
 
-    @Override
+    /**
+     * Creates the {@link StatefulRedisConnection} from the {@link RedisClient}.
+     *
+     * @param config The {@link NamedRedisServersConfiguration}
+     * @return The {@link StatefulRedisConnection}
+     */
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
-    public StatefulRedisConnection<String, String> redisConnection(RedisClient client) {
-        return super.redisConnection(client);
+    public StatefulRedisConnection<String, String> redisConnection(NamedRedisServersConfiguration config) {
+        return super.redisConnection(super.redisClient(config));
     }
 
-    @Override
+    /**
+     * Creates the {@link StatefulRedisPubSubConnection} from the {@link RedisClient}.
+     *
+     * @param config The {@link NamedRedisServersConfiguration}
+     * @return The {@link StatefulRedisPubSubConnection}
+     */
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
-    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(RedisClient redisClient) {
-        return super.redisPubSubConnection(redisClient);
+    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(NamedRedisServersConfiguration config) {
+        return super.redisPubSubConnection(super.redisClient(config));
     }
 }

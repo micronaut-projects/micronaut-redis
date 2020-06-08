@@ -10,7 +10,7 @@ $ mn create-app my-app --features redis-lettuce
 
 To configure the Lettuce driver you should first add the `redis-lettuce` module to your classpath:
 
-dependency:micronaut-redis-lettuce[groupId="io.micronaut.configuration"]
+dependency:micronaut-redis-lettuce[groupId="io.micronaut.redis"]
 
 You should then configure the URI of the Redis server you wish to communicate with in `application.yml`:
 

@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.configuration.lettuce;
+package io.micronaut.configuration.lettuce.cache;
 
+import io.micronaut.configuration.lettuce.RedisSetting;
 import io.micronaut.context.annotation.ConfigurationProperties;
-import io.micronaut.context.annotation.Primary;
-import io.micronaut.context.annotation.Requires;
+import io.micronaut.runtime.ApplicationConfiguration;
 
 /**
- * In the case where the <tt>redis.uri</tt> is not specified use the default configuration.
+ * Allows providing default configuration values for the actual caches.
  *
- * @author Graeme Rocher
- * @since 1.0
+ * @author Alex Katlein
+ * @since 1.3
  */
-@ConfigurationProperties(RedisSetting.PREFIX)
-@Primary
-@Requires(property = RedisSetting.PREFIX)
-public class DefaultRedisConfiguration extends AbstractRedisConfiguration {
+@ConfigurationProperties(RedisSetting.REDIS_CACHE)
+public class DefaultRedisCacheConfiguration extends AbstractRedisCacheConfiguration {
+    /**
+     * Constructor.
+     *
+     * @param applicationConfiguration applicationConfiguration
+     */
+    public DefaultRedisCacheConfiguration(ApplicationConfiguration applicationConfiguration) {
+        super(applicationConfiguration);
+    }
 }

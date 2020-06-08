@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.configuration.lettuce;
-
-import io.micronaut.context.annotation.ConfigurationProperties;
-import io.micronaut.context.annotation.Primary;
-import io.micronaut.context.annotation.Requires;
+package io.micronaut.configuration.lettuce.cache.expiration;
 
 /**
- * In the case where the <tt>redis.uri</tt> is not specified use the default configuration.
- *
- * @author Graeme Rocher
- * @since 1.0
+ * Interface that defines a TTL policy for a Redis cache.
  */
-@ConfigurationProperties(RedisSetting.PREFIX)
-@Primary
-@Requires(property = RedisSetting.PREFIX)
-public class DefaultRedisConfiguration extends AbstractRedisConfiguration {
+public interface ExpirationAfterWritePolicy {
+
+    /**
+     * @param value Object that will be put in the cache (non-serialized)
+     * @return TTL of the document in Redis in milliseconds
+     */
+    long getExpirationAfterWrite(Object value);
 }

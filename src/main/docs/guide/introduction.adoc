@@ -2,6 +2,11 @@ Micronaut features automatic configuration of the https://lettuce.io[Lettuce] dr
 
 === Release History
 
+==== 2.0.0
+
+* Micronaut 1.3.x minimum version
+* New group ID `io.micronaut.redis`
+
 ==== 1.0.0
 
 * Initial Release

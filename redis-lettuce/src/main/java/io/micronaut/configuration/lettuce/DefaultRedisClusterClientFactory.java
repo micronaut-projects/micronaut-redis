@@ -19,6 +19,7 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
+import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
@@ -26,6 +27,7 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.util.CollectionUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
 import java.util.List;
 
@@ -43,17 +45,18 @@ public class DefaultRedisClusterClientFactory {
     /**
      * Create the client based on config URIs.
      * @param config config
+     * @param defaultClientResources default {@link ClientResources}
      * @return client
      */
     @Bean(preDestroy = "shutdown")
     @Singleton
     @Primary
-    public RedisClusterClient redisClient(@Primary AbstractRedisConfiguration config) {
+    public RedisClusterClient redisClient(@Primary AbstractRedisConfiguration config, @Primary @Nullable ClientResources defaultClientResources) {
         List<RedisURI> uris = config.getUris();
         if (CollectionUtils.isEmpty(uris)) {
             throw new ConfigurationException("Redis URIs must be specified");
         }
-        return RedisClusterClient.create(uris);
+        return defaultClientResources == null ? RedisClusterClient.create(uris) : RedisClusterClient.create(defaultClientResources, uris);
     }
 
     /**

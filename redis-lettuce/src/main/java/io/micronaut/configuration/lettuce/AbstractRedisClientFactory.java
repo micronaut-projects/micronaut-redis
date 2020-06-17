@@ -19,7 +19,9 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
+import io.lettuce.core.resource.ClientResources;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -39,6 +41,22 @@ public abstract class AbstractRedisClientFactory {
         Optional<RedisURI> uri = config.getUri();
         return uri.map(RedisClient::create)
             .orElseGet(() -> RedisClient.create(config));
+    }
+
+    /**
+     * Creates the {@link RedisClient} from the configuration.
+     *
+     * @param config The configuration
+     * @param clientResources The ClientResources
+     * @return The {@link RedisClient}
+     */
+    public RedisClient redisClient(AbstractRedisConfiguration config, @Nullable ClientResources clientResources) {
+        if (clientResources == null) {
+            return redisClient(config);
+        }
+        Optional<RedisURI> uri = config.getUri();
+        return uri.map(redisURI -> RedisClient.create(clientResources, redisURI))
+            .orElseGet(() -> RedisClient.create(clientResources, config));
     }
 
     /**

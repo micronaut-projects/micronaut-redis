@@ -18,9 +18,15 @@ package io.micronaut.configuration.lettuce;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
+import io.lettuce.core.resource.ClientResources;
+import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Primary;
+import io.micronaut.inject.qualifiers.Qualifiers;
+
+import javax.annotation.Nullable;
 
 /**
  * A factory bean for constructing {@link RedisClient} instances from {@link NamedRedisServersConfiguration} instances.
@@ -31,6 +37,18 @@ import io.micronaut.context.annotation.Factory;
 @Factory
 public class NamedRedisClientFactory extends AbstractRedisClientFactory {
 
+    private final BeanLocator beanLocator;
+    private final ClientResources defaultClientResources;
+
+    /**
+     * @param beanLocator The BeanLocator
+     * @param defaultClientResources The ClientResources
+     */
+    public NamedRedisClientFactory(BeanLocator beanLocator, @Primary @Nullable ClientResources defaultClientResources) {
+        this.beanLocator = beanLocator;
+        this.defaultClientResources = defaultClientResources;
+    }
+
     /**
      * Creates the {@link RedisClient} from the configuration.
      *
@@ -40,7 +58,7 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
     @Bean(preDestroy = "shutdown")
     @EachBean(NamedRedisServersConfiguration.class)
     public RedisClient redisClient(NamedRedisServersConfiguration config) {
-        return super.redisClient(config);
+        return super.redisClient(config, getClientResources(config));
     }
 
     /**
@@ -52,7 +70,7 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
     public StatefulRedisConnection<String, String> redisConnection(NamedRedisServersConfiguration config) {
-        return super.redisConnection(super.redisClient(config));
+        return super.redisConnection(getRedisClient(config));
     }
 
     /**
@@ -64,6 +82,25 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
     public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(NamedRedisServersConfiguration config) {
-        return super.redisPubSubConnection(super.redisClient(config));
+        return super.redisPubSubConnection(getRedisClient(config));
     }
+
+    /**
+     * Finds named {@link ClientResources} or uses default if exists.
+     * @param config named config
+     * @return named The ClientResources
+     */
+    private @Nullable ClientResources getClientResources(NamedRedisServersConfiguration config) {
+        return beanLocator.findBean(ClientResources.class, Qualifiers.byName(config.getClientName())).orElse(this.defaultClientResources);
+    }
+
+    /**
+     * Finds named {@link RedisClient}.
+     * @param config named config
+     * @return named The RedisClient
+     */
+    private RedisClient getRedisClient(NamedRedisServersConfiguration config) {
+        return beanLocator.getBean(RedisClient.class, Qualifiers.byName(config.getClientName()));
+    }
+
 }

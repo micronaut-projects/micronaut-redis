@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.configuration.lettuce;
-
-import io.micronaut.context.annotation.ConfigurationProperties;
-import io.micronaut.context.annotation.Primary;
-import io.micronaut.context.annotation.Requires;
+package io.micronaut.configuration.lettuce.cache.expiration;
 
 /**
- * In the case where the <tt>redis.uri</tt> is not specified use the default configuration.
- *
- * @author Graeme Rocher
- * @since 1.0
+ * Provides a Cache TTL policy of constant time.
  */
-@ConfigurationProperties(RedisSetting.PREFIX)
-@Primary
-@Requires(property = RedisSetting.PREFIX)
-public class DefaultRedisConfiguration extends AbstractRedisConfiguration {
+public class ConstantExpirationAfterWritePolicy implements ExpirationAfterWritePolicy {
+    private final long ttl;
+
+    /**
+     * @param ttl ttl in milliseconds
+     */
+    public ConstantExpirationAfterWritePolicy(long ttl) {
+        this.ttl = ttl;
+    }
+
+    @Override
+    public long getExpirationAfterWrite(Object value) {
+        return ttl;
+    }
 }

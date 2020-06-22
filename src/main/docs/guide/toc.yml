@@ -4,3 +4,4 @@ config: Configuring the Redis Lettuce Driver
 testing: Redis and Testing
 cache: Redis for Caching
 sessions: Session State with Redis
+repository: Repository

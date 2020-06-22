@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2020 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,8 +22,11 @@ import io.micronaut.cache.AsyncCache;
 import io.micronaut.cache.SyncCache;
 import io.micronaut.cache.serialize.DefaultStringKeySerializer;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
+import io.micronaut.configuration.lettuce.cache.expiration.ConstantExpirationAfterWritePolicy;
+import io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.EachBean;
+import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.serialize.JdkSerializer;
 import io.micronaut.core.serialize.ObjectSerializer;
@@ -47,7 +50,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     private final RedisCacheConfiguration redisCacheConfiguration;
     private final ObjectSerializer keySerializer;
     private final ObjectSerializer valueSerializer;
-    private final Long expireAfterWrite;
+    private final ExpirationAfterWritePolicy expireAfterWritePolicy;
     private final Long expireAfterAccess;
     private final RedisAsyncCache asyncCache;
     private final StatefulConnection<String, String> connection;
@@ -57,34 +60,87 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     /**
      * Creates a new redis cache for the given arguments.
      *
-     * @param redisCacheConfiguration The configuration
-     * @param conversionService       The conversion service
-     * @param beanLocator             The bean locator used to discover the redis connection from the configuration
+     * @param defaultRedisCacheConfiguration The default configuration
+     * @param redisCacheConfiguration        The configuration
+     * @param conversionService              The conversion service
+     * @param beanLocator                    The bean locator used to discover the redis connection from the configuration
      */
     @SuppressWarnings("unchecked")
     public RedisCache(
-        RedisCacheConfiguration redisCacheConfiguration,
-        ConversionService<?> conversionService,
-        BeanLocator beanLocator) {
+            DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
+            RedisCacheConfiguration redisCacheConfiguration,
+            ConversionService<?> conversionService,
+            BeanLocator beanLocator
+    ) {
         if (redisCacheConfiguration == null) {
             throw new IllegalArgumentException("Redis cache configuration cannot be null");
         }
+
         this.redisCacheConfiguration = redisCacheConfiguration;
-        this.expireAfterWrite = redisCacheConfiguration.getExpireAfterWrite().map(Duration::toMillis).orElse(null);
-        this.expireAfterAccess = redisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null);
+        this.expireAfterWritePolicy = configureExpirationAfterWritePolicy(redisCacheConfiguration, beanLocator);
+
+        this.expireAfterAccess = redisCacheConfiguration
+                .getExpireAfterAccess()
+                .map(Duration::toMillis)
+                .orElse(defaultRedisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null));
+
         this.keySerializer = redisCacheConfiguration
-            .getKeySerializer()
-            .flatMap(beanLocator::findOrInstantiateBean)
-            .orElse(newDefaultKeySerializer(redisCacheConfiguration, conversionService));
+                .getKeySerializer()
+                .flatMap(beanLocator::findOrInstantiateBean)
+                .orElse(
+                        defaultRedisCacheConfiguration
+                                .getKeySerializer()
+                                .flatMap(beanLocator::findOrInstantiateBean)
+                                .orElse(newDefaultKeySerializer(redisCacheConfiguration, conversionService))
+                );
 
         this.valueSerializer = redisCacheConfiguration
-            .getValueSerializer()
-            .flatMap(beanLocator::findOrInstantiateBean)
-            .orElse(new JdkSerializer(conversionService));
+                .getValueSerializer()
+                .flatMap(beanLocator::findOrInstantiateBean)
+                .orElse(
+                        defaultRedisCacheConfiguration
+                                .getValueSerializer()
+                                .flatMap(beanLocator::findOrInstantiateBean)
+                                .orElse(new JdkSerializer(conversionService))
+                );
 
-        Optional<String> server = redisCacheConfiguration.getServer();
+        Optional<String> server = Optional.ofNullable(
+                redisCacheConfiguration
+                        .getServer()
+                        .orElse(defaultRedisCacheConfiguration.getServer().orElse(null))
+        );
+
         this.connection = RedisConnectionUtil.findRedisConnection(beanLocator, server, "No Redis server configured to allow caching");
         this.asyncCache = new RedisAsyncCache();
+    }
+
+    private ExpirationAfterWritePolicy configureExpirationAfterWritePolicy(RedisCacheConfiguration redisCacheConfiguration, BeanLocator beanLocator) {
+        if (redisCacheConfiguration.getExpireAfterWrite().isPresent()) {
+            Duration expiration = redisCacheConfiguration.getExpireAfterWrite().get();
+            return new ConstantExpirationAfterWritePolicy(expiration.toMillis());
+        } else if (redisCacheConfiguration.getExpirationAfterWritePolicy().isPresent()) {
+            return (ExpirationAfterWritePolicy) redisCacheConfiguration
+                    .getExpirationAfterWritePolicy()
+                    .flatMap(className -> findExpirationAfterWritePolicyBean(beanLocator, className))
+                    .get();
+        }
+        return null;
+    }
+
+    private Optional<?> findExpirationAfterWritePolicyBean(BeanLocator beanLocator, String className) {
+        try {
+            Optional<?> bean = beanLocator.findOrInstantiateBean(Class.forName(className));
+            if (bean.isPresent()) {
+                if (bean.get() instanceof ExpirationAfterWritePolicy) {
+                    return bean;
+                }
+                throw new ConfigurationException("Redis expiration-after-write-policy was not of type ExpirationAfterWritePolicy");
+            } else {
+                throw new ConfigurationException("Redis expiration-after-write-policy was not found");
+            }
+        } catch (ClassNotFoundException e) {
+            throw new ConfigurationException("Redis expiration-after-write-policy was not found");
+        }
     }
 
     private synchronized SyncCacheCommands getCommands() {
@@ -160,7 +216,9 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     @Override
     public void invalidateAll() {
         List<byte[]> keys = getCommands().keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
-        getCommands().del(keys.toArray(new byte[keys.size()][]));
+        if (!keys.isEmpty()) {
+            getCommands().del(keys.toArray(new byte[keys.size()][]));
+        }
     }
 
     @Override
@@ -170,10 +228,11 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
     /**
      * Get the value based on the parameters.
-     * @param requiredType requiredType
-     * @param commands commands
+     *
+     * @param requiredType  requiredType
+     * @param commands      commands
      * @param serializedKey serializedKey
-     * @param <T> type of the argument
+     * @param <T>           type of the argument
      * @return value
      */
     protected <T> Optional<T> getValue(Argument<T> requiredType, SyncCacheCommands commands, byte[] serializedKey) {
@@ -198,17 +257,18 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
     /**
      * Place the value in the cache.
-     * @param commands commands
+     *
+     * @param commands      commands
      * @param serializedKey serializedKey
-     * @param value value
-     * @param <T> type of the value
+     * @param value         value
+     * @param <T>           type of the value
      */
     protected <T> void putValue(SyncCacheCommands commands, byte[] serializedKey, T value) {
         Optional<byte[]> serialized = valueSerializer.serialize(value);
         if (serialized.isPresent()) {
             byte[] bytes = serialized.get();
-            if (expireAfterWrite != null) {
-                commands.put(serializedKey, bytes, expireAfterWrite);
+            if (expireAfterWritePolicy != null) {
+                commands.put(serializedKey, bytes, expireAfterWritePolicy.getExpirationAfterWrite(value));
             } else {
                 commands.put(serializedKey, bytes);
             }
@@ -219,6 +279,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
     /**
      * Serialize the key.
+     *
      * @param key The key
      * @return bytes of the object
      */
@@ -228,6 +289,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
     /**
      * Get the synchronous commands for the stateful connection.
+     *
      * @param connection stateful connection
      * @return commands
      */
@@ -238,6 +300,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
 
     /**
      * Get the asynchronous commands for the stateful connection.
+     *
      * @param connection stateful connection
      * @return commands
      */
@@ -296,7 +359,14 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                     result.completeExceptionally(throwable);
                 } else {
                     if (data != null) {
-                        Optional<T> deserialized = valueSerializer.deserialize(data, requiredType.getType());
+                        Optional<T> deserialized;
+                        try {
+                            deserialized = valueSerializer.deserialize(data, requiredType.getType());
+                        } catch (Throwable t) {
+                            result.completeExceptionally(t);
+                            return;
+                        }
+
                         boolean hasValue = deserialized.isPresent();
                         if (expireAfterAccess != null && hasValue) {
                             async.expire(serializedKey, expireAfterAccess).whenComplete((s, throwable1) -> {
@@ -332,9 +402,16 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                     if (data != null) {
                         completeGet(Argument.of((Class<T>) value.getClass()), result, async, serializedKey, data);
                     } else {
-                        Optional<byte[]> serialized = valueSerializer.serialize(value);
+                        Optional<byte[]> serialized;
+                        try {
+                            serialized = valueSerializer.serialize(value);
+                        } catch (Throwable t) {
+                            result.completeExceptionally(t);
+                            return;
+                        }
+
                         if (serialized.isPresent()) {
-                            RedisFuture<String> putOperation = newPutOperation(async, serializedKey, serialized.get());
+                            RedisFuture<Void> putOperation = newPutOperation(async, serializedKey, serialized.get(), value);
                             putOperation.whenComplete((s, throwable12) -> {
                                 if (throwable12 != null) {
                                     result.completeExceptionally(throwable12);
@@ -352,7 +429,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         @Override
         public CompletableFuture<Boolean> put(Object key, Object value) {
             CompletableFuture<Boolean> result = new CompletableFuture<>();
-            BiConsumer<String, Throwable> booleanConsumer = (s, throwable) -> {
+            BiConsumer<Void, Throwable> booleanConsumer = (s, throwable) -> {
                 if (throwable == null) {
                     result.complete(true);
                 } else {
@@ -360,21 +437,28 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                 }
             };
             byte[] serializedKey = serializeKey(key);
-            Optional<byte[]> serialized = valueSerializer.serialize(value);
-            if (serialized.isPresent()) {
-                 getAsync().thenAccept(async -> {
-                     RedisFuture<String> future =  newPutOperation(async, serializedKey, serialized.get());
-                     future.whenComplete(booleanConsumer);
-                });
-            } else {
-                getAsync().thenAccept(async -> async.remove(serializedKey).whenComplete((aLong, throwable) -> {
-                    if (throwable == null) {
-                        result.complete(true);
-                    } else {
-                        result.completeExceptionally(throwable);
-                    }
-                }));
+            Optional<byte[]> serialized;
+            try {
+                serialized = valueSerializer.serialize(value);
+
+                if (serialized.isPresent()) {
+                    getAsync().thenAccept(async -> {
+                        RedisFuture<Void> future = newPutOperation(async, serializedKey, serialized.get(), value);
+                        future.whenComplete(booleanConsumer);
+                    });
+                } else {
+                    getAsync().thenAccept(async -> async.remove(serializedKey).whenComplete((aLong, throwable) -> {
+                        if (throwable == null) {
+                            result.complete(true);
+                        } else {
+                            result.completeExceptionally(throwable);
+                        }
+                    }));
+                }
+            } catch (Throwable t) {
+                result.completeExceptionally(t);
             }
+
             return result;
         }
 
@@ -421,7 +505,14 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         }
 
         private <T> void completeGet(Argument<T> requiredType, CompletableFuture<Optional<T>> result, AsyncCacheCommands async, byte[] serializedKey, byte[] data) {
-            Optional<T> deserialized = valueSerializer.deserialize(data, requiredType.getType());
+            Optional<T> deserialized;
+            try {
+                deserialized = valueSerializer.deserialize(data, requiredType.getType());
+            } catch (Throwable t) {
+                result.completeExceptionally(t);
+                return;
+            }
+
             if (expireAfterAccess != null && deserialized.isPresent()) {
                 async.expire(serializedKey, expireAfterAccess).whenComplete((s, throwable1) -> {
                     if (throwable1 != null) {
@@ -446,9 +537,16 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
             }
             if (!hasSupplierError) {
 
-                Optional<byte[]> serialized = valueSerializer.serialize(value);
+                Optional<byte[]> serialized;
+                try {
+                    serialized = valueSerializer.serialize(value);
+                } catch (Throwable t) {
+                    result.completeExceptionally(t);
+                    return;
+                }
+
                 if (serialized.isPresent()) {
-                    RedisFuture<String> future = newPutOperation(async, serializedKey, serialized.get());
+                    RedisFuture<Void> future = newPutOperation(async, serializedKey, serialized.get(), value);
                     T finalValue = value;
                     future.whenComplete((s, throwable12) -> {
                         if (throwable12 != null) {
@@ -463,15 +561,12 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
             }
         }
 
-        private RedisFuture newPutOperation(AsyncCacheCommands async, byte[] serializedKey, byte[] serialized) {
-            RedisFuture future;
-            if (expireAfterWrite != null) {
-                future = async.put(serializedKey, serialized, expireAfterWrite);
+        private RedisFuture<Void> newPutOperation(AsyncCacheCommands async, byte[] serializedKey, byte[] serialized, Object value) {
+            if (expireAfterWritePolicy != null) {
+                return async.put(serializedKey, serialized, expireAfterWritePolicy.getExpirationAfterWrite(value));
             } else {
-                future = async.put(serializedKey, serialized);
+                return async.put(serializedKey, serialized);
             }
-            return future;
         }
-
     }
 }

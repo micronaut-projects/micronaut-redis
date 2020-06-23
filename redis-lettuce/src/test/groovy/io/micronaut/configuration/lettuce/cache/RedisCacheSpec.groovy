@@ -15,6 +15,12 @@
  */
 package io.micronaut.configuration.lettuce.cache
 
+import io.lettuce.core.RedisFuture
+import io.lettuce.core.api.StatefulRedisConnection
+import io.lettuce.core.api.async.RedisKeyAsyncCommands
+import io.lettuce.core.api.async.RedisStringAsyncCommands
+import io.lettuce.core.protocol.AsyncCommand
+import io.lettuce.core.protocol.RedisCommand
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.BeanLocator
 import io.micronaut.context.exceptions.ConfigurationException
@@ -22,10 +28,15 @@ import io.micronaut.core.convert.DefaultConversionService
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.runtime.ApplicationConfiguration
 import spock.lang.AutoCleanup
+import spock.lang.Requires
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Stepwise
 
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 import java.nio.charset.Charset
+import java.util.concurrent.ExecutionException
 
 /**
  * @author Graeme Rocher
@@ -44,6 +55,7 @@ class RedisCacheSpec extends Specification {
 
         then:
         redisCache != null
+        redisCache.getNativeCache() instanceof StatefulRedisConnection
 
         when:
         redisCache.put("test", new Foo(name: "test"))
@@ -153,6 +165,38 @@ class RedisCacheSpec extends Specification {
 
         then:
         thrown ConfigurationException
+    }
+
+    @Requires({jvm.javaVersion.startsWith("1.8")}) // Because of the reflection run only on Java 8
+    void "test exceptions"() {
+        setup:
+            def redisStringAsyncCommands = Mock(RedisStringAsyncCommands.class)
+            RedisCache redisCache = applicationContext.getBean(RedisCache, Qualifiers.byName("test"))
+
+            Field field = RedisCache.getDeclaredField("redisStringAsyncCommands")
+            field.setAccessible(true)
+
+            Field modifiersField = Field.class.getDeclaredField("modifiers")
+            modifiersField.setAccessible(true)
+            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL)
+
+            field.set(redisCache, redisStringAsyncCommands)
+
+            def result = new AsyncCommand(Mock(RedisCommand))
+            redisStringAsyncCommands.get(_) >> result
+            result.completeExceptionally(new RuntimeException("XYZ"))
+        when:
+            def op = redisCache.async().get("two", Foo.class)
+        then:
+            op.isCompletedExceptionally()
+        when:
+            op.get()
+        then:
+            def e = thrown(ExecutionException)
+            e.cause.message == "XYZ"
+
+        cleanup:
+            applicationContext.stop()
     }
 
     static class Foo implements Serializable {

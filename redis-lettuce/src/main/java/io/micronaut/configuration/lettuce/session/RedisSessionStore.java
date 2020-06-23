@@ -16,8 +16,14 @@
 package io.micronaut.configuration.lettuce.session;
 
 import io.lettuce.core.Range;
+import io.lettuce.core.RedisFuture;
 import io.lettuce.core.api.StatefulConnection;
-import io.lettuce.core.dynamic.RedisCommandFactory;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.async.*;
+import io.lettuce.core.api.sync.*;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import io.lettuce.core.cluster.api.async.RedisAdvancedClusterAsyncCommands;
+import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import io.lettuce.core.pubsub.RedisPubSubAdapter;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
@@ -42,6 +48,7 @@ import io.micronaut.session.event.SessionExpiredEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.nio.charset.Charset;
@@ -85,12 +92,11 @@ import static io.micronaut.configuration.lettuce.session.RedisSessionStore.Redis
 @Primary
 @Requires(property = RedisSessionStore.REDIS_SESSION_ENABLED, value = StringUtils.TRUE)
 @Replaces(InMemorySessionStore.class)
-public class RedisSessionStore extends RedisPubSubAdapter<String, String> implements SessionStore<RedisSessionStore.RedisSession> {
+public class RedisSessionStore extends RedisPubSubAdapter<String, String> implements SessionStore<RedisSessionStore.RedisSession>, AutoCloseable {
 
     public static final String REDIS_SESSION_ENABLED = SessionSettings.HTTP + ".redis.enabled";
     private static final int EXPIRATION_SECONDS = 5;
     private static final Logger LOG  = LoggerFactory.getLogger(RedisSessionStore.class);
-    private final RedisSessionCommands sessionCommands;
     private final RedisHttpSessionConfiguration sessionConfiguration;
     private final SessionIdGenerator sessionIdGenerator;
     private final ApplicationEventPublisher eventPublisher;
@@ -100,6 +106,13 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
     private final byte[] sessionCreatedTopic;
     private final byte[] activeSessionsSet;
     private final RedisHttpSessionConfiguration.WriteMode writeMode;
+    private final StatefulConnection<byte[], byte[]> connection;
+    private final BaseRedisAsyncCommands<byte[], byte[]> baseRedisAsyncCommands;
+    private final RedisServerCommands<byte[], byte[]> redisServerCommands;
+    private final RedisSortedSetAsyncCommands<byte[], byte[]> redisSortedSetAsyncCommands;
+    private final RedisStringAsyncCommands<byte[], byte[]> redisStringAsyncCommands;
+    private final RedisHashAsyncCommands<byte[], byte[]> redisHashAsyncCommands;
+    private final RedisKeyAsyncCommands<byte[], byte[]> redisKeyAsyncCommands;
 
     /**
      * Constructor.
@@ -126,14 +139,36 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
         this.eventPublisher = eventPublisher;
         this.sessionConfiguration = sessionConfiguration;
         this.charset = sessionConfiguration.getCharset();
-        StatefulConnection statefulConnection = findRedisConnection(sessionConfiguration, beanLocator);
         StatefulRedisPubSubConnection<String, String> pubSubConnection = findRedisPubSubConnection(sessionConfiguration, beanLocator);
-
 
         this.expiryPrefix = sessionConfiguration.getNamespace() + "expiry:";
         this.sessionCreatedTopic = sessionConfiguration.getSessionCreatedTopic().getBytes(charset);
         this.activeSessionsSet = sessionConfiguration.getActiveSessionsKey().getBytes(charset);
         pubSubConnection.addListener(this);
+
+        this.connection = RedisConnectionUtil.openBytesRedisConnection(beanLocator, sessionConfiguration.getServerName(), "No Redis server configured to store sessions");
+        if (connection instanceof StatefulRedisConnection) {
+            RedisCommands<byte[], byte[]> sync = ((StatefulRedisConnection<byte[], byte[]>) connection).sync();
+            redisServerCommands = sync;
+            RedisAsyncCommands<byte[], byte[]> async = ((StatefulRedisConnection<byte[], byte[]>) connection).async();
+            baseRedisAsyncCommands = async;
+            redisSortedSetAsyncCommands = async;
+            redisStringAsyncCommands = async;
+            redisHashAsyncCommands = async;
+            redisKeyAsyncCommands = async;
+        } else if (connection instanceof StatefulRedisClusterConnection) {
+            RedisAdvancedClusterCommands<byte[], byte[]> sync = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).sync();
+            redisServerCommands = sync;
+            RedisAdvancedClusterAsyncCommands<byte[], byte[]> async = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).async();
+            baseRedisAsyncCommands = async;
+            redisSortedSetAsyncCommands = async;
+            redisStringAsyncCommands = async;
+            redisHashAsyncCommands = async;
+            redisKeyAsyncCommands = async;
+        } else {
+            throw new ConfigurationException("Invalid Redis connection");
+        }
+
         RedisPubSubCommands<String, String> sync = pubSubConnection.sync();
         try {
             sync.psubscribe(
@@ -144,15 +179,11 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
         } catch (Exception e) {
             throw new ConfigurationException("Unable to subscribe to session topics: " + e.getMessage(), e);
         }
-        RedisCommandFactory redisCommandFactory = new RedisCommandFactory(
-                statefulConnection
-        );
-        this.sessionCommands = redisCommandFactory.getCommands(RedisSessionCommands.class);
 
         if (sessionConfiguration.isEnableKeyspaceEvents()) {
 
             try {
-                String result = this.sessionCommands.configSet(
+                String result = this.redisServerCommands.configSet(
                         "notify-keyspace-events", "Egx"
                 );
                 if (!result.equalsIgnoreCase("ok")) {
@@ -173,13 +204,13 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
                     () -> {
                         long oneMinuteFromNow = Instant.now().plus(1, ChronoUnit.MINUTES).toEpochMilli();
                         long oneMinuteAgo = Instant.now().minus(1, ChronoUnit.MINUTES).toEpochMilli();
-                        sessionCommands.zrangebyscore(
+                        redisSortedSetAsyncCommands.zrangebyscore(
                                 activeSessionsSet, Range.create(Long.valueOf(oneMinuteAgo).doubleValue(), Long.valueOf(oneMinuteFromNow).doubleValue())
                         ).thenAccept((aboutToExpire) -> {
                             if (aboutToExpire != null) {
                                 for (byte[] bytes : aboutToExpire) {
                                     byte[] expiryKey = getExpiryKey(new String(bytes, charset));
-                                    sessionCommands.get(expiryKey);
+                                    redisStringAsyncCommands.get(expiryKey);
                                 }
                             }
                         });
@@ -219,7 +250,7 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
             boolean expired = pattern.endsWith(":expired");
             if (pattern.endsWith(":del") || expired) {
                 String id = message.substring(expiryPrefix.length());
-                sessionCommands.zrem(activeSessionsSet, id.getBytes(charset)).whenComplete((aVoid, throwable) -> {
+                redisSortedSetAsyncCommands.zrem(activeSessionsSet, id.getBytes(charset)).whenComplete((aVoid, throwable) -> {
                     if (throwable != null) {
                         if (LOG.isErrorEnabled()) {
                             LOG.error("Error removing session [" + id + "] from active sessions: " + throwable.getMessage(), throwable);
@@ -251,27 +282,14 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
 
     @Override
     public CompletableFuture<Boolean> deleteSession(String id) {
-        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
-        findSessionInternal(id, true).whenComplete((session, throwable) -> {
-            if (throwable != null) {
-                completableFuture.completeExceptionally(throwable);
-            } else {
-                if (session.isPresent()) {
-                    RedisSession redisSession = session.get();
-                    redisSession.setMaxInactiveInterval(Duration.ZERO);
-                    save(redisSession).whenComplete((savedSession, throwable1) -> {
-                        if (throwable1 != null) {
-                            completableFuture.completeExceptionally(throwable1);
-                        } else {
-                            completableFuture.complete(true);
-                        }
-                    });
-                } else {
-                    completableFuture.complete(false);
-                }
+        return findSessionInternal(id, true).thenCompose(session -> {
+            if (session.isPresent()) {
+                RedisSession redisSession = session.get();
+                redisSession.setMaxInactiveInterval(Duration.ZERO);
+                return save(redisSession).thenApply(ignore -> true);
             }
-        });
-        return completableFuture;
+            return CompletableFuture.completedFuture(false);
+        }).toCompletableFuture();
     }
 
     @Override
@@ -283,55 +301,38 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
             Set<String> removedKeys = session.removedKeys;
             byte[][] removedKeyBytes = removedKeys.stream().map(str -> (RedisSession.ATTR_PREFIX + str).getBytes(charset)).toArray(byte[][]::new);
             if (!removedKeys.isEmpty()) {
-                CompletableFuture<RedisSession> completableFuture = new CompletableFuture<>();
                 byte[] sessionKey = getSessionKey(session.getId());
-                sessionCommands.deleteAttributes(sessionKey, removedKeyBytes)
-                        .whenComplete((aVoid, throwable) -> {
-                            if (throwable == null) {
-                                saveSessionDelta(session, changes, completableFuture);
-                            } else {
-                                completableFuture.completeExceptionally(throwable);
-                            }
-                        });
-                return completableFuture;
-            } else {
-
-                CompletableFuture<RedisSession> future = new CompletableFuture<>();
-                saveSessionDelta(session, changes, future);
-                return future;
+                return redisHashAsyncCommands.hdel(sessionKey, removedKeyBytes)
+                        .thenCompose(ignore -> saveSessionDelta(session, changes))
+                        .toCompletableFuture();
             }
+            return saveSessionDelta(session, changes);
         }
     }
 
-    private void saveSessionDelta(RedisSession session, Map<byte[], byte[]> changes, CompletableFuture<RedisSession> future) {
+    private CompletableFuture<RedisSession> saveSessionDelta(RedisSession session, Map<byte[], byte[]> changes) {
         Duration maxInactiveInterval = session.getMaxInactiveInterval();
         long expirySeconds = maxInactiveInterval.getSeconds();
         byte[] sessionKey = getSessionKey(session.getId());
         byte[] sessionIdBytes = session.getId().getBytes(charset);
         if (expirySeconds == 0) {
             // delete the expired session
-            CompletableFuture<Void> deleteOp = sessionCommands.del(getExpiryKey(session));
-            deleteOp.whenComplete((aLong, throwable) -> {
-                    if (throwable != null) {
-                        future.completeExceptionally(throwable);
-                    } else {
-                        future.complete(session);
-                    }
-                });
+            RedisFuture<Long> deleteOp = redisKeyAsyncCommands.del(getExpiryKey(session));
+            return deleteOp
+                    .thenCompose(ignore -> redisHashAsyncCommands.hmset(sessionKey, changes))
+                    .thenApply(ignore -> session)
+                    .toCompletableFuture();
         }
 
-        sessionCommands.saveSessionData(
+        return redisHashAsyncCommands.hmset(
                 sessionKey,
                 changes
-        ).whenComplete((s, throwable) -> {
-            if (throwable != null) {
-                future.completeExceptionally(throwable);
-            } else {
+        ).thenCompose(ignore -> {
                 try {
                     if (session.isNew()) {
                         session.clearModifications();
 
-                        sessionCommands.publish(sessionCreatedTopic, sessionIdBytes).whenComplete((aLong, throwable12) -> {
+                        baseRedisAsyncCommands.publish(sessionCreatedTopic, sessionIdBytes).whenComplete((aLong, throwable12) -> {
                             if (throwable12 != null) {
                                 if (LOG.isErrorEnabled()) {
                                     LOG.error("Error publishing session creation event: " + throwable12.getMessage(), throwable12);
@@ -345,26 +346,16 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
                     if (LOG.isErrorEnabled()) {
                         LOG.error("Error publishing session creation event: " + e.getMessage(), e);
                     }
-                } finally {
-                    long fiveMinutesAfterExpires = expirySeconds
-                            + TimeUnit.MINUTES.toSeconds(EXPIRATION_SECONDS);
-                    byte[] expiryKey = getExpiryKey(session);
-                    double expireTimeScore = Long.valueOf(Instant.now().plus(expirySeconds, ChronoUnit.SECONDS).toEpochMilli()).doubleValue();
-
-                    CompletableFuture<Boolean> expireOp = sessionCommands.expire(sessionKey, fiveMinutesAfterExpires);
-                    CompletableFuture<Void> saveExpiryOp = sessionCommands.saveExpiry(expiryKey, String.valueOf(expirySeconds).getBytes());
-                    CompletableFuture<Long> saveActiveSessionOp = sessionCommands.zadd(activeSessionsSet, expireTimeScore, sessionIdBytes);
-                    CompletableFuture.allOf(expireOp, saveExpiryOp, saveActiveSessionOp).whenComplete((aBoolean, throwable1) -> {
-                                if (throwable1 != null) {
-                                    future.completeExceptionally(throwable1);
-                                } else {
-                                    future.complete(session);
-                                }
-                            });
                 }
+                long fiveMinutesAfterExpires = expirySeconds + TimeUnit.MINUTES.toSeconds(EXPIRATION_SECONDS);
+                byte[] expiryKey = getExpiryKey(session);
+                double expireTimeScore = Long.valueOf(Instant.now().plus(expirySeconds, ChronoUnit.SECONDS).toEpochMilli()).doubleValue();
 
-            }
-        });
+                CompletableFuture<Boolean> expireOp = redisKeyAsyncCommands.expire(sessionKey, fiveMinutesAfterExpires).toCompletableFuture();
+                CompletableFuture<String> saveExpiryOp = redisStringAsyncCommands.setex(expiryKey, expirySeconds, String.valueOf(expirySeconds).getBytes()).toCompletableFuture();
+                CompletableFuture<Long> saveActiveSessionOp = redisSortedSetAsyncCommands.zadd(activeSessionsSet, expireTimeScore, sessionIdBytes).toCompletableFuture();
+                return CompletableFuture.allOf(expireOp, saveExpiryOp, saveActiveSessionOp).thenApply(ignore2 -> session);
+            }).toCompletableFuture();
     }
 
     private byte[] getExpiryKey(RedisSession session) {
@@ -377,15 +368,8 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
     }
 
     private CompletableFuture<Optional<RedisSession>> findSessionInternal(String id, boolean allowExpired) {
-        CompletableFuture<Optional<RedisSession>> completableFuture = new CompletableFuture<>();
-        CompletableFuture<Map<byte[], byte[]>> future = sessionCommands.findSessionData(
-                getSessionKey(id)
-        );
-        future.whenComplete((data, throwable) -> {
-
-            if (CollectionUtils.isEmpty(data) || throwable != null) {
-                completableFuture.complete(Optional.empty());
-            } else {
+        return redisHashAsyncCommands.hgetall(getSessionKey(id)).thenApply(data -> {
+            if (CollectionUtils.isNotEmpty(data)) {
                 Map<String, byte[]> transformed = data.entrySet().stream().collect(
                         Collectors.toMap(
                                 entry -> new String(entry.getKey(), charset),
@@ -397,22 +381,15 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
                         valueSerializer,
                         transformed);
                 if (!session.isExpired() || allowExpired) {
-                    completableFuture.complete(Optional.of(session));
-                } else {
-                    completableFuture.complete(Optional.empty());
+                    return Optional.of(session);
                 }
             }
-        });
-        return completableFuture;
+            return Optional.<RedisSession>empty();
+        }).toCompletableFuture();
     }
 
     private byte[] getSessionKey(String id) {
         return (sessionConfiguration.getNamespace() + "sessions:" + id).getBytes();
-    }
-
-    private StatefulConnection findRedisConnection(RedisHttpSessionConfiguration sessionConfiguration, BeanLocator beanLocator) {
-        Optional<String> serverName = sessionConfiguration.getServerName();
-        return RedisConnectionUtil.findRedisConnection(beanLocator, serverName, "No Redis server configured to store sessions");
     }
 
     @SuppressWarnings("unchecked")
@@ -470,6 +447,12 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
             }
         }
         return Instant.now();
+    }
+
+    @PreDestroy
+    @Override
+    public void close() {
+        connection.close();
     }
 
     /**
@@ -624,7 +607,7 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
                 String attr = key.toString();
                 this.removedKeys.add(attr);
                 if (writeMode == RedisHttpSessionConfiguration.WriteMode.BACKGROUND) {
-                    sessionCommands.deleteAttributes(getSessionKey(getId()), getAttributeKey(attr))
+                    redisHashAsyncCommands.hdel(getSessionKey(getId()), getAttributeKey(attr))
                             .exceptionally(attributeErrorHandler(attr));
                 }
             }
@@ -645,7 +628,7 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
                 this.removedKeys.addAll(names);
                 if (writeMode == RedisHttpSessionConfiguration.WriteMode.BACKGROUND) {
                     byte[][] attributes = names.stream().map(this::getAttributeKey).toArray(byte[][]::new);
-                    sessionCommands.deleteAttributes(getSessionKey(getId()), attributes)
+                    redisHashAsyncCommands.hdel(getSessionKey(getId()), attributes)
                             .exceptionally(throwable -> {
                                 if (LOG.isErrorEnabled()) {
                                     LOG.error("Error writing behind session attributes: " + throwable.getMessage(), throwable);
@@ -703,7 +686,7 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
             modifiedKeys.clear();
         }
 
-        private Function<Throwable, Void> attributeErrorHandler(String attr) {
+        private <T> Function<Throwable, T> attributeErrorHandler(String attr) {
             return throwable -> {
                 if (LOG.isErrorEnabled()) {
                     LOG.error("Error writing behind session attribute [" + attr + "]: " + throwable.getMessage(), throwable);
@@ -713,7 +696,7 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
         }
 
         private void writeBehind(String attr, byte[] lastAccessedTimeBytes) {
-            sessionCommands.setAttribute(getSessionKey(getId()), attr.getBytes(charset), lastAccessedTimeBytes)
+            redisHashAsyncCommands.hset(getSessionKey(getId()), attr.getBytes(charset), lastAccessedTimeBytes)
                     .exceptionally(attributeErrorHandler(attr));
         }
 

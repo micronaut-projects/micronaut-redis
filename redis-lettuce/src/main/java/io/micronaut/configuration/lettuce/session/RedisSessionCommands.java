@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
  * @author Graeme Rocher
  * @since 1.0
  */
+@Deprecated
 public interface RedisSessionCommands extends Commands {
 
     /**

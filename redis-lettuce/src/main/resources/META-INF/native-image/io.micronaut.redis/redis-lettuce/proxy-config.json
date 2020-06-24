@@ -1,0 +1,5 @@
+[
+  ["io.lettuce.core.api.sync.RedisCommands","io.lettuce.core.cluster.api.sync.RedisClusterCommands"],
+  ["java.lang.reflect.ParameterizedType","io.lettuce.core.dynamic.support.TypeWrapper$SerializableTypeProxy","java.io.Serializable"],
+  ["java.lang.reflect.TypeVariable","io.lettuce.core.dynamic.support.TypeWrapper$SerializableTypeProxy","java.io.Serializable"]
+]

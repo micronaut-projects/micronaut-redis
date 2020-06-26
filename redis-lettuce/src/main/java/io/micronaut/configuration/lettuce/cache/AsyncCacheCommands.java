@@ -28,6 +28,7 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 1.0
  */
+@Deprecated
 public interface AsyncCacheCommands extends Commands {
 
     /**

@@ -15,9 +15,17 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
-import io.lettuce.core.RedisFuture;
 import io.lettuce.core.api.StatefulConnection;
-import io.lettuce.core.dynamic.RedisCommandFactory;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.async.RedisAsyncCommands;
+import io.lettuce.core.api.async.RedisKeyAsyncCommands;
+import io.lettuce.core.api.async.RedisStringAsyncCommands;
+import io.lettuce.core.api.sync.RedisCommands;
+import io.lettuce.core.api.sync.RedisKeyCommands;
+import io.lettuce.core.api.sync.RedisStringCommands;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import io.lettuce.core.cluster.api.async.RedisAdvancedClusterAsyncCommands;
+import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import io.micronaut.cache.AsyncCache;
 import io.micronaut.cache.SyncCache;
 import io.micronaut.cache.serialize.DefaultStringKeySerializer;
@@ -32,11 +40,13 @@ import io.micronaut.core.serialize.JdkSerializer;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.type.Argument;
 
+import javax.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -46,16 +56,18 @@ import java.util.function.Supplier;
  * @since 1.0
  */
 @EachBean(RedisCacheConfiguration.class)
-public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
+public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoCloseable {
     private final RedisCacheConfiguration redisCacheConfiguration;
     private final ObjectSerializer keySerializer;
     private final ObjectSerializer valueSerializer;
     private final ExpirationAfterWritePolicy expireAfterWritePolicy;
     private final Long expireAfterAccess;
     private final RedisAsyncCache asyncCache;
-    private final StatefulConnection<String, String> connection;
-
-    private SyncCacheCommands commands;
+    private final StatefulConnection<byte[], byte[]> connection;
+    private final RedisKeyCommands<byte[], byte[]> redisKeyCommands;
+    private final RedisStringCommands<byte[], byte[]> redisStringCommands;
+    private final RedisKeyAsyncCommands<byte[], byte[]> redisKeyAsyncCommands;
+    private final RedisStringAsyncCommands<byte[], byte[]> redisStringAsyncCommands;
 
     /**
      * Creates a new redis cache for the given arguments.
@@ -110,8 +122,26 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
                         .orElse(defaultRedisCacheConfiguration.getServer().orElse(null))
         );
 
-        this.connection = RedisConnectionUtil.findRedisConnection(beanLocator, server, "No Redis server configured to allow caching");
+        this.connection = RedisConnectionUtil.openBytesRedisConnection(beanLocator, server, "No Redis server configured to allow caching");
         this.asyncCache = new RedisAsyncCache();
+
+        if (connection instanceof StatefulRedisConnection) {
+            RedisCommands<byte[], byte[]> sync = ((StatefulRedisConnection<byte[], byte[]>) connection).sync();
+            redisStringCommands = sync;
+            redisKeyCommands = sync;
+            RedisAsyncCommands<byte[], byte[]> async = ((StatefulRedisConnection<byte[], byte[]>) connection).async();
+            redisKeyAsyncCommands = async;
+            redisStringAsyncCommands = async;
+        } else if (connection instanceof StatefulRedisClusterConnection) {
+            RedisAdvancedClusterCommands<byte[], byte[]> sync = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).sync();
+            redisStringCommands = sync;
+            redisKeyCommands = sync;
+            RedisAdvancedClusterAsyncCommands<byte[], byte[]> async = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).async();
+            redisKeyAsyncCommands = async;
+            redisStringAsyncCommands = async;
+        } else {
+            throw new ConfigurationException("Invalid Redis connection");
+        }
     }
 
     private ExpirationAfterWritePolicy configureExpirationAfterWritePolicy(RedisCacheConfiguration redisCacheConfiguration, BeanLocator beanLocator) {
@@ -143,15 +173,6 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         }
     }
 
-    private synchronized SyncCacheCommands getCommands() {
-        if (commands == null) {
-            // syncCommands internally runs `command` command on Redis
-            commands = syncCommands(connection);
-        }
-
-        return commands;
-    }
-
     @Override
     public String getName() {
         return redisCacheConfiguration.getCacheName();
@@ -165,13 +186,13 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     @Override
     public <T> Optional<T> get(Object key, Argument<T> requiredType) {
         byte[] serializedKey = serializeKey(key);
-        return getValue(requiredType, getCommands(), serializedKey);
+        return getValue(requiredType, serializedKey);
     }
 
     @Override
     public <T> T get(Object key, Argument<T> requiredType, Supplier<T> supplier) {
         byte[] serializedKey = serializeKey(key);
-        byte[] data = getCommands().get(serializedKey);
+        byte[] data = redisStringCommands.get(serializedKey);
         if (data != null) {
             Optional<T> deserialized = valueSerializer.deserialize(data, requiredType.getType());
             if (deserialized.isPresent()) {
@@ -180,7 +201,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         }
 
         T value = supplier.get();
-        putValue(getCommands(), serializedKey, value);
+        putValue(serializedKey, value);
         return value;
     }
 
@@ -192,9 +213,9 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         }
 
         byte[] serializedKey = serializeKey(key);
-        Optional<T> existing = getValue(Argument.of((Class<T>) value.getClass()), getCommands(), serializedKey);
+        Optional<T> existing = getValue(Argument.of((Class<T>) value.getClass()), serializedKey);
         if (!existing.isPresent()) {
-            putValue(getCommands(), serializedKey, value);
+            putValue(serializedKey, value);
             return Optional.empty();
         } else {
             return existing;
@@ -204,20 +225,20 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     @Override
     public void put(Object key, Object value) {
         byte[] serializedKey = serializeKey(key);
-        putValue(getCommands(), serializedKey, value);
+        putValue(serializedKey, value);
     }
 
     @Override
     public void invalidate(Object key) {
         byte[] serializedKey = serializeKey(key);
-        getCommands().remove(serializedKey);
+        redisKeyCommands.del(serializedKey);
     }
 
     @Override
     public void invalidateAll() {
-        List<byte[]> keys = getCommands().keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
+        List<byte[]> keys = redisKeyCommands.keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
         if (!keys.isEmpty()) {
-            getCommands().del(keys.toArray(new byte[keys.size()][]));
+            redisKeyCommands.del(keys.toArray(new byte[keys.size()][]));
         }
     }
 
@@ -230,20 +251,18 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
      * Get the value based on the parameters.
      *
      * @param requiredType  requiredType
-     * @param commands      commands
      * @param serializedKey serializedKey
      * @param <T>           type of the argument
      * @return value
      */
-    protected <T> Optional<T> getValue(Argument<T> requiredType, SyncCacheCommands commands, byte[] serializedKey) {
-        byte[] data = commands.get(serializedKey);
+    protected <T> Optional<T> getValue(Argument<T> requiredType, byte[] serializedKey) {
+        byte[] data = redisStringCommands.get(serializedKey);
         if (expireAfterAccess != null) {
-            commands.expire(serializedKey, expireAfterAccess);
+            redisKeyCommands.pexpire(serializedKey, expireAfterAccess);
         }
         if (data != null) {
             return valueSerializer.deserialize(data, requiredType.getType());
         } else {
-
             return Optional.empty();
         }
     }
@@ -258,22 +277,21 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
     /**
      * Place the value in the cache.
      *
-     * @param commands      commands
      * @param serializedKey serializedKey
      * @param value         value
      * @param <T>           type of the value
      */
-    protected <T> void putValue(SyncCacheCommands commands, byte[] serializedKey, T value) {
+    protected <T> void putValue(byte[] serializedKey, T value) {
         Optional<byte[]> serialized = valueSerializer.serialize(value);
         if (serialized.isPresent()) {
             byte[] bytes = serialized.get();
             if (expireAfterWritePolicy != null) {
-                commands.put(serializedKey, bytes, expireAfterWritePolicy.getExpirationAfterWrite(value));
+                redisStringCommands.psetex(serializedKey, expireAfterWritePolicy.getExpirationAfterWrite(value), bytes);
             } else {
-                commands.put(serializedKey, bytes);
+                redisStringCommands.set(serializedKey, bytes);
             }
         } else {
-            commands.remove(serializedKey);
+            redisKeyCommands.del(serializedKey);
         }
     }
 
@@ -287,30 +305,14 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
         return keySerializer.serialize(key).orElseThrow(() -> new IllegalArgumentException("Key cannot be null"));
     }
 
-    /**
-     * Get the synchronous commands for the stateful connection.
-     *
-     * @param connection stateful connection
-     * @return commands
-     */
-    protected SyncCacheCommands syncCommands(StatefulConnection<String, String> connection) {
-        RedisCommandFactory redisCommandFactory = new RedisCommandFactory(connection);
-        return redisCommandFactory.getCommands(SyncCacheCommands.class);
-    }
-
-    /**
-     * Get the asynchronous commands for the stateful connection.
-     *
-     * @param connection stateful connection
-     * @return commands
-     */
-    protected AsyncCacheCommands asyncCommands(StatefulConnection<String, String> connection) {
-        RedisCommandFactory redisCommandFactory = new RedisCommandFactory(connection);
-        return redisCommandFactory.getCommands(AsyncCacheCommands.class);
-    }
-
     private DefaultStringKeySerializer newDefaultKeySerializer(RedisCacheConfiguration redisCacheConfiguration, ConversionService<?> conversionService) {
         return new DefaultStringKeySerializer(redisCacheConfiguration.getCacheName(), redisCacheConfiguration.getCharset(), conversionService);
+    }
+
+    @PreDestroy
+    @Override
+    public void close() {
+        connection.close();
     }
 
     /**
@@ -318,180 +320,75 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
      */
     protected class RedisAsyncCache implements AsyncCache<StatefulConnection<?, ?>> {
 
-        private AsyncCacheCommands asyncCacheCommands;
-
-        private synchronized AsyncCacheCommands getAsyncCacheCommands() {
-            if (asyncCacheCommands == null) {
-                asyncCacheCommands = asyncCommands(connection);
-            }
-
-            return asyncCacheCommands;
-        }
-
-        private CompletableFuture<AsyncCacheCommands> getAsync() {
-            return CompletableFuture.supplyAsync(this::getAsyncCacheCommands);
-        }
-
         @Override
         public <T> CompletableFuture<Optional<T>> get(Object key, Argument<T> requiredType) {
-            CompletableFuture<Optional<T>> result = new CompletableFuture<>();
             byte[] serializedKey = serializeKey(key);
-            getAsync().thenAccept(async -> async.get(serializedKey).whenComplete((data, throwable) -> {
-                if (throwable != null) {
-                    result.completeExceptionally(throwable);
-                } else {
-                    if (data != null) {
-                        completeGet(requiredType, result, async, serializedKey, data);
-                    } else {
-                        result.complete(Optional.empty());
-                    }
+            return redisStringAsyncCommands.get(serializedKey).thenCompose(data -> {
+                if (data != null) {
+                    return getWithExpire(requiredType, serializedKey, data);
                 }
-            }));
-            return result;
+                return CompletableFuture.completedFuture(Optional.empty());
+            }).toCompletableFuture();
         }
 
         @Override
         public <T> CompletableFuture<T> get(Object key, Argument<T> requiredType, Supplier<T> supplier) {
-            CompletableFuture<T> result = new CompletableFuture<>();
             byte[] serializedKey = serializeKey(key);
-            getAsync().thenAccept(async -> async.get(serializedKey).whenComplete((data, throwable) -> {
-                if (throwable != null) {
-                    result.completeExceptionally(throwable);
-                } else {
-                    if (data != null) {
-                        Optional<T> deserialized;
-                        try {
-                            deserialized = valueSerializer.deserialize(data, requiredType.getType());
-                        } catch (Throwable t) {
-                            result.completeExceptionally(t);
-                            return;
-                        }
-
-                        boolean hasValue = deserialized.isPresent();
-                        if (expireAfterAccess != null && hasValue) {
-                            async.expire(serializedKey, expireAfterAccess).whenComplete((s, throwable1) -> {
-                                if (throwable1 != null) {
-                                    result.completeExceptionally(throwable1);
-                                } else {
-                                    result.complete(deserialized.get());
-                                }
-                            });
-                        } else {
-                            if (hasValue) {
-                                result.complete(deserialized.get());
-                            } else {
-                                invokeSupplier(serializedKey, supplier, async, result);
-                            }
-                        }
-                    } else {
-                        invokeSupplier(serializedKey, supplier, async, result);
+            return redisStringAsyncCommands.get(serializedKey).thenCompose(data -> {
+                if (data != null) {
+                    Optional<T> deserialized = valueSerializer.deserialize(data, requiredType.getType());
+                    boolean hasValue = deserialized.isPresent();
+                    if (expireAfterAccess != null && hasValue) {
+                        return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccess).thenApply(ignore -> deserialized.get());
+                    } else if (hasValue) {
+                        return CompletableFuture.completedFuture(deserialized.get());
                     }
                 }
-            }));
-            return result;
+                return putFromSupplier(serializedKey, supplier);
+            }).toCompletableFuture();
         }
 
         @Override
         public <T> CompletableFuture<Optional<T>> putIfAbsent(Object key, T value) {
-            CompletableFuture<Optional<T>> result = new CompletableFuture<>();
             byte[] serializedKey = serializeKey(key);
-            getAsync().thenAccept(async -> async.get(serializedKey).whenComplete((data, throwable) -> {
-                if (throwable != null) {
-                    result.completeExceptionally(throwable);
-                } else {
-                    if (data != null) {
-                        completeGet(Argument.of((Class<T>) value.getClass()), result, async, serializedKey, data);
-                    } else {
-                        Optional<byte[]> serialized;
-                        try {
-                            serialized = valueSerializer.serialize(value);
-                        } catch (Throwable t) {
-                            result.completeExceptionally(t);
-                            return;
-                        }
-
-                        if (serialized.isPresent()) {
-                            RedisFuture<Void> putOperation = newPutOperation(async, serializedKey, serialized.get(), value);
-                            putOperation.whenComplete((s, throwable12) -> {
-                                if (throwable12 != null) {
-                                    result.completeExceptionally(throwable12);
-                                } else {
-                                    result.complete(Optional.empty());
-                                }
-                            });
-                        }
-                    }
+            return redisStringAsyncCommands.get(serializedKey).thenCompose(data -> {
+                if (data != null) {
+                    return getWithExpire(Argument.of((Class<T>) value.getClass()), serializedKey, data);
                 }
-            }));
-            return result;
+                Optional<byte[]> serialized = valueSerializer.serialize(value);
+                if (serialized.isPresent()) {
+                    return putWithExpire(serializedKey, serialized.get(), value).thenApply(ignore -> Optional.of(value));
+                }
+                return CompletableFuture.completedFuture(Optional.empty());
+            }).toCompletableFuture();
         }
 
         @Override
         public CompletableFuture<Boolean> put(Object key, Object value) {
-            CompletableFuture<Boolean> result = new CompletableFuture<>();
-            BiConsumer<Void, Throwable> booleanConsumer = (s, throwable) -> {
-                if (throwable == null) {
-                    result.complete(true);
-                } else {
-                    result.completeExceptionally(throwable);
-                }
-            };
             byte[] serializedKey = serializeKey(key);
-            Optional<byte[]> serialized;
-            try {
-                serialized = valueSerializer.serialize(value);
-
-                if (serialized.isPresent()) {
-                    getAsync().thenAccept(async -> {
-                        RedisFuture<Void> future = newPutOperation(async, serializedKey, serialized.get(), value);
-                        future.whenComplete(booleanConsumer);
-                    });
-                } else {
-                    getAsync().thenAccept(async -> async.remove(serializedKey).whenComplete((aLong, throwable) -> {
-                        if (throwable == null) {
-                            result.complete(true);
-                        } else {
-                            result.completeExceptionally(throwable);
-                        }
-                    }));
-                }
-            } catch (Throwable t) {
-                result.completeExceptionally(t);
+            Optional<byte[]> serialized = valueSerializer.serialize(value);
+            if (serialized.isPresent()) {
+                return putWithExpire(serializedKey, serialized.get(), value).toCompletableFuture();
             }
-
-            return result;
+            return deleteByKeys(serializedKey);
         }
 
         @Override
         public CompletableFuture<Boolean> invalidate(Object key) {
-            CompletableFuture<Boolean> result = new CompletableFuture<>();
-            getAsync().thenAccept(async -> async.remove(serializeKey(key)).whenComplete((status, throwable) -> {
-                if (throwable != null) {
-                    result.completeExceptionally(throwable);
-                } else {
-                    result.complete(true);
-                }
-            }));
-            return result;
+            return deleteByKeys(serializeKey(key));
         }
 
         @Override
         public CompletableFuture<Boolean> invalidateAll() {
-            CompletableFuture<Boolean> result = new CompletableFuture<>();
-            getAsync().thenAccept(async -> async.keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset())).whenComplete((keys, throwable) -> {
-                if (throwable != null) {
-                    result.completeExceptionally(throwable);
-                } else {
-                    async.del(keys.toArray(new byte[keys.size()][])).whenComplete((deleteCount, throwable1) -> {
-                        if (throwable1 != null) {
-                            result.completeExceptionally(throwable1);
-                        } else {
-                            result.complete(true);
-                        }
-                    });
-                }
-            }));
-            return result;
+            return redisKeyAsyncCommands.keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()))
+                    .thenCompose(keys -> deleteByKeys(keys.toArray(new byte[keys.size()][])))
+                    .toCompletableFuture();
+        }
+
+        private CompletableFuture<Boolean> deleteByKeys(byte[]... serializedKey) {
+            return redisKeyAsyncCommands.del(serializedKey)
+                    .thenApply(keysDeleted -> keysDeleted > 0)
+                    .toCompletableFuture();
         }
 
         @Override
@@ -504,69 +401,47 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>> {
             return RedisCache.this.getNativeCache();
         }
 
-        private <T> void completeGet(Argument<T> requiredType, CompletableFuture<Optional<T>> result, AsyncCacheCommands async, byte[] serializedKey, byte[] data) {
-            Optional<T> deserialized;
-            try {
-                deserialized = valueSerializer.deserialize(data, requiredType.getType());
-            } catch (Throwable t) {
-                result.completeExceptionally(t);
-                return;
-            }
-
+        private <T> CompletionStage<Optional<T>> getWithExpire(Argument<T> requiredType, byte[] serializedKey, byte[] data) {
+            Optional<T> deserialized = valueSerializer.deserialize(data, requiredType.getType());
             if (expireAfterAccess != null && deserialized.isPresent()) {
-                async.expire(serializedKey, expireAfterAccess).whenComplete((s, throwable1) -> {
-                    if (throwable1 != null) {
-                        result.completeExceptionally(throwable1);
-                    } else {
-                        result.complete(deserialized);
-                    }
-                });
-            } else {
-                result.complete(deserialized);
+                return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccess)
+                        .thenApply(ignore -> deserialized);
             }
+            return CompletableFuture.completedFuture(deserialized);
         }
 
-        private <T> void invokeSupplier(byte[] serializedKey, Supplier<T> supplier, AsyncCacheCommands async, CompletableFuture<T> result) {
-            T value = null;
-            boolean hasSupplierError = false;
-            try {
-                value = supplier.get();
-            } catch (Exception e) {
-                hasSupplierError = true;
-                result.completeExceptionally(e);
-            }
-            if (!hasSupplierError) {
-
-                Optional<byte[]> serialized;
-                try {
-                    serialized = valueSerializer.serialize(value);
-                } catch (Throwable t) {
-                    result.completeExceptionally(t);
-                    return;
-                }
-
-                if (serialized.isPresent()) {
-                    RedisFuture<Void> future = newPutOperation(async, serializedKey, serialized.get(), value);
-                    T finalValue = value;
-                    future.whenComplete((s, throwable12) -> {
-                        if (throwable12 != null) {
-                            result.completeExceptionally(throwable12);
-                        } else {
-                            result.complete(finalValue);
+        private <T> CompletionStage<T> putFromSupplier(byte[] serializedKey, Supplier<T> supplier) {
+            return supply(supplier)
+                    .thenCompose(value -> {
+                        Optional<byte[]> serialized = valueSerializer.serialize(value);
+                        if (serialized.isPresent()) {
+                            return putWithExpire(serializedKey, serialized.get(), value).thenApply(ignore -> value);
                         }
+                        return CompletableFuture.completedFuture(null);
                     });
-                } else {
-                    result.complete(null);
-                }
+        }
+
+        private <T> CompletionStage<T> supply(Supplier<T> supplier) {
+            CompletableFuture<T> completableFuture = new CompletableFuture<>();
+            try {
+                completableFuture.complete(supplier.get());
+            } catch (Throwable e) {
+                completableFuture.completeExceptionally(e);
+            }
+            return completableFuture;
+        }
+
+        private CompletionStage<Boolean> putWithExpire(byte[] serializedKey, byte[] serialized, Object value) {
+            if (expireAfterWritePolicy != null) {
+                return redisStringAsyncCommands.psetex(serializedKey, expireAfterWritePolicy.getExpirationAfterWrite(value), serialized).thenApply(isOK());
+            } else {
+                return redisStringAsyncCommands.set(serializedKey, serialized).thenApply(isOK());
             }
         }
 
-        private RedisFuture<Void> newPutOperation(AsyncCacheCommands async, byte[] serializedKey, byte[] serialized, Object value) {
-            if (expireAfterWritePolicy != null) {
-                return async.put(serializedKey, serialized, expireAfterWritePolicy.getExpirationAfterWrite(value));
-            } else {
-                return async.put(serializedKey, serialized);
-            }
+        private Function<String, Boolean> isOK() {
+            return "OK"::equals;
         }
+
     }
 }

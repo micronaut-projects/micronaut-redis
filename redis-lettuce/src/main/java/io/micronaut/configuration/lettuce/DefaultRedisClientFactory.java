@@ -18,11 +18,13 @@ package io.micronaut.configuration.lettuce;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
+import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
 /**
@@ -40,8 +42,8 @@ public class DefaultRedisClientFactory extends AbstractRedisClientFactory {
     @Singleton
     @Primary
     @Override
-    public RedisClient redisClient(@Primary AbstractRedisConfiguration config) {
-        return super.redisClient(config);
+    public RedisClient redisClient(@Primary AbstractRedisConfiguration config, @Nullable @Primary ClientResources defaultClientResources) {
+        return super.redisClient(config, defaultClientResources);
     }
 
     @Override

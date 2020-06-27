@@ -529,7 +529,7 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
             if (!result.isPresent() && attributeMap.containsKey(name)) {
                 Object val = attributeMap.get(name);
                 if (val instanceof byte[]) {
-                    Optional<T> deserialized = valueSerializer.deserialize((byte[]) val, conversionContext.getArgument().getType());
+                    Optional<T> deserialized = valueSerializer.deserialize((byte[]) val, conversionContext.getArgument());
                     deserialized.ifPresent(t -> attributeMap.put(name, t));
                     return deserialized;
                 }

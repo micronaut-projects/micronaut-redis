@@ -64,9 +64,9 @@ public class RedisHealthIndicator implements HealthIndicator {
     /**
      * Constructor.
      *
-     * @param beanContext      beanContext
-     * @param healthAggregator healthAggregator
-     * @param redisConnections redisConnections
+     * @param beanContext               beanContext
+     * @param healthAggregator          healthAggregator
+     * @param redisConnections          redisConnections
      * @param redisClusteredConnections redisClusteredConnections
      */
     public RedisHealthIndicator(BeanContext beanContext, HealthAggregator<?> healthAggregator, StatefulRedisConnection[] redisConnections, StatefulRedisClusterConnection[] redisClusteredConnections) {
@@ -80,7 +80,7 @@ public class RedisHealthIndicator implements HealthIndicator {
     public Publisher<HealthResult> getResult() {
         Publisher<HealthResult> clientResults = getResult(RedisClient.class, RedisClient::connect, StatefulRedisConnection::reactive);
         Publisher<HealthResult> clusteredClientResults = getResult(RedisClusterClient.class, RedisClusterClient::connect, StatefulRedisClusterConnection::reactive);
-        return Flux.merge(clientResults, clusteredClientResults);
+        return Flux.concat(clientResults, clusteredClientResults);
     }
 
     private <T, R extends StatefulConnection<K, V>, K, V> Publisher<HealthResult> getResult(Class<T> type, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {

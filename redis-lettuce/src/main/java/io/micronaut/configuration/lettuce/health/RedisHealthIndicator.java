@@ -66,6 +66,8 @@ public class RedisHealthIndicator implements HealthIndicator {
      *
      * @param beanContext      beanContext
      * @param healthAggregator healthAggregator
+     * @param redisConnections redisConnections
+     * @param redisClusteredConnections redisClusteredConnections
      */
     public RedisHealthIndicator(BeanContext beanContext, HealthAggregator<?> healthAggregator, StatefulRedisConnection[] redisConnections, StatefulRedisClusterConnection[] redisClusteredConnections) {
         this.beanContext = beanContext;

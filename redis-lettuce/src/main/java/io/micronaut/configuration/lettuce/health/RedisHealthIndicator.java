@@ -78,16 +78,19 @@ public class RedisHealthIndicator implements HealthIndicator {
 
     @Override
     public Publisher<HealthResult> getResult() {
-        Publisher<HealthResult> clientResults = getResult(RedisClient.class, RedisClient::connect, StatefulRedisConnection::reactive);
-        Publisher<HealthResult> clusteredClientResults = getResult(RedisClusterClient.class, RedisClusterClient::connect, StatefulRedisClusterConnection::reactive);
-        return Flux.concat(clientResults, clusteredClientResults);
+        Flux<HealthResult> clientResults = getResult(RedisClient.class, RedisClient::connect, StatefulRedisConnection::reactive);
+        Flux<HealthResult> clusteredClientResults = getResult(RedisClusterClient.class, RedisClusterClient::connect, StatefulRedisClusterConnection::reactive);
+        return this.healthAggregator.aggregate(
+                NAME,
+                Flux.concat(clientResults, clusteredClientResults)
+        );
     }
 
-    private <T, R extends StatefulConnection<K, V>, K, V> Publisher<HealthResult> getResult(Class<T> type, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
+    private <T, R extends StatefulConnection<K, V>, K, V> Flux<HealthResult> getResult(Class<T> type, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
         Collection<BeanRegistration<T>> registrations = beanContext.getActiveBeanRegistrations(type);
         Flux<BeanRegistration<T>> redisClients = Flux.fromIterable(registrations);
 
-        Flux<HealthResult> healthResultFlux = redisClients.flatMap(client -> {
+        return redisClients.flatMap(client -> {
             R connection;
             String connectionName = client.getIdentifier().getName();
             String dbName = "redis(" + connectionName + ")";
@@ -138,10 +141,5 @@ public class RedisHealthIndicator implements HealthIndicator {
                     }
             );
         });
-
-        return this.healthAggregator.aggregate(
-                NAME,
-                healthResultFlux
-        );
     }
 }

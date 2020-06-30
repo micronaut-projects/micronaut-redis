@@ -58,22 +58,22 @@ public class RedisHealthIndicator implements HealthIndicator {
     private final BeanContext beanContext;
     private final HealthAggregator<?> healthAggregator;
     // Must include the connections otherwise the health check will be unknown until the first Redis command executed
-    private final StatefulRedisConnection[] redisConnections;
-    private final StatefulRedisClusterConnection[] redisClusteredConnections;
+    private final RedisClient[] redisClients;
+    private final RedisClusterClient[] redisClusterClients;
 
     /**
      * Constructor.
      *
-     * @param beanContext               beanContext
-     * @param healthAggregator          healthAggregator
-     * @param redisConnections          redisConnections
-     * @param redisClusteredConnections redisClusteredConnections
+     * @param beanContext         beanContext
+     * @param healthAggregator    healthAggregator
+     * @param redisClients        redisClients
+     * @param redisClusterClients redisClusterClients
      */
-    public RedisHealthIndicator(BeanContext beanContext, HealthAggregator<?> healthAggregator, StatefulRedisConnection[] redisConnections, StatefulRedisClusterConnection[] redisClusteredConnections) {
+    public RedisHealthIndicator(BeanContext beanContext, HealthAggregator<?> healthAggregator, RedisClient[] redisClients, RedisClusterClient[] redisClusterClients) {
         this.beanContext = beanContext;
         this.healthAggregator = healthAggregator;
-        this.redisConnections = redisConnections;
-        this.redisClusteredConnections = redisClusteredConnections;
+        this.redisClients = redisClients;
+        this.redisClusterClients = redisClusterClients;
     }
 
     @Override

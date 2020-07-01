@@ -169,9 +169,10 @@ implements io.micronaut.management.health.indicator.HealthIndicator</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/health/RedisHealthIndicator.html#RedisHealthIndicator-io.micronaut.context.BeanContext-io.micronaut.management.health.aggregator.HealthAggregator-io.lettuce.core.api.StatefulRedisConnection...-">RedisHealthIndicator</a></span>(io.micronaut.context.BeanContext&nbsp;beanContext,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/health/RedisHealthIndicator.html#RedisHealthIndicator-io.micronaut.context.BeanContext-io.micronaut.management.health.aggregator.HealthAggregator-io.lettuce.core.RedisClient:A-io.lettuce.core.cluster.RedisClusterClient:A-">RedisHealthIndicator</a></span>(io.micronaut.context.BeanContext&nbsp;beanContext,
                     io.micronaut.management.health.aggregator.HealthAggregator&lt;?&gt;&nbsp;healthAggregator,
-                    io.lettuce.core.api.StatefulRedisConnection...&nbsp;connections)</code>
+                    io.lettuce.core.RedisClient[]&nbsp;redisClients,
+                    io.lettuce.core.cluster.RedisClusterClient[]&nbsp;redisClusterClients)</code>
 <div class="block">Constructor.</div>
 </td>
 </tr>
@@ -245,7 +246,7 @@ implements io.micronaut.management.health.indicator.HealthIndicator</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="RedisHealthIndicator-io.micronaut.context.BeanContext-io.micronaut.management.health.aggregator.HealthAggregator-io.lettuce.core.api.StatefulRedisConnection...-">
+<a name="RedisHealthIndicator-io.micronaut.context.BeanContext-io.micronaut.management.health.aggregator.HealthAggregator-io.lettuce.core.RedisClient:A-io.lettuce.core.cluster.RedisClusterClient:A-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -253,13 +254,15 @@ implements io.micronaut.management.health.indicator.HealthIndicator</pre>
 <h4>RedisHealthIndicator</h4>
 <pre>public&nbsp;RedisHealthIndicator(io.micronaut.context.BeanContext&nbsp;beanContext,
                             io.micronaut.management.health.aggregator.HealthAggregator&lt;?&gt;&nbsp;healthAggregator,
-                            io.lettuce.core.api.StatefulRedisConnection...&nbsp;connections)</pre>
+                            io.lettuce.core.RedisClient[]&nbsp;redisClients,
+                            io.lettuce.core.cluster.RedisClusterClient[]&nbsp;redisClusterClients)</pre>
 <div class="block">Constructor.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>beanContext</code> - beanContext</dd>
 <dd><code>healthAggregator</code> - healthAggregator</dd>
-<dd><code>connections</code> - connections</dd>
+<dd><code>redisClients</code> - redisClients</dd>
+<dd><code>redisClusterClients</code> - redisClusterClients</dd>
 </dl>
 </li>
 </ul>

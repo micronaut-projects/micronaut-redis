@@ -112,7 +112,7 @@ var activeTableTab = "activeTableTab";
 <li class="blockList">
 <hr>
 <br>
-<pre>@Requires(beans=<a href="../../../../io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration.class</a>)
+<pre>@Requires(beans=<a href="../../../../io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration.class</a>) @Requires(missingProperty="redis.uris")
  @Singleton
  @Factory
 public class <span class="typeNameLabel">DefaultRedisClientFactory</span>

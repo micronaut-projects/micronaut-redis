@@ -16,7 +16,11 @@
 package io.micronaut.configuration.lettuce.health;
 
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.reactive.BaseRedisReactiveCommands;
+import io.lettuce.core.cluster.RedisClusterClient;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.micronaut.context.BeanContext;
 import io.micronaut.context.BeanRegistration;
 import io.micronaut.context.annotation.Requires;
@@ -32,6 +36,7 @@ import javax.inject.Singleton;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Function;
 
 /**
  * A Health Indicator for Redis.
@@ -52,32 +57,45 @@ public class RedisHealthIndicator implements HealthIndicator {
 
     private final BeanContext beanContext;
     private final HealthAggregator<?> healthAggregator;
-    private final StatefulRedisConnection[] connections;
+    // Must include the connections otherwise the health check will be unknown until the first Redis command executed
+    private final RedisClient[] redisClients;
+    private final RedisClusterClient[] redisClusterClients;
 
     /**
      * Constructor.
      *
-     * @param beanContext      beanContext
-     * @param healthAggregator healthAggregator
-     * @param connections      connections
+     * @param beanContext         beanContext
+     * @param healthAggregator    healthAggregator
+     * @param redisClients        redisClients
+     * @param redisClusterClients redisClusterClients
      */
-    public RedisHealthIndicator(BeanContext beanContext, HealthAggregator<?> healthAggregator, StatefulRedisConnection... connections) {
+    public RedisHealthIndicator(BeanContext beanContext, HealthAggregator<?> healthAggregator, RedisClient[] redisClients, RedisClusterClient[] redisClusterClients) {
         this.beanContext = beanContext;
         this.healthAggregator = healthAggregator;
-        this.connections = connections;
+        this.redisClients = redisClients;
+        this.redisClusterClients = redisClusterClients;
     }
 
     @Override
     public Publisher<HealthResult> getResult() {
-        Collection<BeanRegistration<RedisClient>> registrations = beanContext.getActiveBeanRegistrations(RedisClient.class);
-        Flux<BeanRegistration<RedisClient>> redisClients = Flux.fromIterable(registrations);
+        Flux<HealthResult> clientResults = getResult(RedisClient.class, RedisClient::connect, StatefulRedisConnection::reactive);
+        Flux<HealthResult> clusteredClientResults = getResult(RedisClusterClient.class, RedisClusterClient::connect, StatefulRedisClusterConnection::reactive);
+        return this.healthAggregator.aggregate(
+                NAME,
+                Flux.concat(clientResults, clusteredClientResults)
+        );
+    }
 
-        Flux<HealthResult> healthResultFlux = redisClients.flatMap(client -> {
-            StatefulRedisConnection<String, String> connection;
+    private <T, R extends StatefulConnection<K, V>, K, V> Flux<HealthResult> getResult(Class<T> type, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
+        Collection<BeanRegistration<T>> registrations = beanContext.getActiveBeanRegistrations(type);
+        Flux<BeanRegistration<T>> redisClients = Flux.fromIterable(registrations);
+
+        return redisClients.flatMap(client -> {
+            R connection;
             String connectionName = client.getIdentifier().getName();
             String dbName = "redis(" + connectionName + ")";
             try {
-                connection = client.getBean().connect();
+                connection = getConnection.apply(client.getBean());
             } catch (Exception e) {
                 HealthResult result = HealthResult
                         .builder(dbName, HealthStatus.DOWN)
@@ -86,7 +104,7 @@ public class RedisHealthIndicator implements HealthIndicator {
                 return Flux.just(result);
             }
 
-            Mono<String> pingCommand = connection.reactive().ping();
+            Mono<String> pingCommand = getReactive.apply(connection).ping();
             pingCommand = pingCommand.timeout(Duration.ofSeconds(TIMEOUT_SECONDS)).retry(RETRY);
             return pingCommand.map(s -> {
                 try {
@@ -123,10 +141,5 @@ public class RedisHealthIndicator implements HealthIndicator {
                     }
             );
         });
-
-        return this.healthAggregator.aggregate(
-                NAME,
-                healthResultFlux
-        );
     }
 }

@@ -36,6 +36,7 @@ import javax.inject.Singleton;
 @Requires(beans = DefaultRedisConfiguration.class)
 @Singleton
 @Factory
+@Requires(missingProperty = RedisSetting.REDIS_URIS)
 public class DefaultRedisClientFactory extends AbstractRedisClientFactory {
 
     @Bean(preDestroy = "shutdown")

@@ -6,12 +6,14 @@ dependencies {
 
     api "io.lettuce:lettuce-core:$lettuceVersion"
     implementation "io.micronaut:micronaut-runtime:$micronautVersion"
+    compileOnly "io.micronaut.cache:micronaut-cache-core"
     compileOnly "io.micronaut:micronaut-session"
     compileOnly "io.micronaut:micronaut-management"
     
     compileOnly "com.github.kstyrc:embedded-redis:0.6"
 
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
+    testImplementation "io.micronaut.cache:micronaut-cache-core"
     testImplementation "io.micronaut:micronaut-inject-java"
     testImplementation "io.micronaut:micronaut-management"
     testImplementation "io.micronaut:micronaut-inject-groovy"

@@ -15,9 +15,11 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
+import io.micronaut.cache.SyncCache;
 import io.micronaut.configuration.lettuce.RedisSetting;
 import io.micronaut.context.annotation.EachProperty;
 import io.micronaut.context.annotation.Parameter;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.runtime.ApplicationConfiguration;
 
 /**
@@ -27,6 +29,7 @@ import io.micronaut.runtime.ApplicationConfiguration;
  * @since 1.0
  */
 @EachProperty(RedisSetting.REDIS_CACHES)
+@Requires(classes = SyncCache.class)
 public class RedisCacheConfiguration extends AbstractRedisCacheConfiguration {
     protected final String cacheName;
 

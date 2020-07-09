@@ -24,11 +24,15 @@ subprojects { Project subproject ->
 
     
     dependencies {
-        testImplementation("org.spockframework:spock-core:${spockVersion}") {
+        testImplementation("org.spockframework:spock-core") {
             exclude module:'groovy-all'
         }
-        testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"        
-    }    
+        testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
+        testRuntimeOnly "io.micronaut.reactor:micronaut-reactor"
+    }
+    tasks.withType(Test) {
+        useJUnitPlatform()
+    }
 }
 
 apply plugin: "io.micronaut.build.docs"

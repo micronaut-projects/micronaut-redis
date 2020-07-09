@@ -196,7 +196,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
         byte[] serializedKey = serializeKey(key);
         byte[] data = redisStringCommands.get(serializedKey);
         if (data != null) {
-            Optional<T> deserialized = valueSerializer.deserialize(data, requiredType.getType());
+            Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
             if (deserialized.isPresent()) {
                 return deserialized.get();
             }
@@ -263,7 +263,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
             redisKeyCommands.pexpire(serializedKey, expireAfterAccess);
         }
         if (data != null) {
-            return valueSerializer.deserialize(data, requiredType.getType());
+            return valueSerializer.deserialize(data, requiredType);
         } else {
             return Optional.empty();
         }
@@ -338,7 +338,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
             byte[] serializedKey = serializeKey(key);
             return redisStringAsyncCommands.get(serializedKey).thenCompose(data -> {
                 if (data != null) {
-                    Optional<T> deserialized = valueSerializer.deserialize(data, requiredType.getType());
+                    Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
                     boolean hasValue = deserialized.isPresent();
                     if (expireAfterAccess != null && hasValue) {
                         return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccess).thenApply(ignore -> deserialized.get());
@@ -404,7 +404,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
         }
 
         private <T> CompletionStage<Optional<T>> getWithExpire(Argument<T> requiredType, byte[] serializedKey, byte[] data) {
-            Optional<T> deserialized = valueSerializer.deserialize(data, requiredType.getType());
+            Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
             if (expireAfterAccess != null && deserialized.isPresent()) {
                 return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccess)
                         .thenApply(ignore -> deserialized);

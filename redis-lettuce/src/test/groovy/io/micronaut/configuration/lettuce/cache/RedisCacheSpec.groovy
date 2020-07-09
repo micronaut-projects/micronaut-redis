@@ -15,9 +15,7 @@
  */
 package io.micronaut.configuration.lettuce.cache
 
-import io.lettuce.core.RedisFuture
 import io.lettuce.core.api.StatefulRedisConnection
-import io.lettuce.core.api.async.RedisKeyAsyncCommands
 import io.lettuce.core.api.async.RedisStringAsyncCommands
 import io.lettuce.core.protocol.AsyncCommand
 import io.lettuce.core.protocol.RedisCommand
@@ -25,13 +23,11 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.context.BeanLocator
 import io.micronaut.context.exceptions.ConfigurationException
 import io.micronaut.core.convert.DefaultConversionService
+import io.micronaut.core.type.Argument
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.runtime.ApplicationConfiguration
-import spock.lang.AutoCleanup
 import spock.lang.Requires
-import spock.lang.Shared
 import spock.lang.Specification
-import spock.lang.Stepwise
 
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -44,12 +40,17 @@ import java.util.concurrent.ExecutionException
  */
 class RedisCacheSpec extends Specification {
 
-    @Shared @AutoCleanup ApplicationContext applicationContext = ApplicationContext.run(
-            'redis.type':'embedded',
-            'redis.caches.test.enabled':'true'
-    )
+    ApplicationContext createApplicationContext() {
+        ApplicationContext.run(
+                'redis.type': 'embedded',
+                'redis.caches.test.enabled': 'true'
+        )
+    }
 
     void "test read/write object from redis sync cache"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext()
+
         when:
         RedisCache redisCache = applicationContext.getBean(RedisCache, Qualifiers.byName("test"))
 
@@ -60,6 +61,7 @@ class RedisCacheSpec extends Specification {
         when:
         redisCache.put("test", new Foo(name: "test"))
         redisCache.put("two", new Foo(name: "two"))
+        redisCache.put("test-list", [new Foo(name: "abc")] as List<Foo>)
         redisCache.put("three", 3)
         redisCache.put("four", "four")
         Foo foo = redisCache.get("test", Foo).get()
@@ -69,6 +71,8 @@ class RedisCacheSpec extends Specification {
         redisCache.async().get("two", Foo.class).get().get().name == "two"
         redisCache.async().get("three", Integer.class).get().get() == 3
         redisCache.async().get("four", String.class).get().get() == "four"
+        redisCache.async().get("test-list", Argument.listOf(Foo)).get().get().get(0) instanceof Foo
+        redisCache.async().get("test-list", Argument.listOf(Foo)).get().get().get(0).name == "abc"
 
         when:
         redisCache.invalidate("test")
@@ -80,20 +84,23 @@ class RedisCacheSpec extends Specification {
 
         when:
         redisCache.async().put("three", new Foo(name: "three")).get()
-        Foo four = redisCache.async().get("four",Foo, {-> new Foo(name: "four")}).get()
+        Foo two = redisCache.async().get("two", Foo, {-> new Foo(name: "two")}).get()
+        Foo created = redisCache.async().get("new", Foo, {-> new Foo(name: "new")}).get()
 
         then:
-        four != null
+        two != null
+        created != null
+        created.name == "new"
         redisCache.get("three", Foo).isPresent()
         redisCache.async().get("three", Foo).get().isPresent()
-        redisCache.get("four", Foo).isPresent()
+        redisCache.get("new", Foo).isPresent()
 
         when:
         redisCache.async().invalidate("three").get()
 
         then:
         !redisCache.async().get("three", Foo).get().isPresent()
-        redisCache.get("four", Foo).isPresent()
+        redisCache.get("new", Foo).isPresent()
 
         when:
         redisCache.invalidateAll()
@@ -101,6 +108,8 @@ class RedisCacheSpec extends Specification {
         then:
         !redisCache.get("test", Foo).isPresent()
         !redisCache.get("two", Foo).isPresent()
+        !redisCache.get("new", Foo).isPresent()
+        !redisCache.get("four", Foo).isPresent()
 
         then:
         // invalidate an empty cache should not fail
@@ -112,6 +121,8 @@ class RedisCacheSpec extends Specification {
 
     void "test creating expiration after write policy that is not of type ExpirationAfterWritePolicy"() {
         given:
+        ApplicationContext applicationContext = createApplicationContext()
+
         ApplicationConfiguration appConfig = new ApplicationConfiguration()
         appConfig.setDefaultCharset(Charset.defaultCharset())
         RedisCacheConfiguration cacheConfig = new RedisCacheConfiguration("test3", appConfig)
@@ -127,10 +138,15 @@ class RedisCacheSpec extends Specification {
 
         then:
         thrown ConfigurationException
+
+        cleanup:
+        applicationContext.stop()
     }
 
     void "test creating expiration after write policy that does not exist"() {
         given:
+        ApplicationContext applicationContext = createApplicationContext()
+
         ApplicationConfiguration appConfig = new ApplicationConfiguration()
         appConfig.setDefaultCharset(Charset.defaultCharset())
         RedisCacheConfiguration cacheConfig = new RedisCacheConfiguration("test3", appConfig)
@@ -146,10 +162,15 @@ class RedisCacheSpec extends Specification {
 
         then:
         thrown ConfigurationException
+
+        cleanup:
+        applicationContext.stop()
     }
 
     void "test creating expiration after write policy that exists but has no bean"() {
         given:
+        ApplicationContext applicationContext = createApplicationContext()
+
         ApplicationConfiguration appConfig = new ApplicationConfiguration()
         appConfig.setDefaultCharset(Charset.defaultCharset())
         RedisCacheConfiguration cacheConfig = new RedisCacheConfiguration("test3", appConfig)
@@ -165,11 +186,16 @@ class RedisCacheSpec extends Specification {
 
         then:
         thrown ConfigurationException
+
+        cleanup:
+        applicationContext.stop()
     }
 
     @Requires({jvm.javaVersion.startsWith("1.8")}) // Because of the reflection run only on Java 8
     void "test exceptions"() {
         setup:
+            ApplicationContext applicationContext = createApplicationContext()
+
             def redisStringAsyncCommands = Mock(RedisStringAsyncCommands.class)
             RedisCache redisCache = applicationContext.getBean(RedisCache, Qualifiers.byName("test"))
 

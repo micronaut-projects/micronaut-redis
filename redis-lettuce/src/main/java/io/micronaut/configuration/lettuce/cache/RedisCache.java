@@ -34,6 +34,7 @@ import io.micronaut.configuration.lettuce.cache.expiration.ConstantExpirationAft
 import io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.EachBean;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.serialize.JdkSerializer;
@@ -56,6 +57,7 @@ import java.util.function.Supplier;
  * @since 1.0
  */
 @EachBean(RedisCacheConfiguration.class)
+@Requires(classes = SyncCache.class)
 public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoCloseable {
     private final RedisCacheConfiguration redisCacheConfiguration;
     private final ObjectSerializer keySerializer;

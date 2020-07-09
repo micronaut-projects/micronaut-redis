@@ -494,7 +494,6 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
             this.modifications.add(Modification.CREATED);
         }
 
-
         /**
          * Construct a new Redis session from existing redis data.
          *

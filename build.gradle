@@ -30,9 +30,6 @@ subprojects { Project subproject ->
         testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
         testRuntimeOnly "io.micronaut.reactor:micronaut-reactor"
     }
-    tasks.withType(Test) {
-        useJUnitPlatform()
-    }
 }
 
 apply plugin: "io.micronaut.build.docs"

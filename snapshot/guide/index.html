@@ -45,19 +45,21 @@
                                 
                                 <div class="toc-item" style="margin-left:0"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#setup"><strong>2</strong><span>Setting up the Redis Lettuce Driver</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#releaseHistory"><strong>2</strong><span>Release History</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#config"><strong>3</strong><span>Configuring the Redis Lettuce Driver</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#setup"><strong>3</strong><span>Setting up the Redis Lettuce Driver</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#testing"><strong>4</strong><span>Redis and Testing</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#config"><strong>4</strong><span>Configuring the Redis Lettuce Driver</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#cache"><strong>5</strong><span>Redis for Caching</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#testing"><strong>5</strong><span>Redis and Testing</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#sessions"><strong>6</strong><span>Session State with Redis</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#cache"><strong>6</strong><span>Redis for Caching</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#graalvm"><strong>7</strong><span>GraalVM support</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#sessions"><strong>7</strong><span>Session State with Redis</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>8</strong><span>Repository</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#graalvm"><strong>8</strong><span>GraalVM support</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
                                 
                             </div>
                         </div>
@@ -90,19 +92,21 @@
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-introduction"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-setup"><a href="#setup"><strong>2</strong><span>Setting up the Redis Lettuce Driver</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-releaseHistory"><a href="#releaseHistory"><strong>2</strong><span>Release History</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-config"><a href="#config"><strong>3</strong><span>Configuring the Redis Lettuce Driver</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-setup"><a href="#setup"><strong>3</strong><span>Setting up the Redis Lettuce Driver</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-testing"><a href="#testing"><strong>4</strong><span>Redis and Testing</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-config"><a href="#config"><strong>4</strong><span>Configuring the Redis Lettuce Driver</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-cache"><a href="#cache"><strong>5</strong><span>Redis for Caching</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-testing"><a href="#testing"><strong>5</strong><span>Redis and Testing</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-sessions"><a href="#sessions"><strong>6</strong><span>Session State with Redis</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-cache"><a href="#cache"><strong>6</strong><span>Redis for Caching</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-graalvm"><a href="#graalvm"><strong>7</strong><span>GraalVM support</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-sessions"><a href="#sessions"><strong>7</strong><span>Session State with Redis</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>8</strong><span>Repository</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-graalvm"><a href="#graalvm"><strong>8</strong><span>GraalVM support</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
         
         </div>
     </div>
@@ -127,44 +131,24 @@
 <div class="paragraph">
 <p>Micronaut features automatic configuration of the <a href="https://lettuce.io">Lettuce</a> driver for <a href="https://redis.io">Redis</a> via the <code>redis-lettuce</code> module.</p>
 </div>
-<div class="sect2">
-<h3 id="_release_history">Release History</h3>
-<div class="sect3">
-<h4 id="_2_0_0">2.0.0</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Micronaut 1.3.x minimum version</p>
-</li>
-<li>
-<p>New group ID <code>io.micronaut.redis</code></p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_1_0_0">1.0.0</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Initial Release</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_1_1_0">1.1.0</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Upgrade Lettuce <code>5.0.4.RELEASE</code> &#8594; <code>5.1.3.RELEASE</code></p>
-</li>
-</ul>
-</div>
-</div>
+
+<h1 id="releaseHistory"><a class="anchor" href="#releaseHistory"></a>2 Release History</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/releaseHistory.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
 </div>
 
-<h1 id="setup"><a class="anchor" href="#setup"></a>2 Setting up the Redis Lettuce Driver</h1>
+
+<div class="paragraph">
+<p>For this project, you can find a list of releases (with release notes) here:</p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/micronaut-projects/micronaut-redis/releases">https://github.com/micronaut-projects/micronaut-redis/releases</a></p>
+</div>
+
+<h1 id="setup"><a class="anchor" href="#setup"></a>3 Setting up the Redis Lettuce Driver</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/setup.adoc"'>
@@ -283,7 +267,7 @@ The Lettuce driver&#8217;s <code>StatefulRedisConnection</code> interface is des
 </div>
 </div>
 
-<h1 id="config"><a class="anchor" href="#config"></a>3 Configuring the Redis Lettuce Driver</h1>
+<h1 id="config"><a class="anchor" href="#config"></a>4 Configuring the Redis Lettuce Driver</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/config.adoc"'>
@@ -348,7 +332,7 @@ The Lettuce driver&#8217;s <code>StatefulRedisConnection</code> interface is des
 </div>
 </div>
 
-<h1 id="testing"><a class="anchor" href="#testing"></a>4 Redis and Testing</h1>
+<h1 id="testing"><a class="anchor" href="#testing"></a>5 Redis and Testing</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/testing.adoc"'>
@@ -370,7 +354,7 @@ The Lettuce driver&#8217;s <code>StatefulRedisConnection</code> interface is des
 <p>If Redis is unavailable for the configured Redis URI an embedded instance of Redis will be automatically started and then shutdown at the end of the test (when <code>stop</code> is called on the <code>ApplicationContext</code>).</p>
 </div>
 
-<h1 id="cache"><a class="anchor" href="#cache"></a>5 Redis for Caching</h1>
+<h1 id="cache"><a class="anchor" href="#cache"></a>6 Redis for Caching</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/cache.adoc"'>
@@ -462,7 +446,7 @@ Lettuce is a non-blocking, reactive Redis client implementation and Micronaut pr
 </tbody>
 </table>
 
-<h1 id="sessions"><a class="anchor" href="#sessions"></a>6 Session State with Redis</h1>
+<h1 id="sessions"><a class="anchor" href="#sessions"></a>7 Session State with Redis</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/sessions.adoc"'>
@@ -523,7 +507,7 @@ The <a href="../api/io/micronaut/configuration/lettuce/session/RedisSessionStore
 </div>
 </div>
 
-<h1 id="graalvm"><a class="anchor" href="#graalvm"></a>7 GraalVM support</h1>
+<h1 id="graalvm"><a class="anchor" href="#graalvm"></a>8 GraalVM support</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/graalvm.adoc"'>
@@ -553,7 +537,7 @@ information.
 </table>
 </div>
 
-<h1 id="repository"><a class="anchor" href="#repository"></a>8 Repository</h1>
+<h1 id="repository"><a class="anchor" href="#repository"></a>9 Repository</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/repository.adoc"'>

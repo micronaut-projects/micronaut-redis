@@ -223,6 +223,69 @@ The <code>redis.uri</code> setting should be in the format as described in the <
 <p>You can also specify multiple Redis URIs using <code>redis.uris</code> in which case a <code>RedisClusterClient</code> is created instead.</p>
 </div>
 <div class="sect2">
+<h3 id="_configuring_lettuce_clientresources_and_threads">Configuring Lettuce ClientResources and threads</h3>
+<div class="paragraph">
+<p>You can provide a custom instance of <code>io.lettuce.core.resource.ClientResources</code> it will be used to create <code>io.lettuce.core.RedisClient</code>.</p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s possible to configure thread pool size without providing custom <code>io.lettuce.core.resource.ClientResources</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>redis:
+    uri: redis://localhost
+    io-thread-pool-size: 5
+    computation-thread-pool-size: 4</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lettuce_description_of_pool_size_properties">Lettuce description of pool size properties</h3>
+<div class="paragraph">
+<p><a href="https://github.com/lettuce-io/lettuce-core/wiki/Configuring-Client-resources" class="bare">https://github.com/lettuce-io/lettuce-core/wiki/Configuring-Client-resources</a></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>I/O Thread Pool Size</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number of processors</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">The number of threads in the I/O thread pools. The number defaults to the number of available processors that the runtime returns (which, as a well-known fact, sometimes does not represent the actual number of processors). Every thread represents an internal event loop where all I/O tasks are run. The number does not reflect the actual number of I/O threads because the client requires different thread pools for Network (NIO) and Unix Domain Socket (EPoll) connections. The minimum I/O threads are <code>3</code>. A pool with fewer threads can cause undefined behavior.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Computation Thread Pool Size</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number of processors</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">The number of threads in the computation thread pool. The number defaults to the number of available processors that the runtime returns (which, as a well-known fact, sometimes does not represent the actual number of processors). Every thread represents an internal event loop where all computation tasks are run. The minimum computation threads are <code>3</code>. A pool with fewer threads can cause undefined behavior.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+You may see <code>io.lettuce.core.RedisCommandTimeoutException: Command timed out after</code> if your code is blocking Lettuce&#8217;s asynchronous execution because of the default value of the thread pool size being small.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_available_lettuce_beans">Available Lettuce Beans</h3>
 <div class="paragraph">
 <p>Once you have the above configuration in place you can inject one of the following beans:</p>

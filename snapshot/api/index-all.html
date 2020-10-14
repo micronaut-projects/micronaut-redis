@@ -280,6 +280,10 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#getCharset--">getCharset()</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#getComputationThreadPoolSize--">getComputationThreadPoolSize()</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
+<dd>
+<div class="block">Returns the pool size (number of threads) for all computation tasks.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/expiration/ConstantExpirationAfterWritePolicy.html#getExpirationAfterWrite-java.lang.Object-">getExpirationAfterWrite(Object)</a></span> - Method in class io.micronaut.configuration.lettuce.cache.expiration.<a href="io/micronaut/configuration/lettuce/cache/expiration/ConstantExpirationAfterWritePolicy.html" title="class in io.micronaut.configuration.lettuce.cache.expiration">ConstantExpirationAfterWritePolicy</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/expiration/ExpirationAfterWritePolicy.html#getExpirationAfterWrite-java.lang.Object-">getExpirationAfterWrite(Object)</a></span> - Method in interface io.micronaut.configuration.lettuce.cache.expiration.<a href="io/micronaut/configuration/lettuce/cache/expiration/ExpirationAfterWritePolicy.html" title="interface in io.micronaut.configuration.lettuce.cache.expiration">ExpirationAfterWritePolicy</a></dt>
@@ -296,6 +300,10 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#getExpiredSessionCheck--">getExpiredSessionCheck()</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#getIoThreadPoolSize--">getIoThreadPoolSize()</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
+<dd>
+<div class="block">Returns the pool size (number of threads) for IO threads.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#getKeySerializer--">getKeySerializer()</a></span> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
 <dd>
 <div class="block">The <code>ObjectSerializer</code> to use for serializing keys.</div>
@@ -672,6 +680,11 @@
 <dd>
 <div class="block">Sets the charset to use to serialize values.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#setComputationThreadPoolSize-java.lang.Integer-">setComputationThreadPoolSize(Integer)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
+<dd>
+<div class="block">Sets the thread pool size (number of threads to use) for computation operations (default value is the number of
+ CPUs).</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#setEnableKeyspaceEvents-boolean-">setEnableKeyspaceEvents(boolean)</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>
 <div class="block">Sets whether keyspace events should be enabled at startup.</div>
@@ -685,6 +698,10 @@
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#setExpiredSessionCheck-java.time.Duration-">setExpiredSessionCheck(Duration)</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>
 <div class="block">Sets the duration to check for expired sessions.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#setIoThreadPoolSize-java.lang.Integer-">setIoThreadPoolSize(Integer)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
+<dd>
+<div class="block">Sets the thread pool size (number of threads to use) for I/O operations (default value is the number of CPUs).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#setNamespace-java.lang.String-">setNamespace(String)</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>

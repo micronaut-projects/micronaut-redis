@@ -164,7 +164,7 @@ extends java.lang.Object</pre>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>io.lettuce.core.RedisClient</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#redisClient-io.micronaut.configuration.lettuce.AbstractRedisConfiguration-io.lettuce.core.resource.ClientResources-">redisClient</a></span>(<a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a>&nbsp;config,
-           io.lettuce.core.resource.ClientResources&nbsp;clientResources)</code>
+           io.lettuce.core.resource.ClientResources&nbsp;optionalClientResources)</code>
 <div class="block">Creates the <code>RedisClient</code> from the configuration.</div>
 </td>
 </tr>
@@ -243,12 +243,12 @@ extends java.lang.Object</pre>
 <h4>redisClient</h4>
 <pre>public&nbsp;io.lettuce.core.RedisClient&nbsp;redisClient(<a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a>&nbsp;config,
                                                @Nullable
-                                               io.lettuce.core.resource.ClientResources&nbsp;clientResources)</pre>
+                                               io.lettuce.core.resource.ClientResources&nbsp;optionalClientResources)</pre>
 <div class="block">Creates the <code>RedisClient</code> from the configuration.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>config</code> - The configuration</dd>
-<dd><code>clientResources</code> - The ClientResources</dd>
+<dd><code>optionalClientResources</code> - The ClientResources</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The <code>RedisClient</code></dd>
 </dl>

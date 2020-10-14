@@ -50,7 +50,9 @@ class RedisClientFactorySpec extends Specification{
         commands.get("foo") == "bar"
         // end::commands[]
 
-        cleanup:redisServer.stop()
+        cleanup:
+        redisServer.stop()
+        applicationContext.stop()
     }
 
     void "test redis server config by URI"() {
@@ -67,7 +69,9 @@ class RedisClientFactorySpec extends Specification{
         command.set("foo", "bar")
         command.get("foo") == "bar"
 
-        cleanup:redisServer.stop()
+        cleanup:
+        redisServer.stop()
+        applicationContext.stop()
     }
 
     void "test multi redis server config by URI"() {
@@ -93,6 +97,31 @@ class RedisClientFactorySpec extends Specification{
         then:
         commandBar.info().contains("tcp_port:$port")
 
-        cleanup:redisServer.stop()
+        cleanup:
+        redisServer.stop()
+        applicationContext.stop()
+    }
+
+    void "test redis thread pool settings"() {
+        given:
+        def port = SocketUtils.findAvailableTcpPort()
+        RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
+        redisServer.start()
+
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.uri':"redis://localhost:$port",
+                'redis.io-thread-pool-size':10,
+                'redis.computation-thread-pool-size':20,
+        ])
+        when:
+        RedisClient client = applicationContext.getBean(RedisClient)
+
+        then:
+        client.getResources().computationThreadPoolSize() == 20
+        client.getResources().ioThreadPoolSize() == 10
+
+        cleanup:
+        redisServer.stop()
+        applicationContext.stop()
     }
 }

@@ -47,10 +47,11 @@ public abstract class AbstractRedisClientFactory {
      * Creates the {@link RedisClient} from the configuration.
      *
      * @param config The configuration
-     * @param clientResources The ClientResources
+     * @param optionalClientResources The ClientResources
      * @return The {@link RedisClient}
      */
-    public RedisClient redisClient(AbstractRedisConfiguration config, @Nullable ClientResources clientResources) {
+    public RedisClient redisClient(AbstractRedisConfiguration config, @Nullable ClientResources optionalClientResources) {
+        ClientResources clientResources = configureClientResources(config, optionalClientResources);
         if (clientResources == null) {
             return redisClient(config);
         }
@@ -77,5 +78,20 @@ public abstract class AbstractRedisClientFactory {
      */
     public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(RedisClient redisClient) {
         return redisClient.connectPubSub();
+    }
+
+    @Nullable
+    private ClientResources configureClientResources(AbstractRedisConfiguration config, @Nullable ClientResources clientResources) {
+        if (config.getIoThreadPoolSize() != null || config.getComputationThreadPoolSize() != null) {
+            ClientResources.Builder clientResourcesBuilder = clientResources == null ?  ClientResources.builder() : clientResources.mutate();
+            if (config.getIoThreadPoolSize() != null) {
+                clientResourcesBuilder.ioThreadPoolSize(config.getIoThreadPoolSize());
+            }
+            if (config.getComputationThreadPoolSize() != null) {
+                clientResourcesBuilder.computationThreadPoolSize(config.getComputationThreadPoolSize());
+            }
+            return clientResourcesBuilder.build();
+        }
+        return clientResources;
     }
 }

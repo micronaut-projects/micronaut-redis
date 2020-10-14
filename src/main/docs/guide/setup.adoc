@@ -25,6 +25,40 @@ TIP: The `redis.uri` setting should be in the format as described in the https:/
 
 You can also specify multiple Redis URIs using `redis.uris` in which case a `RedisClusterClient` is created instead.
 
+=== Configuring Lettuce ClientResources and threads
+
+You can provide a custom instance of `io.lettuce.core.resource.ClientResources` it will be used to create `io.lettuce.core.RedisClient`.
+
+It's possible to configure thread pool size without providing custom `io.lettuce.core.resource.ClientResources`:
+----
+redis:
+    uri: redis://localhost
+    io-thread-pool-size: 5
+    computation-thread-pool-size: 4
+----
+
+
+=== Lettuce description of pool size properties
+https://github.com/lettuce-io/lettuce-core/wiki/Configuring-Client-resources
+
+|===
+|Name|Default
+
+|*I/O Thread Pool Size*
+|Number of processors
+
+2+|The number of threads in the I/O thread pools. The number defaults to the number of available processors that the runtime returns (which, as a well-known fact, sometimes does not represent the actual number of processors). Every thread represents an internal event loop where all I/O tasks are run. The number does not reflect the actual number of I/O threads because the client requires different thread pools for Network (NIO) and Unix Domain Socket (EPoll) connections. The minimum I/O threads are `3`. A pool with fewer threads can cause undefined behavior.
+
+|*Computation Thread Pool Size*
+|Number of processors
+
+2+|The number of threads in the computation thread pool. The number defaults to the number of available processors that the runtime returns (which, as a well-known fact, sometimes does not represent the actual number of processors). Every thread represents an internal event loop where all computation tasks are run. The minimum computation threads are `3`. A pool with fewer threads can cause undefined behavior.
+
+|===
+
+IMPORTANT: You may see `io.lettuce.core.RedisCommandTimeoutException: Command timed out after` if your code is blocking Lettuce's asynchronous execution because of the default value of the thread pool size being small.
+
+
 === Available Lettuce Beans
 
 Once you have the above configuration in place you can inject one of the following beans:

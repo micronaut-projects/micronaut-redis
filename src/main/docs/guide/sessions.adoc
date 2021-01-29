@@ -16,7 +16,7 @@ micronaut:
                 namespace: 'myapp:sessions'
                 # Write session changes in the background
                 write-mode: BACKGROUND
-                # Disable programatic activation of keyspace events
+                # Disable programmatic activation of keyspace events
                 enable-keyspace-events: false
 ----
 

@@ -16,7 +16,6 @@
 package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisURI;
-import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.env.Environment;
 
 import java.net.URI;
@@ -84,7 +83,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI {
      * Returns the pool size (number of threads) for IO threads. The indicated size does not reflect the number for all IO
      * threads. TCP and socket connections (epoll) require different IO pool.
      *
-     * {@link ClientResources#ioThreadPoolSize()}
+     * {@link io.lettuce.core.resource.ClientResources#ioThreadPoolSize()}
      *
      * @return the pool size (number of threads) for all IO tasks.
      */
@@ -94,9 +93,9 @@ public abstract class AbstractRedisConfiguration extends RedisURI {
 
     /**
      * Sets the thread pool size (number of threads to use) for I/O operations (default value is the number of CPUs). The
-     * thread pool size is only effective if no {@link ClientResources.Builder#eventLoopGroupProvider} is provided.
+     * thread pool size is only effective if no {@link io.lettuce.core.resource.ClientResources.Builder#eventLoopGroupProvider} is provided.
      *
-     * {@link ClientResources.Builder#ioThreadPoolSize(int)}
+     * {@link io.lettuce.core.resource.ClientResources.Builder#ioThreadPoolSize(int)}
      *
      * @param ioThreadPoolSize the thread pool size, must be greater {@code 0}.
      */
@@ -107,7 +106,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI {
     /**
      * Returns the pool size (number of threads) for all computation tasks.
      *
-     * {@link ClientResources#computationThreadPoolSize()}
+     * {@link io.lettuce.core.resource.ClientResources#computationThreadPoolSize()}
      *
      * @return the pool size (number of threads to use).
      */
@@ -117,9 +116,9 @@ public abstract class AbstractRedisConfiguration extends RedisURI {
 
     /**
      * Sets the thread pool size (number of threads to use) for computation operations (default value is the number of
-     * CPUs). The thread pool size is only effective if no {@link ClientResources.Builder#eventExecutorGroup} is provided.
+     * CPUs). The thread pool size is only effective if no {@link io.lettuce.core.resource.ClientResources.Builder#eventExecutorGroup} is provided.
      *
-     * {@link ClientResources.Builder#computationThreadPoolSize(int)}
+     * {@link io.lettuce.core.resource.ClientResources.Builder#computationThreadPoolSize(int)}
      *
      * @param computationThreadPoolSize the thread pool size, must be greater {@code 0}.
      */

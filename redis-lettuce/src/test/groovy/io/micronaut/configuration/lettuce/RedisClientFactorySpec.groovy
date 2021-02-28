@@ -18,6 +18,8 @@ package io.micronaut.configuration.lettuce
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.sync.RedisCommands
+import io.lettuce.core.metrics.MicrometerCommandLatencyRecorder
+import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.core.io.socket.SocketUtils
 import io.micronaut.inject.qualifiers.Qualifiers
@@ -119,6 +121,29 @@ class RedisClientFactorySpec extends Specification{
         then:
         client.getResources().computationThreadPoolSize() == 20
         client.getResources().ioThreadPoolSize() == 10
+
+        cleanup:
+        redisServer.stop()
+        applicationContext.stop()
+    }
+
+    void "test redis metrics settings"() {
+        given:
+        def port = SocketUtils.findAvailableTcpPort()
+        RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
+        redisServer.start()
+
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.uri':"redis://localhost:$port",
+        ])
+        when:
+        StatefulRedisConnection client = applicationContext.getBean(StatefulRedisConnection)
+        MeterRegistry meterRegistry = applicationContext.getBean(MeterRegistry)
+        def command = client.sync()
+        command.set("foo", "bar")
+
+        then:
+        meterRegistry.getMeters().findAll {it.getId().getName().startsWith("lettuce")}.size() > 0
 
         cleanup:
         redisServer.stop()

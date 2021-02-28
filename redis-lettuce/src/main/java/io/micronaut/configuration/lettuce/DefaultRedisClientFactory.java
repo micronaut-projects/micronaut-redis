@@ -26,6 +26,7 @@ import io.micronaut.context.annotation.Requires;
 
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
+import java.util.List;
 
 /**
  * Factory for the default {@link RedisClient}. Creates the injectable {@link Primary} bean.
@@ -43,8 +44,8 @@ public class DefaultRedisClientFactory extends AbstractRedisClientFactory {
     @Singleton
     @Primary
     @Override
-    public RedisClient redisClient(@Primary AbstractRedisConfiguration config, @Nullable @Primary ClientResources defaultClientResources) {
-        return super.redisClient(config, defaultClientResources);
+    public RedisClient redisClient(@Primary AbstractRedisConfiguration config, @Nullable @Primary ClientResources defaultClientResources, @Nullable List<ClientResourcesMutator> mutators) {
+        return super.redisClient(config, defaultClientResources, mutators);
     }
 
     @Override

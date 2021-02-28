@@ -22,6 +22,7 @@ import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 
 import io.micronaut.core.annotation.Nullable;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -48,10 +49,13 @@ public abstract class AbstractRedisClientFactory {
      *
      * @param config The configuration
      * @param optionalClientResources The ClientResources
+     * @param mutators The list of mutators
      * @return The {@link RedisClient}
      */
-    public RedisClient redisClient(AbstractRedisConfiguration config, @Nullable ClientResources optionalClientResources) {
-        ClientResources clientResources = configureClientResources(config, optionalClientResources);
+    public RedisClient redisClient(AbstractRedisConfiguration config,
+                                   @Nullable ClientResources optionalClientResources,
+                                   @Nullable List<ClientResourcesMutator> mutators) {
+        ClientResources clientResources = configureClientResources(config, optionalClientResources, mutators);
         if (clientResources == null) {
             return redisClient(config);
         }
@@ -81,17 +85,11 @@ public abstract class AbstractRedisClientFactory {
     }
 
     @Nullable
-    private ClientResources configureClientResources(AbstractRedisConfiguration config, @Nullable ClientResources clientResources) {
-        if (config.getIoThreadPoolSize() != null || config.getComputationThreadPoolSize() != null) {
-            ClientResources.Builder clientResourcesBuilder = clientResources == null ?  ClientResources.builder() : clientResources.mutate();
-            if (config.getIoThreadPoolSize() != null) {
-                clientResourcesBuilder.ioThreadPoolSize(config.getIoThreadPoolSize());
-            }
-            if (config.getComputationThreadPoolSize() != null) {
-                clientResourcesBuilder.computationThreadPoolSize(config.getComputationThreadPoolSize());
-            }
-            return clientResourcesBuilder.build();
+    private ClientResources configureClientResources(AbstractRedisConfiguration config, @Nullable ClientResources clientResources, @Nullable List<ClientResourcesMutator> mutators) {
+        ClientResources.Builder clientResourcesBuilder = clientResources == null ?  ClientResources.builder() : clientResources.mutate();
+        if (mutators != null) {
+            mutators.forEach(clientResourcesMutator -> clientResourcesMutator.mutate(clientResourcesBuilder, config));
         }
-        return clientResources;
+        return clientResourcesBuilder.build();
     }
 }

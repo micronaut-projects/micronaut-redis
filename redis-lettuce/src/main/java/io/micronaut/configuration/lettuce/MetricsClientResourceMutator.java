@@ -26,6 +26,7 @@ import javax.inject.Singleton;
 /**
  * Mutates a {@link ClientResources.Builder} adding {@link MicrometerCommandLatencyRecorder}.
  * @author Rafael Acevedo
+ * @since 4.1
  */
 @Singleton
 @Requires(beans = MeterRegistry.class)

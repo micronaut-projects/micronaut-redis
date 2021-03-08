@@ -22,6 +22,7 @@ import javax.inject.Singleton;
 /**
  * Mutates a {@link ClientResources.Builder} adding lettuce threadpool configs.
  * @author Rafael Acevedo
+ * @since 4.1
  */
 @Singleton
 public class ThreadPoolClientResourceMutator implements ClientResourcesMutator {

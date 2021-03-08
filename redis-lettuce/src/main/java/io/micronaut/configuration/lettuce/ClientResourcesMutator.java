@@ -20,6 +20,7 @@ import io.lettuce.core.resource.ClientResources;
 /**
  * Mutates a {@link ClientResources.Builder}.
  * @author Rafael Acevedo
+ * @since 4.1
  */
 public interface ClientResourcesMutator {
     void mutate(ClientResources.Builder builder, AbstractRedisConfiguration config);

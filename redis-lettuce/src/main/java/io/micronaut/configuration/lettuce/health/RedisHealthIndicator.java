@@ -29,6 +29,8 @@ import io.micronaut.management.health.aggregator.HealthAggregator;
 import io.micronaut.management.health.indicator.HealthIndicator;
 import io.micronaut.management.health.indicator.HealthResult;
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -47,6 +49,7 @@ import java.util.function.Function;
 @Singleton
 @Requires(classes = HealthIndicator.class)
 public class RedisHealthIndicator implements HealthIndicator {
+    public static final Logger LOG = LoggerFactory.getLogger(RedisHealthIndicator.class);
     /**
      * Default name to use for health indication for Redis.
      */
@@ -107,39 +110,29 @@ public class RedisHealthIndicator implements HealthIndicator {
             Mono<String> pingCommand = getReactive.apply(connection).ping();
             pingCommand = pingCommand.timeout(Duration.ofSeconds(TIMEOUT_SECONDS)).retry(RETRY);
             return pingCommand.map(s -> {
-                try {
-                    if (s.equalsIgnoreCase("pong")) {
-                        return HealthResult
-                                .builder(dbName, HealthStatus.UP)
-                                .build();
-                    }
+                if (s.equalsIgnoreCase("pong")) {
                     return HealthResult
-                            .builder(dbName, HealthStatus.DOWN)
-                            .details(Collections.singletonMap("message", "Unexpected response: " + s))
+                            .builder(dbName, HealthStatus.UP)
                             .build();
-                } finally {
-                    try {
-                        connection.close();
-                    } catch (Exception e) {
-                        // ignore
-                    }
                 }
-            }).onErrorResume(throwable -> {
-                        try {
-                            return Mono.just(HealthResult
-                                    .builder(dbName, HealthStatus.DOWN)
-                                    .exception(throwable)
-                                    .build()
-                            );
-                        } finally {
-                            try {
-                                connection.close();
-                            } catch (Exception e) {
-                                // ignore
-                            }
-                        }
-                    }
-            );
+                return HealthResult
+                        .builder(dbName, HealthStatus.DOWN)
+                        .details(Collections.singletonMap("message", "Unexpected response: " + s))
+                        .build();
+            }).onErrorResume(throwable ->
+                    Mono.just(HealthResult
+                            .builder(dbName, HealthStatus.DOWN)
+                            .exception(throwable)
+                            .build()
+                    )
+            ).doFinally(f -> {
+                try {
+                    LOG.trace("Closing connection on signal " + f);
+                    connection.close();
+                } catch (Exception e) {
+                    LOG.error("Failed to close connection", e);
+                }
+            });
         });
     }
 }

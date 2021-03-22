@@ -16,7 +16,6 @@
 package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisURI;
-import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.env.Environment;
 
 import java.net.URI;
@@ -136,7 +135,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI {
     }
 
     /**
-     * Sets the name of the bean
+     * Sets the name of the bean.
      *
      * @param name The name of the bean
      */

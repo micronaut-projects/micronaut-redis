@@ -46,7 +46,6 @@ class RedisHealthIndicatorSpec extends Specification {
         client != null
 
         when:
-
         RedisHealthIndicator healthIndicator = applicationContext.getBean(RedisHealthIndicator)
         HealthResult result = Flowable.fromPublisher(healthIndicator.getResult()).blockingFirst()
         
@@ -62,6 +61,7 @@ class RedisHealthIndicatorSpec extends Specification {
         result != null
         result.status == HealthStatus.DOWN
 
-
+        cleanup:
+        applicationContext.close()
     }
 }

@@ -18,7 +18,6 @@ package io.micronaut.configuration.lettuce;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.env.Environment;
-import io.micronaut.core.util.StringUtils;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -129,10 +128,18 @@ public abstract class AbstractRedisConfiguration extends RedisURI {
         this.computationThreadPoolSize = computationThreadPoolSize;
     }
 
+    /**
+     * @return Get the name of the bean.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name of the bean
+     *
+     * @param name The name of the bean
+     */
     public void setName(String name) {
         this.name = name;
     }

@@ -80,22 +80,28 @@ class RedisClientFactorySpec extends Specification{
         RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
         redisServer.start()
 
-        ApplicationContext applicationContext = ApplicationContext.run(['redis.servers.foo.uri':"redis://localhost:$port",'redis.servers.bar.uri':"redis://localhost:$port"])
+        ApplicationContext applicationContext = ApplicationContext.run(['redis.servers.foo.uri':"redis://localhost:$port",
+                                                                        'redis.servers.foo.client-name':"foo-client-name",
+                                                                        'redis.servers.bar.uri':"redis://localhost:$port"])
         when:
         RedisClient clientFoo = applicationContext.getBean(RedisClient, Qualifiers.byName("foo"))
         def innerRedisURI = clientFoo.@redisURI
         def commandFoo = clientFoo.connect().sync()
+
         then:
         innerRedisURI.port == port
+        innerRedisURI.clientName == "foo-client-name"
         commandFoo.info().contains("tcp_port:$port")
         commandFoo.set("foo", "bar")
         commandFoo.get("foo") == "bar"
 
         when:
-        StatefulRedisConnection clientBar = applicationContext.getBean(StatefulRedisConnection, Qualifiers.byName("bar"))
-        def commandBar = clientBar.sync()
+        RedisClient clientBar = applicationContext.getBean(RedisClient, Qualifiers.byName("bar"))
+        def innerBarRedisURI = clientBar.@redisURI
+        def commandBar = clientBar.connect().sync()
         then:
         commandBar.info().contains("tcp_port:$port")
+        !innerBarRedisURI.clientName
 
         cleanup:
         redisServer.stop()
@@ -119,6 +125,28 @@ class RedisClientFactorySpec extends Specification{
         then:
         client.getResources().computationThreadPoolSize() == 20
         client.getResources().ioThreadPoolSize() == 10
+
+        cleanup:
+        redisServer.stop()
+        applicationContext.stop()
+    }
+
+    void "test redis client name settings"() {
+        given:
+        def port = SocketUtils.findAvailableTcpPort()
+        RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
+        redisServer.start()
+
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.uri':"redis://localhost:$port",
+                'redis.client-name':"test-name"
+        ])
+        when:
+        RedisClient client = applicationContext.getBean(RedisClient)
+        def innerRedisURI = client.@redisURI
+
+        then:
+        innerRedisURI.clientName == "test-name"
 
         cleanup:
         redisServer.stop()

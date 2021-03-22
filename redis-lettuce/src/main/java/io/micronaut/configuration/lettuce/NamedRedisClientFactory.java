@@ -91,7 +91,7 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
      * @return named The ClientResources
      */
     private @Nullable ClientResources getClientResources(NamedRedisServersConfiguration config) {
-        return beanLocator.findBean(ClientResources.class, Qualifiers.byName(config.getClientName())).orElse(this.defaultClientResources);
+        return beanLocator.findBean(ClientResources.class, Qualifiers.byName(config.getName())).orElse(this.defaultClientResources);
     }
 
     /**
@@ -100,7 +100,7 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
      * @return named The RedisClient
      */
     private RedisClient getRedisClient(NamedRedisServersConfiguration config) {
-        return beanLocator.getBean(RedisClient.class, Qualifiers.byName(config.getClientName()));
+        return beanLocator.getBean(RedisClient.class, Qualifiers.byName(config.getName()));
     }
 
 }

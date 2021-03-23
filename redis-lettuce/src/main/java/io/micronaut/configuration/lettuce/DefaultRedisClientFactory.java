@@ -24,7 +24,7 @@ import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import javax.inject.Singleton;
 
 /**

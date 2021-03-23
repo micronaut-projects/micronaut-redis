@@ -21,7 +21,7 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import java.util.Optional;
 
 /**

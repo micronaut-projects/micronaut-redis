@@ -16,9 +16,8 @@
 package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisURI;
-import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.env.Environment;
-
+import io.micronaut.core.naming.Named;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,18 +28,19 @@ import java.util.stream.Collectors;
 /**
  * Abstract configuration for Lettuce.
  */
-public abstract class AbstractRedisConfiguration extends RedisURI {
+public abstract class AbstractRedisConfiguration extends RedisURI implements Named {
 
     private RedisURI uri;
     private List<RedisURI> uris = Collections.emptyList();
     private Integer ioThreadPoolSize;
     private Integer computationThreadPoolSize;
-    
+    private String name;
+
     /**
      * Constructor.
      */
     protected AbstractRedisConfiguration() {
-        setClientName(Environment.DEFAULT_NAME);
+        setName(Environment.DEFAULT_NAME);
         setPort(RedisURI.DEFAULT_REDIS_PORT);
         setHost("localhost"); // localhost by default
     }
@@ -125,5 +125,22 @@ public abstract class AbstractRedisConfiguration extends RedisURI {
      */
     public void setComputationThreadPoolSize(Integer computationThreadPoolSize) {
         this.computationThreadPoolSize = computationThreadPoolSize;
+    }
+
+    /**
+     * @return Get the name of the bean.
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name of the bean.
+     *
+     * @param name The name of the bean
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -32,6 +32,6 @@ public class NamedRedisServersConfiguration extends AbstractRedisConfiguration {
      * @param name name from configuration
      */
     public NamedRedisServersConfiguration(@Parameter String name) {
-        setClientName(name);
+        setName(name);
     }
 }

@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -112,7 +112,7 @@ var activeTableTab = "activeTableTab";
 <li class="blockList">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd>io.lettuce.core.ConnectionPoint, java.io.Serializable</dd>
+<dd>io.lettuce.core.ConnectionPoint, io.micronaut.core.naming.Named, java.io.Serializable</dd>
 </dl>
 <dl>
 <dt>Direct Known Subclasses:</dt>
@@ -121,7 +121,8 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public abstract class <span class="typeNameLabel">AbstractRedisConfiguration</span>
-extends io.lettuce.core.RedisURI</pre>
+extends io.lettuce.core.RedisURI
+implements io.micronaut.core.naming.Named</pre>
 <div class="block">Abstract configuration for Lettuce.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -209,33 +210,43 @@ extends io.lettuce.core.RedisURI</pre>
 </td>
 </tr>
 <tr id="i2" class="altColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#getName--">getName</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>java.util.Optional&lt;io.lettuce.core.RedisURI&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#getUri--">getUri</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>java.util.List&lt;io.lettuce.core.RedisURI&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#getUris--">getUris</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#setComputationThreadPoolSize-java.lang.Integer-">setComputationThreadPoolSize</a></span>(java.lang.Integer&nbsp;computationThreadPoolSize)</code>
 <div class="block">Sets the thread pool size (number of threads to use) for computation operations (default value is the number of
  CPUs).</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#setIoThreadPoolSize-java.lang.Integer-">setIoThreadPoolSize</a></span>(java.lang.Integer&nbsp;ioThreadPoolSize)</code>
 <div class="block">Sets the thread pool size (number of threads to use) for I/O operations (default value is the number of CPUs).</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#setName-java.lang.String-">setName</a></span>(java.lang.String&nbsp;name)</code>
+<div class="block">Sets the name of the bean.</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#setUri-java.net.URI-">setUri</a></span>(java.net.URI&nbsp;uri)</code>
 <div class="block">Sets the Redis URI for configuration by string.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#setUris-java.net.URI...-">setUris</a></span>(java.net.URI...&nbsp;uris)</code>
 <div class="block">Sets the Redis URIs for cluster configuration.</div>
@@ -352,7 +363,7 @@ extends io.lettuce.core.RedisURI</pre>
 <div class="block">Returns the pool size (number of threads) for IO threads. The indicated size does not reflect the number for all IO
  threads. TCP and socket connections (epoll) require different IO pool.
 
- <code>ClientResources.ioThreadPoolSize()</code></div>
+ <code>ClientResources#ioThreadPoolSize()</code></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the pool size (number of threads) for all IO tasks.</dd>
@@ -385,7 +396,7 @@ extends io.lettuce.core.RedisURI</pre>
 <pre>public&nbsp;java.lang.Integer&nbsp;getComputationThreadPoolSize()</pre>
 <div class="block">Returns the pool size (number of threads) for all computation tasks.
 
- <code>ClientResources.computationThreadPoolSize()</code></div>
+ <code>ClientResources#computationThreadPoolSize()</code></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the pool size (number of threads to use).</dd>
@@ -395,7 +406,7 @@ extends io.lettuce.core.RedisURI</pre>
 <a name="setComputationThreadPoolSize-java.lang.Integer-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>setComputationThreadPoolSize</h4>
 <pre>public&nbsp;void&nbsp;setComputationThreadPoolSize(java.lang.Integer&nbsp;computationThreadPoolSize)</pre>
@@ -406,6 +417,35 @@ extends io.lettuce.core.RedisURI</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>computationThreadPoolSize</code> - the thread pool size, must be greater <code>0</code>.</dd>
+</dl>
+</li>
+</ul>
+<a name="getName--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getName</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getName()</pre>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code>getName</code>&nbsp;in interface&nbsp;<code>io.micronaut.core.naming.Named</code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Get the name of the bean.</dd>
+</dl>
+</li>
+</ul>
+<a name="setName-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>setName</h4>
+<pre>public&nbsp;void&nbsp;setName(java.lang.String&nbsp;name)</pre>
+<div class="block">Sets the name of the bean.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>name</code> - The name of the bean</dd>
 </dl>
 </li>
 </ul>

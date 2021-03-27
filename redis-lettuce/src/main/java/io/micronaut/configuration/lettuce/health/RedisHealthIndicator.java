@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.SignalType;
 
 import javax.inject.Singleton;
 import java.time.Duration;
@@ -60,6 +61,7 @@ public class RedisHealthIndicator implements HealthIndicator {
 
     private final BeanContext beanContext;
     private final HealthAggregator<?> healthAggregator;
+
     // Must include the connections otherwise the health check will be unknown until the first Redis command executed
     private final RedisClient[] redisClients;
     private final RedisClusterClient[] redisClusterClients;
@@ -92,47 +94,50 @@ public class RedisHealthIndicator implements HealthIndicator {
     private <T, R extends StatefulConnection<K, V>, K, V> Flux<HealthResult> getResult(Class<T> type, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
         Collection<BeanRegistration<T>> registrations = beanContext.getActiveBeanRegistrations(type);
         Flux<BeanRegistration<T>> redisClients = Flux.fromIterable(registrations);
+        return redisClients.flatMap(client -> healthResultForClient(client, getConnection, getReactive));
+    }
 
-        return redisClients.flatMap(client -> {
-            R connection;
-            String connectionName = client.getIdentifier().getName();
-            String dbName = "redis(" + connectionName + ")";
-            try {
-                connection = getConnection.apply(client.getBean());
-            } catch (Exception e) {
-                HealthResult result = HealthResult
-                        .builder(dbName, HealthStatus.DOWN)
-                        .exception(e)
-                        .build();
-                return Flux.just(result);
-            }
+    private <T, R extends StatefulConnection<K, V>, K, V> Mono<HealthResult> healthResultForClient(BeanRegistration<T> client, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
+        R connection;
+        String connectionName = client.getIdentifier().getName();
+        String dbName = "redis(" + connectionName + ")";
+        try {
+            connection = getConnection.apply(client.getBean());
+        } catch (Exception e) {
+            return Mono.just(healthResultForThrowable(e, dbName));
+        }
+        Mono<String> pingCommand = getReactive.apply(connection).ping();
+        pingCommand = pingCommand.timeout(Duration.ofSeconds(TIMEOUT_SECONDS)).retry(RETRY);
+        return pingCommand.map(s -> healthResultForPingResponse(s, dbName))
+                .onErrorResume(throwable -> Mono.just(healthResultForThrowable(throwable, dbName)))
+                .doFinally(f -> closeOnSignal(connection, f));
+    }
 
-            Mono<String> pingCommand = getReactive.apply(connection).ping();
-            pingCommand = pingCommand.timeout(Duration.ofSeconds(TIMEOUT_SECONDS)).retry(RETRY);
-            return pingCommand.map(s -> {
-                if (s.equalsIgnoreCase("pong")) {
-                    return HealthResult
-                            .builder(dbName, HealthStatus.UP)
-                            .build();
-                }
-                return HealthResult
-                        .builder(dbName, HealthStatus.DOWN)
-                        .details(Collections.singletonMap("message", "Unexpected response: " + s))
-                        .build();
-            }).onErrorResume(throwable ->
-                    Mono.just(HealthResult
-                            .builder(dbName, HealthStatus.DOWN)
-                            .exception(throwable)
-                            .build()
-                    )
-            ).doFinally(f -> {
-                try {
-                    LOG.trace("Closing connection on signal " + f);
-                    connection.close();
-                } catch (Exception e) {
-                    LOG.error("Failed to close connection", e);
-                }
-            });
-        });
+    private <R extends StatefulConnection<K, V>, K, V> void closeOnSignal(R connection, SignalType signalType) {
+        try {
+            LOG.trace("Closing connection on signal " + signalType);
+            connection.close();
+        } catch (Exception e) {
+            LOG.error("Failed to close connection", e);
+        }
+    }
+
+    private HealthResult healthResultForThrowable(Throwable throwable, String name) {
+        return HealthResult
+                .builder(name, HealthStatus.DOWN)
+                .exception(throwable)
+                .build();
+    }
+
+    private HealthResult healthResultForPingResponse(String pingResponse, String name) {
+        if (pingResponse.equalsIgnoreCase("pong")) {
+            return HealthResult
+                    .builder(name, HealthStatus.UP)
+                    .build();
+        }
+        return HealthResult
+                .builder(name, HealthStatus.DOWN)
+                .details(Collections.singletonMap("message", "Unexpected response: " + pingResponse))
+                .build();
     }
 }

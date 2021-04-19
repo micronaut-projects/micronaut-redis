@@ -74,7 +74,7 @@ class RedisHealthIndicatorSpec extends Specification {
         when:
         ApplicationContext applicationContext = ApplicationContext.run([
                 'redis.health.enabled': 'false',
-                'redis.port':port
+                'redis.port': port
         ])
         RedisClient client = applicationContext.getBean(RedisClient)
 
@@ -85,10 +85,12 @@ class RedisHealthIndicatorSpec extends Specification {
         Optional<RedisHealthIndicator> healthIndicator = applicationContext.findBean(RedisHealthIndicator)
 
         then:
-        healthIndicator.present
+        healthIndicator.empty
+
+        and:
+        redisServer?.stop()
 
         cleanup:
-        redisServer?.stop()
         applicationContext.close()
     }
 }

@@ -66,15 +66,11 @@ class RedisHealthIndicatorSpec extends Specification {
     }
 
     void "redis health indicator is not loaded when disabled"() {
-        given:
-        def port = SocketUtils.findAvailableTcpPort()
-        RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
-        redisServer.start()
 
         when:
         ApplicationContext applicationContext = ApplicationContext.run([
                 'redis.health.enabled': 'false',
-                'redis.port': port
+                'redis.type': 'embedded',
         ])
         RedisClient client = applicationContext.getBean(RedisClient)
 
@@ -86,9 +82,6 @@ class RedisHealthIndicatorSpec extends Specification {
 
         then:
         healthIndicator.empty
-
-        and:
-        redisServer?.stop()
 
         cleanup:
         applicationContext.close()

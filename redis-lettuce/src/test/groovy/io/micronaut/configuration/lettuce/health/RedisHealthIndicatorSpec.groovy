@@ -66,7 +66,6 @@ class RedisHealthIndicatorSpec extends Specification {
     }
 
     void "redis health indicator is not loaded when disabled"() {
-
         when:
         ApplicationContext applicationContext = ApplicationContext.run([
                 'redis.health.enabled': 'false',

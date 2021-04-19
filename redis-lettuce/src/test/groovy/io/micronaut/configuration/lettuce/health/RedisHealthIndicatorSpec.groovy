@@ -65,24 +65,24 @@ class RedisHealthIndicatorSpec extends Specification {
         applicationContext.close()
     }
 
-//    void "redis health indicator is not loaded when disabled"() {
-//        when:
-//        ApplicationContext applicationContext = ApplicationContext.run([
-//                'redis.health.enabled': 'false',
-//                'redis.type': 'embedded',
-//        ])
-//        RedisClient client = applicationContext.getBean(RedisClient)
-//
-//        then:
-//        client != null
-//
-//        when:
-//        Optional<RedisHealthIndicator> healthIndicator = applicationContext.findBean(RedisHealthIndicator)
-//
-//        then:
-//        healthIndicator.empty
-//
-//        cleanup:
-//        applicationContext.close()
-//    }
+    void "redis health indicator is not loaded when disabled"() {
+        when:
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.health.enabled': 'false',
+                'redis.type': 'embedded',
+        ])
+        RedisClient client = applicationContext.getBean(RedisClient)
+
+        then:
+        client != null
+
+        when:
+        Optional<RedisHealthIndicator> healthIndicator = applicationContext.findBean(RedisHealthIndicator)
+
+        then:
+        healthIndicator.empty
+
+        cleanup:
+        applicationContext.close()
+    }
 }

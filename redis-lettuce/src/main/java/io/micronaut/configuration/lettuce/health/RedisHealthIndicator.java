@@ -50,7 +50,7 @@ import java.util.function.Function;
  */
 @Singleton
 @Requires(classes = HealthIndicator.class)
-//@Requires(property = RedisHealthIndicator.NAME + ".health.enabled", defaultValue = StringUtils.TRUE, notEquals = StringUtils.FALSE)
+@Requires(property = RedisHealthIndicator.NAME + ".health.enabled", defaultValue = StringUtils.TRUE, notEquals = StringUtils.FALSE)
 public class RedisHealthIndicator implements HealthIndicator {
     public static final Logger LOG = LoggerFactory.getLogger(RedisHealthIndicator.class);
     /**

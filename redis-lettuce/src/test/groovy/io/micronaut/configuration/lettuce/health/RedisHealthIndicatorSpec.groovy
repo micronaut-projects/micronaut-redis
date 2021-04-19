@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2021 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ class RedisHealthIndicatorSpec extends Specification {
         redisServer.start()
 
         when:
-        ApplicationContext applicationContext = ApplicationContext.run(['redis.port': port, 'redis.health.enabled': 'false'])
+        ApplicationContext applicationContext = ApplicationContext.run('redis.health.enabled': 'false')
         RedisClient client = applicationContext.getBean(RedisClient)
 
         then:

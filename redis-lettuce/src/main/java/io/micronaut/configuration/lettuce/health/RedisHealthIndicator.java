@@ -42,8 +42,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Function;
 
-import static io.micronaut.configuration.lettuce.health.RedisHealthIndicator.NAME;
-
 /**
  * A Health Indicator for Redis.
  *
@@ -52,7 +50,7 @@ import static io.micronaut.configuration.lettuce.health.RedisHealthIndicator.NAM
  */
 @Singleton
 @Requires(classes = HealthIndicator.class)
-@Requires(property = NAME + ".health.enabled", defaultValue = StringUtils.TRUE, notEquals = StringUtils.FALSE)
+@Requires(property = RedisHealthIndicator.NAME + ".health.enabled", defaultValue = StringUtils.TRUE, notEquals = StringUtils.FALSE)
 public class RedisHealthIndicator implements HealthIndicator {
     public static final Logger LOG = LoggerFactory.getLogger(RedisHealthIndicator.class);
     /**

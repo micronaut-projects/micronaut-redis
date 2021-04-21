@@ -46,6 +46,8 @@ import java.util.Optional;
 public class EmbeddedRedisServer implements BeanCreatedEventListener<AbstractRedisConfiguration>, Closeable {
 
     private static final String DEFAULT_MAXMEMORY_SETTING = "maxmemory 256M";
+    private static final String DEFAULT_BIND_SETTING = "bind 127.0.0.1";
+
     private final Configuration embeddedConfiguration;
     private RedisServer redisServer;
 
@@ -74,6 +76,7 @@ public class EmbeddedRedisServer implements BeanCreatedEventListener<AbstractRed
             RedisServerBuilder builder = embeddedConfiguration.builder;
             builder.port(port);
             builder.setting(DEFAULT_MAXMEMORY_SETTING);
+            builder.setting(DEFAULT_BIND_SETTING);
             redisServer = builder.build();
             redisServer.start();
 

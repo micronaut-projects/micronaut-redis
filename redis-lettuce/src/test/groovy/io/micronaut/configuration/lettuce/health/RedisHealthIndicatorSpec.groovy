@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2021 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,27 @@ class RedisHealthIndicatorSpec extends Specification {
         then:
         result != null
         result.status == HealthStatus.DOWN
+
+        cleanup:
+        applicationContext.close()
+    }
+
+    void "redis health indicator is not loaded when disabled"() {
+        when:
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.health.enabled': 'false',
+                'redis.type': 'embedded',
+        ])
+        RedisClient client = applicationContext.getBean(RedisClient)
+
+        then:
+        client != null
+
+        when:
+        Optional<RedisHealthIndicator> healthIndicator = applicationContext.findBean(RedisHealthIndicator)
+
+        then:
+        !healthIndicator.isPresent()
 
         cleanup:
         applicationContext.close()

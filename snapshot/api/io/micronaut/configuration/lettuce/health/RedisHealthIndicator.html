@@ -112,7 +112,7 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>@Singleton
- @Requires(classes=io.micronaut.management.health.indicator.HealthIndicator.class)
+ @Requires(classes=io.micronaut.management.health.indicator.HealthIndicator.class) @Requires(property="redis.health.enabled",defaultValue="true",notEquals="false")
 public class <span class="typeNameLabel">RedisHealthIndicator</span>
 extends java.lang.Object
 implements io.micronaut.management.health.indicator.HealthIndicator</pre>

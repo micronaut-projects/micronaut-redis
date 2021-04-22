@@ -45,7 +45,7 @@ import java.util.Optional;
 @Factory
 public class EmbeddedRedisServer implements BeanCreatedEventListener<AbstractRedisConfiguration>, Closeable {
 
-    private static final String DEFAULT_MAXMEMORY_SETTING = "maxmemory 256M \nbind 127.0.0.1";
+    private static final String DEFAULT_MAXMEMORY_SETTING = "maxmemory 256M";
     private final Configuration embeddedConfiguration;
     private RedisServer redisServer;
 

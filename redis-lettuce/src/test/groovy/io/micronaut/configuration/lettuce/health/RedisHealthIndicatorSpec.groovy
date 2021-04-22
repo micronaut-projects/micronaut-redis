@@ -80,7 +80,7 @@ class RedisHealthIndicatorSpec extends Specification {
         Optional<RedisHealthIndicator> healthIndicator = applicationContext.findBean(RedisHealthIndicator)
 
         then:
-        healthIndicator.empty
+        !healthIndicator.isPresent()
 
         cleanup:
         applicationContext.close()

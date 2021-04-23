@@ -67,7 +67,7 @@
 <!--   -->
 </a></div>
 <!-- ========= END OF TOP NAVBAR ========= -->
-<div class="contentContainer"><a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:K">K</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:Z">Z</a>&nbsp;<a name="I:A">
+<div class="contentContainer"><a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:K">K</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:Z">Z</a>&nbsp;<a name="I:A">
 <!--   -->
 </a>
 <h2 class="title">A</h2>
@@ -110,6 +110,10 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#charset">charset</a></span> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/ClientResourcesMutator.html" title="interface in io.micronaut.configuration.lettuce"><span class="typeNameLink">ClientResourcesMutator</span></a> - Interface in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
+<dd>
+<div class="block">Mutates a <code>ClientResources.Builder</code>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/cache/RedisCache.html#close--">close()</a></span> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCache</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisSessionStore.html#close--">close()</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisSessionStore.html" title="class in io.micronaut.configuration.lettuce.session">RedisSessionStore</a></dt>
@@ -422,6 +426,20 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/session/RedisSessionStore.html#message-java.lang.String-java.lang.String-java.lang.String-">message(String, String, String)</a></span> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisSessionStore.html" title="class in io.micronaut.configuration.lettuce.session">RedisSessionStore</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/MetricsClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce"><span class="typeNameLink">MetricsClientResourceMutator</span></a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
+<dd>
+<div class="block">Mutates a <code>ClientResources.Builder</code> adding <code>MicrometerCommandLatencyRecorder</code>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/MetricsClientResourceMutator.html#MetricsClientResourceMutator-io.micrometer.core.instrument.MeterRegistry-">MetricsClientResourceMutator(MeterRegistry)</a></span> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/MetricsClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce">MetricsClientResourceMutator</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/ClientResourcesMutator.html#mutate-io.lettuce.core.resource.ClientResources.Builder-io.micronaut.configuration.lettuce.AbstractRedisConfiguration-">mutate(ClientResources.Builder, AbstractRedisConfiguration)</a></span> - Method in interface io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/ClientResourcesMutator.html" title="interface in io.micronaut.configuration.lettuce">ClientResourcesMutator</a></dt>
+<dd>
+<div class="block">Mutates a <code>ClientResources.Builder</code>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/MetricsClientResourceMutator.html#mutate-io.lettuce.core.resource.ClientResources.Builder-io.micronaut.configuration.lettuce.AbstractRedisConfiguration-">mutate(ClientResources.Builder, AbstractRedisConfiguration)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/MetricsClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce">MetricsClientResourceMutator</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/ThreadPoolClientResourceMutator.html#mutate-io.lettuce.core.resource.ClientResources.Builder-io.micronaut.configuration.lettuce.AbstractRedisConfiguration-">mutate(ClientResources.Builder, AbstractRedisConfiguration)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/ThreadPoolClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce">ThreadPoolClientResourceMutator</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <a name="I:N">
 <!--   -->
@@ -565,17 +583,23 @@
 <dd>
 <div class="block">Creates the <code>RedisClient</code> from the configuration.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#redisClient-io.micronaut.configuration.lettuce.AbstractRedisConfiguration-io.lettuce.core.resource.ClientResources-">redisClient(AbstractRedisConfiguration, ClientResources)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#redisClient-io.micronaut.configuration.lettuce.AbstractRedisConfiguration-io.lettuce.core.resource.ClientResources-java.util.List-">redisClient(AbstractRedisConfiguration, ClientResources, List&lt;ClientResourcesMutator&gt;)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
 <dd>
 <div class="block">Creates the <code>RedisClient</code> from the configuration.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#redisClient-io.micronaut.configuration.lettuce.AbstractRedisConfiguration-io.lettuce.core.resource.ClientResources-">redisClient(AbstractRedisConfiguration, ClientResources)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></dt>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#redisClient-io.micronaut.configuration.lettuce.AbstractRedisConfiguration-io.lettuce.core.resource.ClientResources-">redisClient(AbstractRedisConfiguration, ClientResources)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
+<dd>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="block"><span class="deprecationComment">use <a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#redisClient-io.micronaut.configuration.lettuce.AbstractRedisConfiguration-io.lettuce.core.resource.ClientResources-java.util.List-"><code>AbstractRedisClientFactory.redisClient(AbstractRedisConfiguration, ClientResources, List)</code></a> instead</span></div>
+</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#redisClient-io.micronaut.configuration.lettuce.AbstractRedisConfiguration-io.lettuce.core.resource.ClientResources-java.util.List-">redisClient(AbstractRedisConfiguration, ClientResources, List&lt;ClientResourcesMutator&gt;)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#redisClient-io.micronaut.configuration.lettuce.AbstractRedisConfiguration-io.lettuce.core.resource.ClientResources-">redisClient(AbstractRedisConfiguration, ClientResources)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a></dt>
 <dd>
 <div class="block">Create the client based on config URIs.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html#redisClient-io.micronaut.configuration.lettuce.NamedRedisServersConfiguration-">redisClient(NamedRedisServersConfiguration)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a></dt>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html#redisClient-io.micronaut.configuration.lettuce.NamedRedisServersConfiguration-java.util.List-">redisClient(NamedRedisServersConfiguration, List&lt;ClientResourcesMutator&gt;)</a></span> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a></dt>
 <dd>
 <div class="block">Creates the <code>RedisClient</code> from the configuration.</div>
 </dd>
@@ -750,6 +774,18 @@
 <div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
 </dd>
 </dl>
+<a name="I:T">
+<!--   -->
+</a>
+<h2 class="title">T</h2>
+<dl>
+<dt><a href="io/micronaut/configuration/lettuce/ThreadPoolClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce"><span class="typeNameLink">ThreadPoolClientResourceMutator</span></a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
+<dd>
+<div class="block">Mutates a <code>ClientResources.Builder</code> adding lettuce threadpool configs.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/lettuce/ThreadPoolClientResourceMutator.html#ThreadPoolClientResourceMutator--">ThreadPoolClientResourceMutator()</a></span> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/ThreadPoolClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce">ThreadPoolClientResourceMutator</a></dt>
+<dd>&nbsp;</dd>
+</dl>
 <a name="I:V">
 <!--   -->
 </a>
@@ -779,7 +815,7 @@
 <div class="block">Remove an item from the given sorted set.</div>
 </dd>
 </dl>
-<a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:K">K</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:Z">Z</a>&nbsp;</div>
+<a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:K">K</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:Z">Z</a>&nbsp;</div>
 <!-- ======= START OF BOTTOM NAVBAR ====== -->
 <div class="bottomNav"><a name="navbar.bottom">
 <!--   -->

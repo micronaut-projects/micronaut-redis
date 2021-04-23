@@ -48,7 +48,7 @@ var activeTableTab = "activeTableTab";
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../io/micronaut/configuration/lettuce/ClientResourcesMutator.html" title="interface in io.micronaut.configuration.lettuce"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" target="_top">Frames</a></li>
@@ -363,7 +363,7 @@ implements io.micronaut.core.naming.Named</pre>
 <div class="block">Returns the pool size (number of threads) for IO threads. The indicated size does not reflect the number for all IO
  threads. TCP and socket connections (epoll) require different IO pool.
 
- <code>ClientResources#ioThreadPoolSize()</code></div>
+ <code>ClientResources.ioThreadPoolSize()</code></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the pool size (number of threads) for all IO tasks.</dd>
@@ -378,9 +378,9 @@ implements io.micronaut.core.naming.Named</pre>
 <h4>setIoThreadPoolSize</h4>
 <pre>public&nbsp;void&nbsp;setIoThreadPoolSize(java.lang.Integer&nbsp;ioThreadPoolSize)</pre>
 <div class="block">Sets the thread pool size (number of threads to use) for I/O operations (default value is the number of CPUs). The
- thread pool size is only effective if no <code>ClientResources.Builder#eventLoopGroupProvider</code> is provided.
+ thread pool size is only effective if no <code>ClientResources.Builder.eventLoopGroupProvider(io.lettuce.core.resource.EventLoopGroupProvider)</code> is provided.
 
- <code>ClientResources.Builder#ioThreadPoolSize(int)</code></div>
+ <code>ClientResources.Builder.ioThreadPoolSize(int)</code></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>ioThreadPoolSize</code> - the thread pool size, must be greater <code>0</code>.</dd>
@@ -396,7 +396,7 @@ implements io.micronaut.core.naming.Named</pre>
 <pre>public&nbsp;java.lang.Integer&nbsp;getComputationThreadPoolSize()</pre>
 <div class="block">Returns the pool size (number of threads) for all computation tasks.
 
- <code>ClientResources#computationThreadPoolSize()</code></div>
+ <code>ClientResources.computationThreadPoolSize()</code></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the pool size (number of threads to use).</dd>
@@ -411,9 +411,9 @@ implements io.micronaut.core.naming.Named</pre>
 <h4>setComputationThreadPoolSize</h4>
 <pre>public&nbsp;void&nbsp;setComputationThreadPoolSize(java.lang.Integer&nbsp;computationThreadPoolSize)</pre>
 <div class="block">Sets the thread pool size (number of threads to use) for computation operations (default value is the number of
- CPUs). The thread pool size is only effective if no <code>ClientResources.Builder#eventExecutorGroup</code> is provided.
+ CPUs). The thread pool size is only effective if no <code>ClientResources.Builder.eventExecutorGroup(io.netty.util.concurrent.EventExecutorGroup)</code> is provided.
 
- <code>ClientResources.Builder#computationThreadPoolSize(int)</code></div>
+ <code>ClientResources.Builder.computationThreadPoolSize(int)</code></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>computationThreadPoolSize</code> - the thread pool size, must be greater <code>0</code>.</dd>
@@ -477,7 +477,7 @@ implements io.micronaut.core.naming.Named</pre>
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../io/micronaut/configuration/lettuce/ClientResourcesMutator.html" title="interface in io.micronaut.configuration.lettuce"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" target="_top">Frames</a></li>

@@ -28,6 +28,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.inject.qualifiers.Qualifiers;
 
 
+import java.util.List;
 
 /**
  * A factory bean for constructing {@link RedisClient} instances from {@link NamedRedisServersConfiguration} instances.
@@ -54,12 +55,13 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
      * Creates the {@link RedisClient} from the configuration.
      *
      * @param config The configuration
+     * @param mutators the list of mutators
      * @return The {@link RedisClient}
      */
     @Bean(preDestroy = "shutdown")
     @EachBean(NamedRedisServersConfiguration.class)
-    public RedisClient redisClient(NamedRedisServersConfiguration config) {
-        return super.redisClient(config, getClientResources(config));
+    public RedisClient redisClient(NamedRedisServersConfiguration config, @Nullable List<ClientResourcesMutator> mutators) {
+        return super.redisClient(config, getClientResources(config), mutators);
     }
 
     /**

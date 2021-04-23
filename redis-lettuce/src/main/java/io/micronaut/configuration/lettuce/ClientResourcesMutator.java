@@ -16,12 +16,20 @@
 package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.resource.ClientResources;
+import io.micronaut.core.annotation.Indexed;
 
 /**
  * Mutates a {@link ClientResources.Builder}.
  * @author Rafael Acevedo
  * @since 4.1
  */
+@Indexed(ClientResourcesMutator.class)
 public interface ClientResourcesMutator {
+
+    /**
+     * Mutates a {@link ClientResources.Builder}.
+     * @param builder the builder
+     * @param config the redis config
+     */
     void mutate(ClientResources.Builder builder, AbstractRedisConfiguration config);
 }

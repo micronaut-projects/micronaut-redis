@@ -1,4 +1,12 @@
+pluginManagement {
+    plugins {
+        id 'io.micronaut.application' version getProperty("micronautGradlePluginVersion")
+        id 'io.micronaut.library' version getProperty("micronautGradlePluginVersion")
+    }
+}
+
 rootProject.name = 'redis'
 
 include 'redis-lettuce'
+include 'tests:http-session'
 

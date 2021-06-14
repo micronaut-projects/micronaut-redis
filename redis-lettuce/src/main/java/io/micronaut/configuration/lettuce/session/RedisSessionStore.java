@@ -25,6 +25,8 @@ import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.async.RedisAdvancedClusterAsyncCommands;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import io.lettuce.core.pubsub.RedisPubSubAdapter;
+import io.lettuce.core.pubsub.RedisPubSubAsyncCommandsImpl;
+import io.lettuce.core.pubsub.RedisPubSubReactiveCommandsImpl;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
@@ -34,6 +36,7 @@ import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.context.exceptions.ConfigurationException;
+import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.convert.ArgumentConversionContext;
 import io.micronaut.core.convert.value.MutableConvertibleValues;
 import io.micronaut.core.serialize.ObjectSerializer;
@@ -92,6 +95,7 @@ import static io.micronaut.configuration.lettuce.session.RedisSessionStore.Redis
 @Primary
 @Requires(property = RedisSessionStore.REDIS_SESSION_ENABLED, value = StringUtils.TRUE)
 @Replaces(InMemorySessionStore.class)
+@TypeHint(value = {RedisPubSubAsyncCommandsImpl.class, RedisPubSubReactiveCommandsImpl.class}, accessType = TypeHint.AccessType.ALL_PUBLIC)
 public class RedisSessionStore extends RedisPubSubAdapter<String, String> implements SessionStore<RedisSessionStore.RedisSession>, AutoCloseable {
 
     public static final String REDIS_SESSION_ENABLED = SessionSettings.HTTP + ".redis.enabled";

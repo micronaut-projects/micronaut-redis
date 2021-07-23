@@ -17,6 +17,8 @@ package io.micronaut.configuration.lettuce.cache
 
 import io.micronaut.context.ApplicationContext
 import io.micronaut.core.io.socket.SocketUtils
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
@@ -39,8 +41,8 @@ class SyncCacheSpec extends Specification{
         CounterService counterService = applicationContext.getBean(CounterService)
 
         then:
-        counterService.flowableValue("test").toIterable().iterator().next() == 0
-        counterService.singleValue("test").toFuture().get() == 0
+        Flux.from(counterService.flowableValue("test")).toIterable().iterator().next() == 0
+        Mono.from(counterService.singleValue("test")).toFuture().get() == 0
 
         when:
         counterService.reset()
@@ -48,9 +50,9 @@ class SyncCacheSpec extends Specification{
 
         then:
         result == 1
-        counterService.flowableValue("test").toIterable().iterator().next() == 1
+        Flux.from(counterService.flowableValue("test")).toIterable().iterator().next() == 1
         counterService.futureValue("test").get() == 1
-        counterService.singleValue("test").toFuture().get() == 1
+        Mono.from(counterService.singleValue("test")).toFuture().get() == 1
         counterService.getValue("test") == 1
         counterService.getValue("test") == 1
 
@@ -59,7 +61,7 @@ class SyncCacheSpec extends Specification{
 
         then:
         result == 2
-        counterService.flowableValue("test").toIterable().iterator().next() == 1
+        Flux.from(counterService.flowableValue("test")).toIterable().iterator().next() == 1
         counterService.futureValue("test").get() == 1
         counterService.getValue("test") == 1
 
@@ -72,9 +74,7 @@ class SyncCacheSpec extends Specification{
         counterService.reset("test")
         then:
         counterService.futureValue("test").get() == 0
-
-
-
+        
         when:
         counterService.set("test", 3)
 

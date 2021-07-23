@@ -25,7 +25,6 @@ subprojects { Project subproject ->
             exclude module:'groovy-all'
         }
         testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
-        testRuntimeOnly "io.micronaut.reactor:micronaut-reactor"
     }
 }
 

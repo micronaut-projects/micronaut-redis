@@ -20,7 +20,7 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.core.io.socket.SocketUtils
 import io.micronaut.health.HealthStatus
 import io.micronaut.management.health.indicator.HealthResult
-import io.reactivex.Flowable
+import reactor.core.publisher.Flux
 import redis.embedded.RedisServer
 import spock.lang.Specification
 
@@ -34,7 +34,7 @@ class RedisHealthIndicatorSpec extends Specification {
 
     void "test redis health indicator"() {
         given:
-        def port = SocketUtils.findAvailableTcpPort()
+        int port = SocketUtils.findAvailableTcpPort()
         RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
         redisServer.start()
 
@@ -47,7 +47,7 @@ class RedisHealthIndicatorSpec extends Specification {
 
         when:
         RedisHealthIndicator healthIndicator = applicationContext.getBean(RedisHealthIndicator)
-        HealthResult result = Flowable.fromPublisher(healthIndicator.getResult()).blockingFirst()
+        HealthResult result = Flux.from(healthIndicator.getResult()).blockFirst()
         
         then:
         result != null
@@ -55,7 +55,7 @@ class RedisHealthIndicatorSpec extends Specification {
 
         when:
         redisServer?.stop()
-        result = Flowable.fromPublisher(healthIndicator.getResult()).blockingFirst()
+        result = Flux.from(healthIndicator.getResult()).blockFirst()
 
         then:
         result != null

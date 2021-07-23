@@ -17,6 +17,7 @@ package io.micronaut.configuration.lettuce.cache;
 
 import io.micronaut.cache.annotation.*;
 import io.micronaut.core.async.annotation.SingleResult;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -64,12 +65,12 @@ public class CounterService {
 
     @Cacheable
     @SingleResult
-    public Flux<Integer> flowableValue(String name) {
+    public Publisher<Integer> flowableValue(String name) {
         return Flux.just(counters.computeIfAbsent(name, (key)-> 0));
     }
 
     @Cacheable
-    public Mono<Integer> singleValue(String name) {
+    public Publisher<Integer> singleValue(String name) {
         return Mono.just(counters.computeIfAbsent(name, (key)-> 0));
     }
 

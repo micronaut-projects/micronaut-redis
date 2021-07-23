@@ -8,6 +8,8 @@ dependencies {
     api "io.lettuce:lettuce-core:$lettuceVersion"
     api "io.micronaut.cache:micronaut-cache-core"
 
+    implementation 'jakarta.inject:jakarta.inject-api:2.0.0'
+
     compileOnly "io.micronaut:micronaut-session"
     compileOnly "io.micronaut:micronaut-management"
     compileOnly "io.micronaut.micrometer:micronaut-micrometer-core"

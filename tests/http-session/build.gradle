@@ -25,4 +25,5 @@ dependencies {
     testImplementation platform("org.testcontainers:testcontainers-bom:$testContainersVersion")
     testImplementation "org.testcontainers:testcontainers"
     testImplementation "org.testcontainers:spock"
+    testImplementation 'jakarta.inject:jakarta.inject-api:2.0.0'
 }

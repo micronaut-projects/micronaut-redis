@@ -6,13 +6,11 @@ dependencies {
     annotationProcessor "io.micronaut:micronaut-graal"
 
     api "io.lettuce:lettuce-core:$lettuceVersion"
-    api "io.micronaut.cache:micronaut-cache-core"
-
-    implementation 'jakarta.inject:jakarta.inject-api:2.0.0'
+    api "io.micronaut.cache:micronaut-cache-core:$micronautCacheVersion"
 
     compileOnly "io.micronaut:micronaut-session"
     compileOnly "io.micronaut:micronaut-management"
-    compileOnly "io.micronaut.micrometer:micronaut-micrometer-core"
+    compileOnly "io.micronaut.micrometer:micronaut-micrometer-core:$micronautMicrometerVersion"
     compileOnly "com.github.kstyrc:embedded-redis:0.6"
 
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
@@ -23,10 +21,10 @@ dependencies {
 
     testImplementation "io.projectreactor:reactor-core"
 
-    testImplementation "io.micronaut.cache:micronaut-cache-core"
+    testImplementation "io.micronaut.cache:micronaut-cache-core:$micronautCacheVersion"
     testImplementation "io.micronaut:micronaut-inject-java"
     testImplementation "io.micronaut:micronaut-management"
-    testImplementation "io.micronaut.micrometer:micronaut-micrometer-core"
+    testImplementation "io.micronaut.micrometer:micronaut-micrometer-core:$micronautMicrometerVersion"
     testImplementation "io.micronaut:micronaut-inject-groovy"
     testImplementation "io.micronaut:micronaut-function-web"
 

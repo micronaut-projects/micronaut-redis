@@ -17,7 +17,7 @@ package io.micronaut.configuration.lettuce.cache;
 
 import io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class TestExpirationPolicy implements ExpirationAfterWritePolicy {

@@ -21,7 +21,7 @@ import io.lettuce.core.resource.ClientResources;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.context.annotation.Requires;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 /**
  * Mutates a {@link ClientResources.Builder} adding {@link MicrometerCommandLatencyRecorder}.

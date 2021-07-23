@@ -17,7 +17,7 @@ package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.resource.ClientResources;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 /**
  * Mutates a {@link ClientResources.Builder} adding lettuce threadpool configs.

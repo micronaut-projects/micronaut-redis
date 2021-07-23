@@ -18,7 +18,7 @@ package io.micronaut.configuration.lettuce.cache;
 import io.micronaut.cache.annotation.CacheConfig;
 import io.micronaut.cache.annotation.Cacheable;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 @CacheConfig(cacheNames = {"time"})

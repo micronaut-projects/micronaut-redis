@@ -26,7 +26,7 @@ import io.micronaut.session.event.SessionExpiredEvent
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoField

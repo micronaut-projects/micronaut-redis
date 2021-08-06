@@ -20,7 +20,7 @@ micronaut:
                 enable-keyspace-events: false
 ----
 
-NOTE: The api:configuration.lettuce.session.RedisSessionStore[] implementation uses https://redis.io/topics/notifications[keyspace events] to cleanup active sessions and fire api:session.event.SessionExpiredEvent[] and requires they are active.
+NOTE: The api:configuration.lettuce.session.RedisSessionStore[] implementation uses https://redis.io/topics/notifications[keyspace events] to cleanup active sessions and fire https://micronaut-projects.github.io/micronaut-core/latest/api/io/micronaut/session/event/SessionExpiredEvent.html[SessionExpiredEvent] and requires they are active.
 
 By default sessions values are serialized using Java serialization and stored in Redis hashes. You can configure serialization to instead use Jackson to serialize to JSON if desired:
 

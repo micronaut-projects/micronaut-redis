@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce;
 
+import io.lettuce.core.AbstractRedisClient;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.StatefulRedisConnection;
@@ -36,6 +37,26 @@ import java.util.Optional;
  */
 @Internal
 public class RedisConnectionUtil {
+    /**
+     * Utility method for establishing a redis connection.
+     *
+     * @param beanLocator  The bean locator to use
+     * @param serverName   The server name to use
+     * @param errorMessage The error message to use if the connection can't be found
+     * @return The connection
+     * @throws ConfigurationException If the connection cannot be found
+     */
+    public static AbstractRedisClient findClient(BeanLocator beanLocator, Optional<String> serverName, String errorMessage) {
+        Optional<? extends AbstractRedisClient> clusterConn = findRedisClusterClient(beanLocator, serverName);
+        if (clusterConn.isPresent()) {
+            return clusterConn.get();
+        }
+        Optional<? extends AbstractRedisClient> conn = findRedisClient(beanLocator, serverName);
+        if (conn.isPresent()) {
+            return conn.get();
+        }
+        throw new ConfigurationException(errorMessage);
+    }
 
     /**
      * Utility method for establishing a redis connection.

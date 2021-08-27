@@ -16,34 +16,21 @@
 package io.micronaut.configuration.lettuce.cache;
 
 import io.lettuce.core.api.StatefulConnection;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.async.RedisAsyncCommands;
 import io.lettuce.core.api.async.RedisKeyAsyncCommands;
 import io.lettuce.core.api.async.RedisStringAsyncCommands;
-import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.api.sync.RedisKeyCommands;
 import io.lettuce.core.api.sync.RedisStringCommands;
-import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
-import io.lettuce.core.cluster.api.async.RedisAdvancedClusterAsyncCommands;
-import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import io.micronaut.cache.AsyncCache;
 import io.micronaut.cache.SyncCache;
-import io.micronaut.cache.serialize.DefaultStringKeySerializer;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
 import io.micronaut.configuration.lettuce.RedisSetting;
-import io.micronaut.configuration.lettuce.cache.expiration.ConstantExpirationAfterWritePolicy;
-import io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.convert.ConversionService;
-import io.micronaut.core.serialize.JdkSerializer;
-import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.type.Argument;
 
 import javax.annotation.PreDestroy;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -59,12 +46,7 @@ import java.util.function.Supplier;
  */
 @EachBean(RedisCacheConfiguration.class)
 @Requires(classes = SyncCache.class, missingProperty = RedisSetting.REDIS_POOL)
-public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoCloseable {
-    private final RedisCacheConfiguration redisCacheConfiguration;
-    private final ObjectSerializer keySerializer;
-    private final ObjectSerializer valueSerializer;
-    private final ExpirationAfterWritePolicy expireAfterWritePolicy;
-    private final Long expireAfterAccess;
+public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], byte[]>> {
     private final RedisAsyncCache asyncCache;
     private final StatefulConnection<byte[], byte[]> connection;
     private final RedisKeyCommands<byte[], byte[]> redisKeyCommands;
@@ -87,38 +69,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
             ConversionService<?> conversionService,
             BeanLocator beanLocator
     ) {
-        if (redisCacheConfiguration == null) {
-            throw new IllegalArgumentException("Redis cache configuration cannot be null");
-        }
-
-        this.redisCacheConfiguration = redisCacheConfiguration;
-        this.expireAfterWritePolicy = configureExpirationAfterWritePolicy(redisCacheConfiguration, beanLocator);
-
-        this.expireAfterAccess = redisCacheConfiguration
-                .getExpireAfterAccess()
-                .map(Duration::toMillis)
-                .orElse(defaultRedisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null));
-
-        this.keySerializer = redisCacheConfiguration
-                .getKeySerializer()
-                .flatMap(beanLocator::findOrInstantiateBean)
-                .orElse(
-                        defaultRedisCacheConfiguration
-                                .getKeySerializer()
-                                .flatMap(beanLocator::findOrInstantiateBean)
-                                .orElse(newDefaultKeySerializer(redisCacheConfiguration, conversionService))
-                );
-
-        this.valueSerializer = redisCacheConfiguration
-                .getValueSerializer()
-                .flatMap(beanLocator::findOrInstantiateBean)
-                .orElse(
-                        defaultRedisCacheConfiguration
-                                .getValueSerializer()
-                                .flatMap(beanLocator::findOrInstantiateBean)
-                                .orElse(new JdkSerializer(conversionService))
-                );
-
+        super(defaultRedisCacheConfiguration, redisCacheConfiguration, conversionService, beanLocator);
         Optional<String> server = Optional.ofNullable(
                 redisCacheConfiguration
                         .getServer()
@@ -128,52 +79,10 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
         this.connection = RedisConnectionUtil.openBytesRedisConnection(beanLocator, server, "No Redis server configured to allow caching");
         this.asyncCache = new RedisAsyncCache();
 
-        if (connection instanceof StatefulRedisConnection) {
-            RedisCommands<byte[], byte[]> sync = ((StatefulRedisConnection<byte[], byte[]>) connection).sync();
-            redisStringCommands = sync;
-            redisKeyCommands = sync;
-            RedisAsyncCommands<byte[], byte[]> async = ((StatefulRedisConnection<byte[], byte[]>) connection).async();
-            redisKeyAsyncCommands = async;
-            redisStringAsyncCommands = async;
-        } else if (connection instanceof StatefulRedisClusterConnection) {
-            RedisAdvancedClusterCommands<byte[], byte[]> sync = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).sync();
-            redisStringCommands = sync;
-            redisKeyCommands = sync;
-            RedisAdvancedClusterAsyncCommands<byte[], byte[]> async = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).async();
-            redisKeyAsyncCommands = async;
-            redisStringAsyncCommands = async;
-        } else {
-            throw new ConfigurationException("Invalid Redis connection");
-        }
-    }
-
-    private ExpirationAfterWritePolicy configureExpirationAfterWritePolicy(RedisCacheConfiguration redisCacheConfiguration, BeanLocator beanLocator) {
-        if (redisCacheConfiguration.getExpireAfterWrite().isPresent()) {
-            Duration expiration = redisCacheConfiguration.getExpireAfterWrite().get();
-            return new ConstantExpirationAfterWritePolicy(expiration.toMillis());
-        } else if (redisCacheConfiguration.getExpirationAfterWritePolicy().isPresent()) {
-            return (ExpirationAfterWritePolicy) redisCacheConfiguration
-                    .getExpirationAfterWritePolicy()
-                    .flatMap(className -> findExpirationAfterWritePolicyBean(beanLocator, className))
-                    .get();
-        }
-        return null;
-    }
-
-    private Optional<?> findExpirationAfterWritePolicyBean(BeanLocator beanLocator, String className) {
-        try {
-            Optional<?> bean = beanLocator.findOrInstantiateBean(Class.forName(className));
-            if (bean.isPresent()) {
-                if (bean.get() instanceof ExpirationAfterWritePolicy) {
-                    return bean;
-                }
-                throw new ConfigurationException("Redis expiration-after-write-policy was not of type ExpirationAfterWritePolicy");
-            } else {
-                throw new ConfigurationException("Redis expiration-after-write-policy was not found");
-            }
-        } catch (ClassNotFoundException e) {
-            throw new ConfigurationException("Redis expiration-after-write-policy was not found");
-        }
+        redisKeyCommands = getRedisKeyCommands(connection);
+        redisStringCommands = getRedisStringCommands(connection);
+        redisKeyAsyncCommands = getRedisKeyAsyncCommands(connection);
+        redisStringAsyncCommands = getRedisStringAsyncCommands(connection);
     }
 
     @Override
@@ -182,53 +91,14 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
     }
 
     @Override
-    public StatefulConnection<?, ?> getNativeCache() {
+    public StatefulConnection<byte[], byte[]> getNativeCache() {
         return connection;
-    }
-
-    @Override
-    public <T> Optional<T> get(Object key, Argument<T> requiredType) {
-        byte[] serializedKey = serializeKey(key);
-        return getValue(requiredType, serializedKey);
     }
 
     @Override
     public <T> T get(Object key, Argument<T> requiredType, Supplier<T> supplier) {
         byte[] serializedKey = serializeKey(key);
-        byte[] data = redisStringCommands.get(serializedKey);
-        if (data != null) {
-            Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
-            if (deserialized.isPresent()) {
-                return deserialized.get();
-            }
-        }
-
-        T value = supplier.get();
-        putValue(serializedKey, value);
-        return value;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> Optional<T> putIfAbsent(Object key, T value) {
-        if (value == null) {
-            return Optional.empty();
-        }
-
-        byte[] serializedKey = serializeKey(key);
-        Optional<T> existing = getValue(Argument.of((Class<T>) value.getClass()), serializedKey);
-        if (!existing.isPresent()) {
-            putValue(serializedKey, value);
-            return Optional.empty();
-        } else {
-            return existing;
-        }
-    }
-
-    @Override
-    public void put(Object key, Object value) {
-        byte[] serializedKey = serializeKey(key);
-        putValue(serializedKey, value);
+        return get(serializedKey, requiredType, supplier, redisStringCommands);
     }
 
     @Override
@@ -246,7 +116,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
     }
 
     @Override
-    public AsyncCache<StatefulConnection<?, ?>> async() {
+    public AsyncCache<StatefulConnection<byte[], byte[]>> async() {
         return asyncCache;
     }
 
@@ -258,6 +128,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
      * @param <T>           type of the argument
      * @return value
      */
+    @Override
     protected <T> Optional<T> getValue(Argument<T> requiredType, byte[] serializedKey) {
         byte[] data = redisStringCommands.get(serializedKey);
         if (expireAfterAccess != null) {
@@ -271,45 +142,21 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
     }
 
     /**
-     * @return The default keys pattern.
-     */
-    protected String getKeysPattern() {
-        return getName() + ":*";
-    }
-
-    /**
      * Place the value in the cache.
      *
      * @param serializedKey serializedKey
      * @param value         value
      * @param <T>           type of the value
      */
+    @Override
     protected <T> void putValue(byte[] serializedKey, T value) {
         Optional<byte[]> serialized = valueSerializer.serialize(value);
-        if (serialized.isPresent()) {
-            byte[] bytes = serialized.get();
-            if (expireAfterWritePolicy != null) {
-                redisStringCommands.psetex(serializedKey, expireAfterWritePolicy.getExpirationAfterWrite(value), bytes);
-            } else {
-                redisStringCommands.set(serializedKey, bytes);
-            }
-        } else {
-            redisKeyCommands.del(serializedKey);
-        }
-    }
-
-    /**
-     * Serialize the key.
-     *
-     * @param key The key
-     * @return bytes of the object
-     */
-    protected byte[] serializeKey(Object key) {
-        return keySerializer.serialize(key).orElseThrow(() -> new IllegalArgumentException("Key cannot be null"));
-    }
-
-    private DefaultStringKeySerializer newDefaultKeySerializer(RedisCacheConfiguration redisCacheConfiguration, ConversionService<?> conversionService) {
-        return new DefaultStringKeySerializer(redisCacheConfiguration.getCacheName(), redisCacheConfiguration.getCharset(), conversionService);
+        putValue(serializedKey,
+                serialized,
+                expireAfterWritePolicy,
+                redisStringCommands,
+                redisKeyCommands,
+                value);
     }
 
     @PreDestroy
@@ -321,7 +168,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
     /**
      * Redis Async cache implementation.
      */
-    protected class RedisAsyncCache implements AsyncCache<StatefulConnection<?, ?>> {
+    protected class RedisAsyncCache implements AsyncCache<StatefulConnection<byte[], byte[]>> {
 
         @Override
         public <T> CompletableFuture<Optional<T>> get(Object key, Argument<T> requiredType) {
@@ -400,7 +247,7 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
         }
 
         @Override
-        public StatefulConnection<?, ?> getNativeCache() {
+        public StatefulConnection<byte[], byte[]> getNativeCache() {
             return RedisCache.this.getNativeCache();
         }
 

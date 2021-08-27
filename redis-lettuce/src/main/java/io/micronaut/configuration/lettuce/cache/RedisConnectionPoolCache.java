@@ -30,32 +30,24 @@ import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import io.lettuce.core.support.AsyncConnectionPoolSupport;
 import io.lettuce.core.support.AsyncPool;
 import io.lettuce.core.support.BoundedPoolConfig;
-import io.lettuce.core.support.ConnectionPoolSupport;
 import io.micronaut.cache.AsyncCache;
 import io.micronaut.cache.SyncCache;
-import io.micronaut.cache.serialize.DefaultStringKeySerializer;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
 import io.micronaut.configuration.lettuce.RedisSetting;
-import io.micronaut.configuration.lettuce.cache.expiration.ConstantExpirationAfterWritePolicy;
-import io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.convert.ConversionService;
-import io.micronaut.core.serialize.JdkSerializer;
-import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.type.Argument;
-import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import javax.annotation.PreDestroy;
-import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -67,16 +59,9 @@ import java.util.function.Supplier;
  */
 @EachBean(RedisCacheConfiguration.class)
 @Requires(classes = SyncCache.class, property = RedisSetting.REDIS_POOL)
-public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?, ?>>, AutoCloseable {
-    private final RedisCacheConfiguration redisCacheConfiguration;
-    private final ObjectSerializer keySerializer;
-    private final ObjectSerializer valueSerializer;
-    private final ExpirationAfterWritePolicy expireAfterWritePolicy;
-    private final Long expireAfterAccess;
+public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<StatefulConnection<byte[], byte[]>>> {
     private final RedisAsyncCache asyncCache;
-    private final ObjectPool<StatefulConnection<byte[], byte[]>> pool;
     private final AsyncPool<StatefulConnection<byte[], byte[]>> asyncPool;
-    private final StatefulConnection<byte[], byte[]> connection;
 
     /**
      * Creates a new redis cache for the given arguments.
@@ -93,37 +78,7 @@ public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?,
             ConversionService<?> conversionService,
             BeanLocator beanLocator
     ) {
-        if (redisCacheConfiguration == null) {
-            throw new IllegalArgumentException("Redis cache configuration cannot be null");
-        }
-
-        this.redisCacheConfiguration = redisCacheConfiguration;
-        this.expireAfterWritePolicy = configureExpirationAfterWritePolicy(redisCacheConfiguration, beanLocator);
-
-        this.expireAfterAccess = redisCacheConfiguration
-                .getExpireAfterAccess()
-                .map(Duration::toMillis)
-                .orElse(defaultRedisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null));
-
-        this.keySerializer = redisCacheConfiguration
-                .getKeySerializer()
-                .flatMap(beanLocator::findOrInstantiateBean)
-                .orElse(
-                        defaultRedisCacheConfiguration
-                                .getKeySerializer()
-                                .flatMap(beanLocator::findOrInstantiateBean)
-                                .orElse(newDefaultKeySerializer(redisCacheConfiguration, conversionService))
-                );
-
-        this.valueSerializer = redisCacheConfiguration
-                .getValueSerializer()
-                .flatMap(beanLocator::findOrInstantiateBean)
-                .orElse(
-                        defaultRedisCacheConfiguration
-                                .getValueSerializer()
-                                .flatMap(beanLocator::findOrInstantiateBean)
-                                .orElse(new JdkSerializer(conversionService))
-                );
+        super(defaultRedisCacheConfiguration, redisCacheConfiguration, conversionService, beanLocator);
 
         Optional<String> server = Optional.ofNullable(
                 redisCacheConfiguration
@@ -131,23 +86,9 @@ public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?,
                         .orElse(defaultRedisCacheConfiguration.getServer().orElse(null))
         );
 
-        this.connection = RedisConnectionUtil.openBytesRedisConnection(beanLocator, server, "No Redis server configured to allow caching");
         StatefulConnection<Byte[], Byte[]> connection = RedisConnectionUtil.findRedisConnection(beanLocator, server, "No Redis server configured to allow caching");
         this.asyncCache = new RedisAsyncCache();
         AbstractRedisClient client = RedisConnectionUtil.findClient(beanLocator, server, "No Redis server configured to allow caching");
-        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-        config.setMinIdle(4);
-        config.setMaxIdle(16);
-        config.setMaxTotal(32);
-        this.pool = ConnectionPoolSupport.createGenericObjectPool((Supplier) () -> {
-            if (client instanceof RedisClusterClient) {
-                return ((RedisClusterClient) client).connect();
-            }
-            if (client instanceof RedisClient) {
-                return ((RedisClient) client).connect();
-            }
-            throw new ConfigurationException("Invalid Redis connection");
-        }, config);
         BoundedPoolConfig asyncConfig = BoundedPoolConfig.builder().minIdle(4).maxIdle(16).maxTotal(32).build();
         CompletionStage<AsyncPool<StatefulConnection<byte[], byte[]>>> asyncPoolStage = AsyncConnectionPoolSupport.createBoundedObjectPoolAsync((Supplier) () -> {
                     if (client instanceof RedisClusterClient) {
@@ -163,133 +104,45 @@ public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?,
         asyncPool = asyncPoolStage.toCompletableFuture().join();
     }
 
-    private ExpirationAfterWritePolicy configureExpirationAfterWritePolicy(RedisCacheConfiguration redisCacheConfiguration, BeanLocator beanLocator) {
-        if (redisCacheConfiguration.getExpireAfterWrite().isPresent()) {
-            Duration expiration = redisCacheConfiguration.getExpireAfterWrite().get();
-            return new ConstantExpirationAfterWritePolicy(expiration.toMillis());
-        } else if (redisCacheConfiguration.getExpirationAfterWritePolicy().isPresent()) {
-            return (ExpirationAfterWritePolicy) redisCacheConfiguration
-                    .getExpirationAfterWritePolicy()
-                    .flatMap(className -> findExpirationAfterWritePolicyBean(beanLocator, className))
-                    .get();
-        }
-        return null;
-    }
-
-    private Optional<?> findExpirationAfterWritePolicyBean(BeanLocator beanLocator, String className) {
-        try {
-            Optional<?> bean = beanLocator.findOrInstantiateBean(Class.forName(className));
-            if (bean.isPresent()) {
-                if (bean.get() instanceof ExpirationAfterWritePolicy) {
-                    return bean;
-                }
-                throw new ConfigurationException("Redis expiration-after-write-policy was not of type ExpirationAfterWritePolicy");
-            } else {
-                throw new ConfigurationException("Redis expiration-after-write-policy was not found");
-            }
-        } catch (ClassNotFoundException e) {
-            throw new ConfigurationException("Redis expiration-after-write-policy was not found");
-        }
-    }
-
     @Override
     public String getName() {
         return redisCacheConfiguration.getCacheName();
     }
 
     @Override
-    public StatefulConnection<?, ?> getNativeCache() {
-        return connection;
-    }
-
-    @Override
-    public <T> Optional<T> get(Object key, Argument<T> requiredType) {
-        byte[] serializedKey = serializeKey(key);
-        return getValue(requiredType, serializedKey);
+    public AsyncPool<StatefulConnection<byte[], byte[]>> getNativeCache() {
+        return asyncPool;
     }
 
     @Override
     public <T> T get(Object key, Argument<T> requiredType, Supplier<T> supplier) {
         byte[] serializedKey = serializeKey(key);
         try {
-            StatefulConnection<byte[], byte[]> conn = pool.borrowObject();
-            try {
-                if (conn instanceof StatefulRedisConnection) {
-                    return get(serializedKey, requiredType, supplier, ((StatefulRedisConnection<byte[], byte[]>) conn).sync());
-                } else if (conn instanceof StatefulRedisClusterConnection) {
-                    return get(serializedKey, requiredType, supplier, ((StatefulRedisClusterConnection<byte[], byte[]>) conn).sync());
-                } else {
-                    throw new ConfigurationException("Invalid Redis connection");
+            return asyncPool.acquire().thenCompose(connection -> {
+                try {
+                    RedisStringCommands<byte[], byte[]> commands = getRedisStringCommands(connection);
+                    return CompletableFuture.completedFuture(get(serializedKey, requiredType, supplier, commands));
+                } finally {
+                    asyncPool.release(connection);
                 }
-            } finally {
-                pool.returnObject(conn);
-            }
-        } catch (Exception e) {
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private <T> T get(byte[] key, Argument<T> requiredType, Supplier<T> supplier, RedisStringCommands<byte[], byte[]> commands){
-        byte[] data = commands.get(key);
-        if (data != null) {
-            Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
-            if (deserialized.isPresent()) {
-                return deserialized.get();
-            }
-        }
-
-        T value = supplier.get();
-        putValue(key, value);
-        return value;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> Optional<T> putIfAbsent(Object key, T value) {
-        if (value == null) {
-            return Optional.empty();
-        }
-
-        byte[] serializedKey = serializeKey(key);
-        Optional<T> existing = getValue(Argument.of((Class<T>) value.getClass()), serializedKey);
-        if (!existing.isPresent()) {
-            putValue(serializedKey, value);
-            return Optional.empty();
-        } else {
-            return existing;
-        }
-    }
-
-    @Override
-    public void put(Object key, Object value) {
-        byte[] serializedKey = serializeKey(key);
-        putValue(serializedKey, value);
-    }
-
     @Override
     public void invalidate(Object key) {
         byte[] serializedKey = serializeKey(key);
-
-        try {
-            StatefulConnection<byte[], byte[]> conn = pool.borrowObject();
+        asyncPool.acquire().thenAccept(connection -> {
             try {
-                RedisKeyCommands<byte[], byte[]> commands;
-                if (conn instanceof StatefulRedisConnection) {
-                    commands = ((StatefulRedisConnection<byte[], byte[]>) conn).sync();
-                } else if (conn instanceof StatefulRedisClusterConnection) {
-                    commands = ((StatefulRedisClusterConnection<byte[], byte[]>) conn).sync();
-                } else {
-                    throw new ConfigurationException("Invalid Redis connection");
-                }
+                RedisKeyCommands<byte[], byte[]> commands = getRedisKeyCommands(connection);
                 invalidate(Collections.singletonList(serializedKey), commands);
+            } finally {
+                asyncPool.release(connection);
             }
-            finally {
-                pool.returnObject(conn);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }).join();
     }
 
     private void invalidate(List<byte[]> key, RedisKeyCommands<byte[], byte[]> commands) {
@@ -298,23 +151,17 @@ public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?,
 
     @Override
     public void invalidateAll() {
-        try {
-            StatefulConnection<byte[], byte[]> conn = pool.borrowObject();
-            RedisKeyCommands<byte[], byte[]> commands;
-            if (conn instanceof StatefulRedisConnection) {
-                commands = ((StatefulRedisConnection<byte[], byte[]>) conn).sync();
-            } else if (conn instanceof StatefulRedisClusterConnection) {
-                commands = ((StatefulRedisClusterConnection<byte[], byte[]>) conn).sync();
-            } else {
-                throw new ConfigurationException("Invalid Redis connection");
+        asyncPool.acquire().thenAccept(connection -> {
+            try {
+                RedisKeyCommands<byte[], byte[]> commands = getRedisKeyCommands(connection);
+                List<byte[]> keys = allKeys(commands, getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
+                if (!keys.isEmpty()) {
+                    invalidate(keys, commands);
+                }
+            } finally {
+                asyncPool.release(connection);
             }
-            List<byte[]> keys = allKeys(commands, getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
-            if (!keys.isEmpty()) {
-                invalidate(keys, commands);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     private List<byte[]> allKeys(RedisKeyCommands<byte[], byte[]> commands, byte[] pattern) {
@@ -322,7 +169,7 @@ public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?,
     }
 
     @Override
-    public AsyncCache<StatefulConnection<?, ?>> async() {
+    public AsyncCache<AsyncPool<StatefulConnection<byte[], byte[]>>> async() {
         return asyncCache;
     }
 
@@ -334,27 +181,18 @@ public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?,
      * @param <T>           type of the argument
      * @return value
      */
+    @Override
     protected <T> Optional<T> getValue(Argument<T> requiredType, byte[] serializedKey) {
         try {
-            StatefulConnection<byte[], byte[]> conn = pool.borrowObject();
-            try {
-                RedisStringCommands<byte[], byte[]> stringCommands;
-                RedisKeyCommands<byte[], byte[]> keyCommands;
-                if (conn instanceof StatefulRedisConnection) {
-                    RedisCommands<byte[], byte[]> commands = ((StatefulRedisConnection<byte[], byte[]>) conn).sync();
-                    stringCommands = commands;
-                    keyCommands = commands;
-                } else if (conn instanceof StatefulRedisClusterConnection) {
-                    RedisAdvancedClusterCommands<byte[], byte[]> commands = ((StatefulRedisClusterConnection<byte[], byte[]>) conn).sync();
-                    stringCommands = commands;
-                    keyCommands = commands;
-                } else {
-                    throw new ConfigurationException("Invalid Redis connection");
+            return asyncPool.acquire().thenCompose(connection -> {
+                try {
+                    RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
+                    RedisKeyCommands<byte[], byte[]> keyCommands = getRedisKeyCommands(connection);
+                    return CompletableFuture.completedFuture(getValue(requiredType, serializedKey, stringCommands, keyCommands));
+                } finally {
+                    asyncPool.release(connection);
                 }
-                return getValue(requiredType, serializedKey, stringCommands, keyCommands);
-            } finally {
-                pool.returnObject(conn);
-            }
+            }).get();
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
@@ -379,42 +217,26 @@ public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?,
     }
 
     /**
-     * @return The default keys pattern.
-     */
-    protected String getKeysPattern() {
-        return getName() + ":*";
-    }
-
-    /**
      * Place the value in the cache.
      *
      * @param serializedKey serializedKey
      * @param value         value
      * @param <T>           type of the value
      */
+    @Override
     protected <T> void putValue(byte[] serializedKey, T value) {
         Optional<byte[]> serialized = valueSerializer.serialize(value);
 
         try {
-            StatefulConnection<byte[], byte[]> conn = pool.borrowObject();
-            try {
-                RedisStringCommands<byte[], byte[]> stringCommands;
-                RedisKeyCommands<byte[], byte[]> keyCommands;
-                if (conn instanceof StatefulRedisConnection) {
-                    RedisCommands<byte[], byte[]> commands = ((StatefulRedisConnection<byte[], byte[]>) conn).sync();
-                    stringCommands = commands;
-                    keyCommands = commands;
-                } else if (conn instanceof StatefulRedisClusterConnection) {
-                    RedisAdvancedClusterCommands<byte[], byte[]> commands = ((StatefulRedisClusterConnection<byte[], byte[]>) conn).sync();
-                    stringCommands = commands;
-                    keyCommands = commands;
-                } else {
-                    throw new ConfigurationException("Invalid Redis connection");
+            asyncPool.acquire().thenAccept(connection -> {
+                try {
+                    RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
+                    RedisKeyCommands<byte[], byte[]> keyCommands = getRedisKeyCommands(connection);
+                    putValue(serializedKey, serialized, stringCommands, keyCommands);
+                } finally {
+                    asyncPool.release(connection);
                 }
-                putValue(serializedKey, serialized, stringCommands, keyCommands);
-            } finally {
-                pool.returnObject(conn);
-            }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -425,42 +247,24 @@ public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?,
                               RedisStringCommands<byte[], byte[]> stringCommands,
                               RedisKeyCommands<byte[], byte[]> keyCommands
     ) {
-        if (value.isPresent()) {
-            byte[] bytes = value.get();
-            if (expireAfterWritePolicy != null) {
-                stringCommands.psetex(serializedKey, expireAfterWritePolicy.getExpirationAfterWrite(value), bytes);
-            } else {
-                stringCommands.set(serializedKey, bytes);
-            }
-        } else {
-            keyCommands.del(serializedKey);
-        }
-    }
-
-    /**
-     * Serialize the key.
-     *
-     * @param key The key
-     * @return bytes of the object
-     */
-    protected byte[] serializeKey(Object key) {
-        return keySerializer.serialize(key).orElseThrow(() -> new IllegalArgumentException("Key cannot be null"));
-    }
-
-    private DefaultStringKeySerializer newDefaultKeySerializer(RedisCacheConfiguration redisCacheConfiguration, ConversionService<?> conversionService) {
-        return new DefaultStringKeySerializer(redisCacheConfiguration.getCacheName(), redisCacheConfiguration.getCharset(), conversionService);
+        putValue(serializedKey,
+                value,
+                expireAfterWritePolicy,
+                stringCommands,
+                keyCommands,
+                value);
     }
 
     @PreDestroy
     @Override
     public void close() {
-        connection.close();
+        asyncPool.close();
     }
 
     /**
      * Redis Async cache implementation.
      */
-    protected class RedisAsyncCache implements AsyncCache<StatefulConnection<?, ?>> {
+    protected class RedisAsyncCache implements AsyncCache<AsyncPool<StatefulConnection<byte[], byte[]>>> {
 
         @Override
         public <T> CompletableFuture<Optional<T>> get(Object key, Argument<T> requiredType) {
@@ -477,26 +281,6 @@ public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?,
                     asyncPool.release(connection);
                 });
             });
-        }
-
-        private RedisStringAsyncCommands<byte[], byte[]> getRedisStringAsyncCommands(StatefulConnection<byte[], byte[]> connection) {
-            RedisStringAsyncCommands<byte[], byte[]> commands;
-            if (connection instanceof StatefulRedisConnection) {
-                commands = ((StatefulRedisConnection<byte[], byte[]>) connection).async();
-            } else if (connection instanceof StatefulRedisClusterConnection) {
-                commands = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).async();
-            } else throw new ConfigurationException("Invalid Redis connection");
-            return commands;
-        }
-
-        private RedisKeyAsyncCommands<byte[], byte[]> getRedisKeyAsyncCommands(StatefulConnection<byte[], byte[]> connection) {
-            RedisKeyAsyncCommands<byte[], byte[]> commands;
-            if (connection instanceof StatefulRedisConnection) {
-                commands = ((StatefulRedisConnection<byte[], byte[]>) connection).async();
-            } else if (connection instanceof StatefulRedisClusterConnection) {
-                commands = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).async();
-            } else throw new ConfigurationException("Invalid Redis connection");
-            return commands;
         }
 
         @Override
@@ -582,8 +366,8 @@ public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?,
         }
 
         @Override
-        public StatefulConnection<?, ?> getNativeCache() {
-            return RedisConnectionPoolCache.this.getNativeCache();
+        public AsyncPool<StatefulConnection<byte[], byte[]>> getNativeCache() {
+            return asyncPool;
         }
 
         private <T> CompletionStage<Optional<T>> getWithExpire(Argument<T> requiredType, byte[] serializedKey, byte[] data) {
@@ -638,6 +422,5 @@ public class RedisConnectionPoolCache implements SyncCache<StatefulConnection<?,
         private Function<String, Boolean> isOK() {
             return "OK"::equals;
         }
-
     }
 }

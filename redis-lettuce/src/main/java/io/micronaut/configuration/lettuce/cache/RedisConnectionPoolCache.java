@@ -27,6 +27,7 @@ import io.lettuce.core.api.sync.RedisStringCommands;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
+import io.lettuce.core.codec.ByteArrayCodec;
 import io.lettuce.core.support.AsyncConnectionPoolSupport;
 import io.lettuce.core.support.AsyncPool;
 import io.lettuce.core.support.BoundedPoolConfig;
@@ -52,9 +53,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * An implementation of {@link SyncCache} for Lettuce / Redis.
+ * An implementation of {@link SyncCache} for Lettuce / Redis using connection pooling.
  *
- * @author Graeme Rocher
+ * @author Kovalov Illia
  * @since 1.0
  */
 @EachBean(RedisCacheConfiguration.class)
@@ -92,10 +93,10 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
         BoundedPoolConfig asyncConfig = BoundedPoolConfig.builder().minIdle(4).maxIdle(16).maxTotal(32).build();
         CompletionStage<AsyncPool<StatefulConnection<byte[], byte[]>>> asyncPoolStage = AsyncConnectionPoolSupport.createBoundedObjectPoolAsync((Supplier) () -> {
                     if (client instanceof RedisClusterClient) {
-                        return ((RedisClusterClient) client).connect();
+                        return CompletableFuture.completedFuture(((RedisClusterClient) client).connect(new ByteArrayCodec()));
                     }
                     if (client instanceof RedisClient) {
-                        return ((RedisClient) client).connect();
+                        return CompletableFuture.completedFuture(((RedisClient) client).connect(new ByteArrayCodec()));
                     }
                     throw new ConfigurationException("Invalid Redis connection");
                 },

@@ -20,7 +20,7 @@ import java.util.Optional;
 /**
  * Allows configuration of caches stored in Redis.
  *
- * @author Graeme Rocher, Alex Katlein
+ * @author Graeme Rocher, Alex Katlein, Illia Kovalov
  * @since 1.3
  */
 public abstract class AbstractRedisConnectionPoolConfiguration {

@@ -32,7 +32,7 @@ import java.util.Optional;
 /**
  * Internal utility methods for configuration.
  *
- * @author Graeme Rocher
+ * @author Graeme Rocher, Illia Kovalov
  * @since 1.0
  */
 @Internal

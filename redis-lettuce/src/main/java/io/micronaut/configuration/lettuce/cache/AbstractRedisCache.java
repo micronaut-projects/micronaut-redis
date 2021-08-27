@@ -22,6 +22,10 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+/**
+ * An abstract class implementing SyncCache for the redis.
+ * Author: Graeme Rocher, Kovalov Illia
+ */
 public abstract class AbstractRedisCache<T> implements SyncCache<T>, AutoCloseable {
     protected final ObjectSerializer keySerializer;
     protected final ObjectSerializer valueSerializer;

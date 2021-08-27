@@ -7,6 +7,13 @@ import io.micronaut.runtime.ApplicationConfiguration;
 
 @ConfigurationProperties(RedisSetting.REDIS_POOL)
 @Requires(classes = SyncCache.class)
+
+/**
+ * Allows configuration of redis connection pool.
+ *
+ * @author Graeme Rocher, Illia Kovalov
+ * @since 1.3
+ */
 public class DefaultRedisConnectionPoolConfiguration extends AbstractRedisConnectionPoolConfiguration {
     /**
      * Constructor.

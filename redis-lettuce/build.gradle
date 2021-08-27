@@ -12,7 +12,6 @@ dependencies {
     compileOnly "io.micronaut:micronaut-management"
     compileOnly "io.micronaut.micrometer:micronaut-micrometer-core:$micronautMicrometerVersion"
     compileOnly "com.github.kstyrc:embedded-redis:0.6"
-    compileOnly "org.apache.commons:commons-pool2:2.4.3"
 
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
 

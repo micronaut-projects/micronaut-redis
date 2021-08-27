@@ -15,26 +15,18 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
-import io.lettuce.core.AbstractRedisClient;
-import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.async.RedisKeyAsyncCommands;
 import io.lettuce.core.api.async.RedisStringAsyncCommands;
 import io.lettuce.core.api.sync.RedisKeyCommands;
 import io.lettuce.core.api.sync.RedisStringCommands;
-import io.lettuce.core.cluster.RedisClusterClient;
-import io.lettuce.core.codec.ByteArrayCodec;
-import io.lettuce.core.support.AsyncConnectionPoolSupport;
 import io.lettuce.core.support.AsyncPool;
-import io.lettuce.core.support.BoundedPoolConfig;
 import io.micronaut.cache.AsyncCache;
 import io.micronaut.cache.SyncCache;
-import io.micronaut.configuration.lettuce.RedisConnectionUtil;
 import io.micronaut.configuration.lettuce.RedisSetting;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.type.Argument;
 
@@ -65,40 +57,21 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
      *
      * @param defaultRedisCacheConfiguration The default configuration
      * @param redisCacheConfiguration        The configuration
-     * @param conversionService              The conversion service
-     * @param beanLocator                    The bean locator used to discover the redis connection from the configuration
+     * @param conversionService             The conversion service
+     * @param beanLocator                   The bean locator used to discover the redis connection from the configuration
+     * @param asyncPool                     Redis async pool
      */
     @SuppressWarnings("unchecked")
     public RedisConnectionPoolCache(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
             RedisCacheConfiguration redisCacheConfiguration,
             ConversionService<?> conversionService,
-            BeanLocator beanLocator
+            BeanLocator beanLocator,
+            AsyncPool<StatefulConnection<byte[], byte[]>> asyncPool
     ) {
         super(defaultRedisCacheConfiguration, redisCacheConfiguration, conversionService, beanLocator);
-
-        Optional<String> server = Optional.ofNullable(
-                redisCacheConfiguration
-                        .getServer()
-                        .orElse(defaultRedisCacheConfiguration.getServer().orElse(null))
-        );
-
-        StatefulConnection<Byte[], Byte[]> connection = RedisConnectionUtil.findRedisConnection(beanLocator, server, "No Redis server configured to allow caching");
         this.asyncCache = new RedisAsyncCache();
-        AbstractRedisClient client = RedisConnectionUtil.findClient(beanLocator, server, "No Redis server configured to allow caching");
-        BoundedPoolConfig asyncConfig = BoundedPoolConfig.builder().minIdle(4).maxIdle(16).maxTotal(32).build();
-        CompletionStage<AsyncPool<StatefulConnection<byte[], byte[]>>> asyncPoolStage = AsyncConnectionPoolSupport.createBoundedObjectPoolAsync((Supplier) () -> {
-                    if (client instanceof RedisClusterClient) {
-                        return CompletableFuture.completedFuture(((RedisClusterClient) client).connect(new ByteArrayCodec()));
-                    }
-                    if (client instanceof RedisClient) {
-                        return CompletableFuture.completedFuture(((RedisClient) client).connect(new ByteArrayCodec()));
-                    }
-                    throw new ConfigurationException("Invalid Redis connection");
-                },
-                asyncConfig
-        );
-        asyncPool = asyncPoolStage.toCompletableFuture().join();
+        this.asyncPool = asyncPool;
     }
 
     @Override
@@ -412,7 +385,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                 RedisStringAsyncCommands<byte[], byte[]> commands = getRedisStringAsyncCommands(connection);
                 if (expireAfterWritePolicy != null) {
                     return commands.psetex(serializedKey, expireAfterWritePolicy.getExpirationAfterWrite(value), serialized)
-                            .whenComplete((result, ex) -> { asyncPool.release(connection); })
+                            .whenComplete((result, ex) -> {
+                                asyncPool.release(connection);
+                            })
                             .thenApply(isOK());
                 } else {
                     return commands.set(serializedKey, serialized)

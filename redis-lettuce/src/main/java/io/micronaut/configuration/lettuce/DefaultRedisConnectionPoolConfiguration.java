@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce;
 
+import io.lettuce.core.support.BoundedPoolConfig;
 import io.micronaut.cache.SyncCache;
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Primary;
@@ -37,5 +38,23 @@ public class DefaultRedisConnectionPoolConfiguration extends AbstractRedisConnec
      * @param applicationConfiguration applicationConfiguration
      */
     public DefaultRedisConnectionPoolConfiguration(ApplicationConfiguration applicationConfiguration) {
+    }
+
+    /**
+     *
+     * @return BoundedPoolConfig
+     */
+    public BoundedPoolConfig getBoundedPoolConfig() {
+        BoundedPoolConfig.Builder builder = BoundedPoolConfig.builder();
+        if (this.getMaxIdle().isPresent()) {
+            builder.maxIdle(this.getMaxIdle().get());
+        }
+        if (this.getMinIdle().isPresent()) {
+            builder.minIdle(this.getMinIdle().get());
+        }
+        if (this.getMaxTotal().isPresent()) {
+            builder.maxTotal(this.getMaxTotal().get());
+        }
+        return builder.build();
     }
 }

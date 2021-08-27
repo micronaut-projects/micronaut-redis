@@ -40,6 +40,7 @@ import java.util.function.Supplier;
 /**
  * An abstract class implementing SyncCache for the redis.
  * Author: Graeme Rocher, Kovalov Illia
+ * @param <T> – The native cache implementation
  */
 public abstract class AbstractRedisCache<T> implements SyncCache<T>, AutoCloseable {
     protected final ObjectSerializer keySerializer;
@@ -117,7 +118,16 @@ public abstract class AbstractRedisCache<T> implements SyncCache<T>, AutoCloseab
         }
     }
 
-    protected <T> T get(byte[] key, Argument<T> requiredType, Supplier<T> supplier, RedisStringCommands<byte[], byte[]> commands){
+    /**
+     *
+     * @param key
+     * @param requiredType
+     * @param supplier
+     * @param commands
+     * @param <T>
+     * @return value from the cache
+     */
+    protected <T> T get(byte[] key, Argument<T> requiredType, Supplier<T> supplier, RedisStringCommands<byte[], byte[]> commands) {
         byte[] data = commands.get(key);
         if (data != null) {
             Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
@@ -131,50 +141,101 @@ public abstract class AbstractRedisCache<T> implements SyncCache<T>, AutoCloseab
         return value;
     }
 
+    /**
+     *
+     * @param connection
+     * @return RedisStringAsyncCommands
+     */
     protected RedisStringAsyncCommands<byte[], byte[]> getRedisStringAsyncCommands(StatefulConnection<byte[], byte[]> connection) {
         RedisStringAsyncCommands<byte[], byte[]> commands;
         if (connection instanceof StatefulRedisConnection) {
             commands = ((StatefulRedisConnection<byte[], byte[]>) connection).async();
         } else if (connection instanceof StatefulRedisClusterConnection) {
             commands = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).async();
-        } else throw new ConfigurationException("Invalid Redis connection");
+        } else {
+            throw new ConfigurationException("Invalid Redis connection");
+        }
         return commands;
     }
 
+    /**
+     *
+     * @param connection
+     * @return RedisKeyAsyncCommands
+     */
     protected RedisKeyAsyncCommands<byte[], byte[]> getRedisKeyAsyncCommands(StatefulConnection<byte[], byte[]> connection) {
         RedisKeyAsyncCommands<byte[], byte[]> commands;
         if (connection instanceof StatefulRedisConnection) {
             commands = ((StatefulRedisConnection<byte[], byte[]>) connection).async();
         } else if (connection instanceof StatefulRedisClusterConnection) {
             commands = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).async();
-        } else throw new ConfigurationException("Invalid Redis connection");
+        } else {
+            throw new ConfigurationException("Invalid Redis connection");
+        }
         return commands;
     }
 
+    /**
+     *
+     * @param connection
+     * @return RedisStringCommands
+     */
     protected RedisStringCommands<byte[], byte[]> getRedisStringCommands(StatefulConnection<byte[], byte[]> connection) {
         RedisStringCommands<byte[], byte[]> commands;
         if (connection instanceof StatefulRedisConnection) {
             commands = ((StatefulRedisConnection<byte[], byte[]>) connection).sync();
         } else if (connection instanceof StatefulRedisClusterConnection) {
             commands = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).sync();
-        } else throw new ConfigurationException("Invalid Redis connection");
+        } else {
+            throw new ConfigurationException("Invalid Redis connection");
+        }
         return commands;
     }
 
+    /**
+     *
+     * @param connection
+     * @return RedisKeyCommands
+     */
     protected RedisKeyCommands<byte[], byte[]> getRedisKeyCommands(StatefulConnection<byte[], byte[]> connection) {
         RedisKeyCommands<byte[], byte[]> commands;
         if (connection instanceof StatefulRedisConnection) {
             commands = ((StatefulRedisConnection<byte[], byte[]>) connection).sync();
         } else if (connection instanceof StatefulRedisClusterConnection) {
             commands = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).sync();
-        } else throw new ConfigurationException("Invalid Redis connection");
+        } else {
+            throw new ConfigurationException("Invalid Redis connection");
+        }
         return commands;
     }
 
+    /**
+     *
+     * @param requiredType
+     * @param serializedKey
+     * @param <T>
+     * @return Optional<T>
+     */
     protected abstract <T> Optional<T> getValue(Argument<T> requiredType, byte[] serializedKey);
 
+    /**
+     *
+     * @param serializedKey
+     * @param value
+     * @param <T>
+     */
     protected abstract <T> void putValue(byte[] serializedKey, T value);
 
+    /**
+     *
+     * @param serializedKey
+     * @param serialized
+     * @param policy
+     * @param redisStringCommands
+     * @param redisKeyCommands
+     * @param value
+     * @param <T>
+     */
     protected <T> void putValue(byte[] serializedKey, Optional<byte[]> serialized, ExpirationAfterWritePolicy policy, RedisStringCommands<byte[], byte[]> redisStringCommands, RedisKeyCommands<byte[], byte[]> redisKeyCommands, T value) {
         if (serialized.isPresent()) {
             byte[] bytes = serialized.get();

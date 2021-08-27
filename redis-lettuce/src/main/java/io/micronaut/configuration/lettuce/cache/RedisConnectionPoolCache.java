@@ -18,15 +18,11 @@ package io.micronaut.configuration.lettuce.cache;
 import io.lettuce.core.AbstractRedisClient;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulConnection;
-import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisKeyAsyncCommands;
 import io.lettuce.core.api.async.RedisStringAsyncCommands;
-import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.api.sync.RedisKeyCommands;
 import io.lettuce.core.api.sync.RedisStringCommands;
 import io.lettuce.core.cluster.RedisClusterClient;
-import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
-import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import io.lettuce.core.codec.ByteArrayCodec;
 import io.lettuce.core.support.AsyncConnectionPoolSupport;
 import io.lettuce.core.support.AsyncPool;
@@ -348,7 +344,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                RedisKeyAsyncCommands<byte[], byte[]> commands = getRedisKeyAsyncCommands(connection);
                return commands.keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()))
                         .thenCompose(keys -> deleteByKeys(keys.toArray(new byte[keys.size()][])))
-                        .whenComplete((data, ex) -> { asyncPool.release(connection); });
+                        .whenComplete((data, ex) -> {
+                            asyncPool.release(connection);
+                        });
             });
         }
 
@@ -357,7 +355,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                 RedisKeyAsyncCommands<byte[], byte[]> commands = getRedisKeyAsyncCommands(connection);
                 return commands.del(serializedKey)
                         .thenApply(keysDeleted -> keysDeleted > 0)
-                        .whenComplete((data, ex) -> { asyncPool.release(connection); });
+                        .whenComplete((data, ex) -> {
+                            asyncPool.release(connection);
+                        });
             });
         }
 
@@ -378,7 +378,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                     RedisKeyAsyncCommands<byte[], byte[]> commands = getRedisKeyAsyncCommands(connection);
                     return commands.expire(serializedKey, expireAfterAccess)
                             .thenApply(ignore -> deserialized)
-                            .whenComplete((result, ex) -> { asyncPool.release(connection); });
+                            .whenComplete((result, ex) -> {
+                                asyncPool.release(connection);
+                            });
                 });
             }
             return CompletableFuture.completedFuture(deserialized);
@@ -414,7 +416,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                             .thenApply(isOK());
                 } else {
                     return commands.set(serializedKey, serialized)
-                            .whenComplete((result, ex) -> { asyncPool.release(connection); })
+                            .whenComplete((result, ex) -> {
+                                asyncPool.release(connection);
+                            })
                             .thenApply(isOK());
                 }
             });

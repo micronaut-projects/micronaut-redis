@@ -43,7 +43,7 @@ import java.util.concurrent.ExecutionException
  */
 class RedisPoolCacheSpec extends Specification {
 
-    ApplicationContext createApplicationContext() {
+    static ApplicationContext createApplicationContext() {
         ApplicationContext.run(
                 'redis.type': 'embedded',
                 'redis.caches.test.enabled': 'true',
@@ -137,7 +137,8 @@ class RedisPoolCacheSpec extends Specification {
                 new DefaultRedisCacheConfiguration(appConfig),
                 cacheConfig,
                 new DefaultConversionService(),
-                applicationContext.getBean(BeanLocator.class)
+                applicationContext.getBean(BeanLocator.class),
+                applicationContext.getBean(AsyncPool.class)
         )
 
         then:
@@ -161,7 +162,8 @@ class RedisPoolCacheSpec extends Specification {
                 new DefaultRedisCacheConfiguration(appConfig),
                 cacheConfig,
                 new DefaultConversionService(),
-                applicationContext.getBean(BeanLocator.class)
+                applicationContext.getBean(BeanLocator.class),
+                applicationContext.getBean(AsyncPool.class)
         )
 
         then:
@@ -185,7 +187,8 @@ class RedisPoolCacheSpec extends Specification {
                 new DefaultRedisCacheConfiguration(appConfig),
                 cacheConfig,
                 new DefaultConversionService(),
-                applicationContext.getBean(BeanLocator.class)
+                applicationContext.getBean(BeanLocator.class),
+                applicationContext.getBean(AsyncPool.class)
         )
 
         then:

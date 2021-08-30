@@ -22,6 +22,7 @@ import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.codec.ByteArrayCodec;
 import io.lettuce.core.support.AsyncConnectionPoolSupport;
 import io.lettuce.core.support.AsyncPool;
+import io.lettuce.core.support.BoundedAsyncPool;
 import io.lettuce.core.support.BoundedPoolConfig;
 import io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
@@ -57,10 +58,10 @@ public final class RedisAsyncConnectionPoolFactory {
 
     @Singleton
     public AsyncPool<StatefulConnection<byte[], byte[]>> getAsyncPool() {
-        Optional<String> server = Optional.ofNullable(defaultRedisCacheConfiguration.getServer().orElse(null));
+        Optional<String> server = defaultRedisCacheConfiguration.getServer();
         AbstractRedisClient client = RedisConnectionUtil.findClient(this.beanLocator, server, "No Redis server configured to allow caching");
         BoundedPoolConfig asyncConfig = defaultRedisConnectionPoolConfiguration.getBoundedPoolConfig();
-        CompletionStage<AsyncPool<StatefulConnection<byte[], byte[]>>> stage =  AsyncConnectionPoolSupport.createBoundedObjectPoolAsync((Supplier) () -> {
+        CompletionStage<BoundedAsyncPool<StatefulConnection<byte[], byte[]>>> stage =  AsyncConnectionPoolSupport.createBoundedObjectPoolAsync(() -> {
                     if (client instanceof RedisClusterClient) {
                         return CompletableFuture.completedFuture(((RedisClusterClient) client).connect(new ByteArrayCodec()));
                     }

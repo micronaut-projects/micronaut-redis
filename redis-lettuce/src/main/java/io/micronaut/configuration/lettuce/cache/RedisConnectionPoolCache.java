@@ -24,11 +24,15 @@ import io.lettuce.core.support.AsyncPool;
 import io.micronaut.cache.AsyncCache;
 import io.micronaut.cache.SyncCache;
 import io.micronaut.configuration.lettuce.RedisSetting;
+import io.micronaut.configuration.lettuce.session.RedisSessionStore;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.type.Argument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PreDestroy;
 import java.util.Collections;
@@ -51,6 +55,7 @@ import java.util.function.Supplier;
 public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<StatefulConnection<byte[], byte[]>>> {
     private final RedisAsyncCache asyncCache;
     private final AsyncPool<StatefulConnection<byte[], byte[]>> asyncPool;
+    private static final Logger LOG  = LoggerFactory.getLogger(RedisConnectionPoolCache.class);
 
     /**
      * Creates a new redis cache for the given arguments.
@@ -85,21 +90,16 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
     }
 
     @Override
-    public <T> T get(Object key, Argument<T> requiredType, Supplier<T> supplier) {
+    public <T> T get(@NonNull Object key, @NonNull Argument<T> requiredType, @NonNull Supplier<T> supplier) {
         byte[] serializedKey = serializeKey(key);
-        try {
-            return asyncPool.acquire().thenCompose(connection -> {
-                try {
-                    RedisStringCommands<byte[], byte[]> commands = getRedisStringCommands(connection);
-                    return CompletableFuture.completedFuture(get(serializedKey, requiredType, supplier, commands));
-                } finally {
-                    asyncPool.release(connection);
-                }
-            }).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return asyncPool.acquire().thenCompose(connection -> {
+            try {
+                RedisStringCommands<byte[], byte[]> commands = getRedisStringCommands(connection);
+                return CompletableFuture.completedFuture(get(serializedKey, requiredType, supplier, commands));
+            } finally {
+                asyncPool.release(connection);
+            }
+        }).join();
     }
 
     @Override
@@ -131,7 +131,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
             } finally {
                 asyncPool.release(connection);
             }
-        });
+        }).join();
     }
 
     private List<byte[]> allKeys(RedisKeyCommands<byte[], byte[]> commands, byte[] pattern) {
@@ -153,20 +153,15 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
      */
     @Override
     protected <T> Optional<T> getValue(Argument<T> requiredType, byte[] serializedKey) {
-        try {
-            return asyncPool.acquire().thenCompose(connection -> {
-                try {
-                    RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
-                    RedisKeyCommands<byte[], byte[]> keyCommands = getRedisKeyCommands(connection);
-                    return CompletableFuture.completedFuture(getValue(requiredType, serializedKey, stringCommands, keyCommands));
-                } finally {
-                    asyncPool.release(connection);
-                }
-            }).get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Optional.empty();
-        }
+        return asyncPool.acquire().thenCompose(connection -> {
+            try {
+                RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
+                RedisKeyCommands<byte[], byte[]> keyCommands = getRedisKeyCommands(connection);
+                return CompletableFuture.completedFuture(getValue(requiredType, serializedKey, stringCommands, keyCommands));
+            } finally {
+                asyncPool.release(connection);
+            }
+        }).join();
     }
 
     private <T> Optional<T> getValue(
@@ -196,20 +191,15 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
     @Override
     protected <T> void putValue(byte[] serializedKey, T value) {
         Optional<byte[]> serialized = valueSerializer.serialize(value);
-
-        try {
-            asyncPool.acquire().thenAccept(connection -> {
-                try {
-                    RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
-                    RedisKeyCommands<byte[], byte[]> keyCommands = getRedisKeyCommands(connection);
-                    putValue(serializedKey, serialized, stringCommands, keyCommands);
-                } finally {
-                    asyncPool.release(connection);
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        asyncPool.acquire().thenAccept(connection -> {
+            try {
+                RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
+                RedisKeyCommands<byte[], byte[]> keyCommands = getRedisKeyCommands(connection);
+                putValue(serializedKey, serialized, stringCommands, keyCommands);
+            } finally {
+                asyncPool.release(connection);
+            }
+        }).join();
     }
 
     private <T> void putValue(byte[] serializedKey,
@@ -249,6 +239,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                     return CompletableFuture.completedFuture(Optional.empty());
                 }).whenComplete((data, ex) -> {
                     asyncPool.release(connection);
+                    if (ex != null) {
+                        LOG.error(ex.getMessage(), ex);
+                    }
                 });
             });
         }
@@ -272,6 +265,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                     return putFromSupplier(serializedKey, supplier);
                 }).whenComplete((data, ex) -> {
                     asyncPool.release(connection);
+                    if (ex != null) {
+                        LOG.error(ex.getMessage(), ex);
+                    }
                 });
             });
         }
@@ -292,6 +288,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                     return CompletableFuture.completedFuture(Optional.empty());
                 }).whenComplete((data, ex) -> {
                     asyncPool.release(connection);
+                    if (ex != null) {
+                        LOG.error(ex.getMessage(), ex);
+                    }
                 });
             });
         }
@@ -353,6 +352,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                             .thenApply(ignore -> deserialized)
                             .whenComplete((result, ex) -> {
                                 asyncPool.release(connection);
+                                if (ex != null) {
+                                    LOG.error(ex.getMessage(), ex);
+                                }
                             });
                 });
             }
@@ -387,12 +389,18 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                     return commands.psetex(serializedKey, expireAfterWritePolicy.getExpirationAfterWrite(value), serialized)
                             .whenComplete((result, ex) -> {
                                 asyncPool.release(connection);
+                                if (ex != null) {
+                                    LOG.error(ex.getMessage(), ex);
+                                }
                             })
                             .thenApply(isOK());
                 } else {
                     return commands.set(serializedKey, serialized)
                             .whenComplete((result, ex) -> {
                                 asyncPool.release(connection);
+                                if (ex != null) {
+                                    LOG.error(ex.getMessage(), ex);
+                                }
                             })
                             .thenApply(isOK());
                 }

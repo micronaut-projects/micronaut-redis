@@ -316,6 +316,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                         .thenCompose(keys -> deleteByKeys(keys.toArray(new byte[keys.size()][])))
                         .whenComplete((data, ex) -> {
                             asyncPool.release(connection);
+                            if (ex != null) {
+                                LOG.error(ex.getMessage(), ex);
+                            }
                         });
             });
         }
@@ -327,6 +330,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                         .thenApply(keysDeleted -> keysDeleted > 0)
                         .whenComplete((data, ex) -> {
                             asyncPool.release(connection);
+                            if (ex != null) {
+                                LOG.error(ex.getMessage(), ex);
+                            }
                         });
             });
         }

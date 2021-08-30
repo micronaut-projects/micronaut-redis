@@ -24,7 +24,6 @@ import io.lettuce.core.support.AsyncPool;
 import io.micronaut.cache.AsyncCache;
 import io.micronaut.cache.SyncCache;
 import io.micronaut.configuration.lettuce.RedisSetting;
-import io.micronaut.configuration.lettuce.session.RedisSessionStore;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Requires;
@@ -40,7 +39,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -53,9 +51,9 @@ import java.util.function.Supplier;
 @EachBean(RedisCacheConfiguration.class)
 @Requires(classes = SyncCache.class, property = RedisSetting.REDIS_POOL)
 public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<StatefulConnection<byte[], byte[]>>> {
+    private static final Logger LOG  = LoggerFactory.getLogger(RedisConnectionPoolCache.class);
     private final RedisAsyncCache asyncCache;
     private final AsyncPool<StatefulConnection<byte[], byte[]>> asyncPool;
-    private static final Logger LOG  = LoggerFactory.getLogger(RedisConnectionPoolCache.class);
 
     /**
      * Creates a new redis cache for the given arguments.

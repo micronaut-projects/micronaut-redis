@@ -37,6 +37,7 @@ import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.exceptions.ConfigurationException;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.convert.exceptions.ConversionErrorException;
 import io.micronaut.core.serialize.JdkSerializer;
@@ -44,19 +45,19 @@ import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.type.Argument;
 import io.micronaut.core.util.CollectionUtils;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
-import javax.annotation.PreDestroy;
-import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import javax.annotation.PreDestroy;
 
 /**
  * An implementation of {@link SyncCache} for Lettuce / Redis.
@@ -215,37 +216,59 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
         return value;
     }
 
-    public <K> Map<K, Object> get(Collection<K> keys) {
-      return get(keys, Argument.of(Object.class));
+    /**
+     * Resolve the values for the given keys.
+     *
+     * @param keys The cache keys
+     * @param <K>  The type of the unserialized key
+     * @return An ordered map containing all the requested keys in the original order and the
+     * resolved value (null if not found)
+     */
+    @NonNull
+    public <K> Map<K, Object> get(@NonNull Collection<K> keys) {
+        return get(keys, Argument.of(Object.class));
     }
 
-    public <K, T> Map<K, T> get(Collection<K> keys, Argument<T> requiredType) {
+    /**
+     * Resolve the values for the given keys and convert them to the required type.
+     *
+     * @param keys         The cache keys
+     * @param requiredType The required type
+     * @param <K>          The type of the unserialized key
+     * @param <T>          The concrete type
+     * @return An ordered map containing all the requested keys in the original order and the
+     * resolved value (null if not found)
+     * @throws ConversionErrorException If any of the resolved values can't be converted to the
+     *                                  required type
+     */
+    @NonNull
+    public <K, T> Map<K, T> get(@NonNull Collection<K> keys, @NonNull Argument<T> requiredType) {
         Map<byte[], K> serializedKeyMap = new HashMap<>(keys.size());
         byte[][] serializedKeys = new byte[keys.size()][];
         int i = 0;
-        for (K key: keys) {
+        for (K key : keys) {
             final byte[] serializedKey = this.serializeKey(key);
             serializedKeys[i++] = serializedKey;
             serializedKeyMap.put(serializedKey, key);
-        };
+        }
 
         List<KeyValue<byte[], byte[]>> data = redisStringCommands.mget(serializedKeys);
         final Map<K, T> results;
         if (data != null) {
             results = new LinkedHashMap<>(data.size());
-            for (KeyValue<byte[], byte[]> result: data) {
+            for (KeyValue<byte[], byte[]> result : data) {
                 K originalKey = serializedKeyMap.get(result.getKey());
                 if (result.hasValue()) {
-                  final T deserialized = valueSerializer.deserialize(result.getValue(), requiredType)
-                      .orElseThrow(() ->
-                          new ConversionErrorException(requiredType,
-                              new IllegalArgumentException("Cannot convert cached value for [" + originalKey + "] to target type: " + requiredType.getType() + ". Considering defining a TypeConverter bean to handle this case.")));
-                  results.put(originalKey, deserialized);
-                  if (expireAfterAccess != null) {
-                      redisKeyCommands.pexpire(result.getKey(), expireAfterAccess);
-                  }
+                    final T deserialized = valueSerializer.deserialize(result.getValue(), requiredType)
+                        .orElseThrow(() ->
+                            new ConversionErrorException(requiredType,
+                                new IllegalArgumentException("Cannot convert cached value for [" + originalKey + "] to target type: " + requiredType.getType() + ". Considering defining a TypeConverter bean to handle this case.")));
+                    results.put(originalKey, deserialized);
+                    if (expireAfterAccess != null) {
+                        redisKeyCommands.pexpire(result.getKey(), expireAfterAccess);
+                    }
                 } else {
-                  results.put(originalKey, null);
+                    results.put(originalKey, null);
                 }
             }
         } else {
@@ -278,11 +301,22 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
         putValue(serializedKey, value);
     }
 
-    public void put(Map<?, ?> values) {
+    /**
+     * Cache the specified values in bulk.
+     * <p>
+     * Note that if expireAfterWritePolicy is set, the values are persisted to the cache atomically,
+     * but the TTL is set afterwards. This means there is a race condition where something else
+     * could have set the TTL after the save and before the expiration is updated, resulting in the
+     * TTL being overwritten. In practice this shouldn't be too much of a problem since the two TTLs
+     * are likely to be nearly identical. There is no conflict with the value itself, only the TTL.
+     *
+     * @param values the map containing the keys and values to be cached
+     */
+    public void put(@NonNull Map<?, ?> values) {
         if (CollectionUtils.isNotEmpty(values)) {
             Map<byte[], byte[]> toSave = new HashMap<>(values.size());
             Map<byte[], Long> toExpire = expireAfterWritePolicy != null ? new HashMap<>(values.size()) : null;
-            List<byte[]> toDelete = new ArrayList<>();
+            List<byte[]> toDelete = new ArrayList<>(values.size());
             values.forEach((key, value) -> {
                 byte[] serializedKey = serializeKey(key);
                 Optional<byte[]> serialized = valueSerializer.serialize(value);
@@ -314,7 +348,12 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
         redisKeyCommands.del(serializedKey);
     }
 
-    public void invalidate(Collection<?> keys) {
+    /**
+     * Invalidate the values for the given keys.
+     *
+     * @param keys The keys to invalidate
+     */
+    public void invalidate(@NonNull Collection<?> keys) {
         byte[][] serializedKeys = keys.stream().map(this::serializeKey).toArray(byte[][]::new);
         redisKeyCommands.del(serializedKeys);
     }

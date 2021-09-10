@@ -225,6 +225,54 @@ class RedisCacheSpec extends Specification {
             applicationContext.stop()
     }
 
+    void "test read/write objects in bulk from redis sync cache"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext()
+
+        when:
+        RedisCache redisCache = applicationContext.getBean(RedisCache, Qualifiers.byName("test"))
+
+        then:
+        redisCache != null
+        redisCache.getNativeCache() instanceof StatefulRedisConnection
+
+        when:
+        redisCache.put("deleteme", "should get deleted")
+        redisCache.put([
+            "test": new Foo(name: "test"),
+            "two": new Foo(name: "two"),
+            "test-list": [new Foo(name: "abc")] as List<Foo>,
+            "three": 3,
+            "four": "four",
+            "deleteme": null,
+        ])
+        Map<String, Object> result = redisCache.get(["test", "two", "three", "four", "test-list", "deleteme"])
+
+        then:
+        result.get("test").name == "test"
+        result.get("two").name == "two"
+        result.get("three") == 3
+        result.get("four") == "four"
+        result.get("test-list").get(0) instanceof Foo
+        result.get("test-list").get(0).name == "abc"
+        result.get("deleteme") == null
+        !redisCache.get("deleteme", Object).isPresent()
+
+        when:
+        redisCache.invalidate(["test", "two", "three", "four"])
+
+        then:
+        !redisCache.get("test", Foo).isPresent()
+        !redisCache.get("two", Foo).isPresent()
+        !redisCache.get("three", Integer).isPresent()
+        !redisCache.get("four", String).isPresent()
+        redisCache.get("test-list", List<Foo>).isPresent()
+        !redisCache.get("deleteme", Object).isPresent()
+
+        cleanup:
+        applicationContext.stop()
+    }
+
     static class Foo implements Serializable {
         String name
     }

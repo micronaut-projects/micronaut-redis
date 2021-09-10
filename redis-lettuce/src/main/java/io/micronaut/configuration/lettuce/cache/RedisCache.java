@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
+import io.lettuce.core.KeyValue;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
@@ -40,7 +41,13 @@ import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.serialize.JdkSerializer;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.type.Argument;
+import io.micronaut.core.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.List;
@@ -207,6 +214,25 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
         return value;
     }
 
+    public <K, T> Map<K, T> get(Collection<K> keys, Argument<T> requiredType) {
+        Map<byte[], K> serializedKeyMap = keys.stream()
+            .collect(Collectors.toMap(this::serializeKey, Function.identity()));
+        byte[][] serializedKeys = serializedKeyMap.keySet().toArray(new byte[serializedKeyMap.size()][]);
+
+        List<KeyValue<byte[], byte[]>> data = redisStringCommands.mget(serializedKeys);
+        Map<K, T> results = new HashMap<>();
+
+        if (data != null) {
+            for (KeyValue<byte[], byte[]> result: data) {
+                T deserialized = valueSerializer.deserialize(result.getValue(), requiredType).orElse(null);
+                K originalKey = serializedKeyMap.get(result.getKey());
+                results.put(originalKey, deserialized);
+            }
+        }
+
+        return results;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> Optional<T> putIfAbsent(Object key, T value) {
@@ -230,10 +256,42 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
         putValue(serializedKey, value);
     }
 
+    public void put(Map<?, ?> values) {
+        if (CollectionUtils.isNotEmpty(values)) {
+            if (expireAfterWritePolicy != null) {
+                values.forEach(this::put);
+            } else {
+                Map<byte[], byte[]> toSave = new HashMap<>(values.size());
+                List<byte[]> toDelete = new ArrayList<>();
+                values.forEach((key, value) -> {
+                    byte[] serializedKey = serializeKey(key);
+                    Optional<byte[]> serialized = valueSerializer.serialize(value);
+                    if (serialized.isPresent()) {
+                        toSave.put(serializedKey, serialized.get());
+                    } else {
+                        toDelete.add(serializedKey);
+                    }
+                });
+
+                if (CollectionUtils.isNotEmpty(toSave)) {
+                    redisStringCommands.mset(toSave);
+                }
+                if (CollectionUtils.isNotEmpty(toDelete)) {
+                    redisKeyCommands.del(toDelete.toArray(new byte[toDelete.size()][]));
+                }
+            }
+        }
+    }
+
     @Override
     public void invalidate(Object key) {
         byte[] serializedKey = serializeKey(key);
         redisKeyCommands.del(serializedKey);
+    }
+
+    public void invalidate(Collection<?> keys) {
+        byte[][] serializedKeys = keys.stream().map(this::serializeKey).toArray(byte[][]::new);
+        redisKeyCommands.del(serializedKeys);
     }
 
     @Override

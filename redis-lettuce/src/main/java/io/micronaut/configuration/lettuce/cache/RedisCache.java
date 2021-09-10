@@ -46,8 +46,8 @@ import io.micronaut.core.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.List;
@@ -215,19 +215,26 @@ public class RedisCache implements SyncCache<StatefulConnection<?, ?>>, AutoClos
     }
 
     public <K, T> Map<K, T> get(Collection<K> keys, Argument<T> requiredType) {
-        Map<byte[], K> serializedKeyMap = keys.stream()
-            .collect(Collectors.toMap(this::serializeKey, Function.identity()));
-        byte[][] serializedKeys = serializedKeyMap.keySet().toArray(new byte[serializedKeyMap.size()][]);
+        Map<byte[], K> serializedKeyMap = new HashMap<>(keys.size());
+        byte[][] serializedKeys = new byte[keys.size()][];
+        int i = 0;
+        for (K key: keys) {
+            final byte[] serializedKey = this.serializeKey(key);
+            serializedKeys[i++] = serializedKey;
+            serializedKeyMap.put(serializedKey, key);
+        };
 
         List<KeyValue<byte[], byte[]>> data = redisStringCommands.mget(serializedKeys);
-        Map<K, T> results = new HashMap<>();
-
+        final Map<K, T> results;
         if (data != null) {
+            results = new LinkedHashMap<>(data.size());
             for (KeyValue<byte[], byte[]> result: data) {
-                T deserialized = valueSerializer.deserialize(result.getValue(), requiredType).orElse(null);
                 K originalKey = serializedKeyMap.get(result.getKey());
+                T deserialized = valueSerializer.deserialize(result.getValue(), requiredType).orElse(null);
                 results.put(originalKey, deserialized);
             }
+        } else {
+            results = new LinkedHashMap<>();
         }
 
         return results;

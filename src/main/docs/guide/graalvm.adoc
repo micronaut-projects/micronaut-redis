@@ -1,7 +1,7 @@
 It is possible to create native images for Micronaut applications that use the https://lettuce.io/[Lettuce] driver.
 There are some limitations and configuration needed because of the driver itself so please make sure you read the
 https://github.com/lettuce-io/lettuce-core/wiki/Using-Lettuce-with-Native-Images[official driver documentation] about
-GraaVM.
+GraalVM.
 Micronaut provides the configuration for Netty so you don't need to add that part to your own `reflect-config.json`.
 
 

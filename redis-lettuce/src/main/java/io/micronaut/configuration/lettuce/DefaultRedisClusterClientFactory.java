@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.lettuce;
 
-import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
@@ -24,8 +23,6 @@ import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.exceptions.ConfigurationException;
-import io.micronaut.core.util.CollectionUtils;
 
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
@@ -40,45 +37,30 @@ import java.util.List;
 @Requires(property = RedisSetting.REDIS_URIS)
 @Singleton
 @Factory
-public class DefaultRedisClusterClientFactory {
+public class DefaultRedisClusterClientFactory extends AbstractRedisClusterClientFactory {
 
-    /**
-     * Create the client based on config URIs.
-     * @param config config
-     * @param defaultClientResources default {@link ClientResources}
-     * @return client
-     */
+    @Override
     @Bean(preDestroy = "shutdown")
     @Singleton
     @Primary
-    public RedisClusterClient redisClient(@Primary AbstractRedisConfiguration config, @Primary @Nullable ClientResources defaultClientResources) {
-        List<RedisURI> uris = config.getUris();
-        if (CollectionUtils.isEmpty(uris)) {
-            throw new ConfigurationException("Redis URIs must be specified");
-        }
-        return defaultClientResources == null ? RedisClusterClient.create(uris) : RedisClusterClient.create(defaultClientResources, uris);
+    public RedisClusterClient redisClient(@Primary AbstractRedisConfiguration config,
+                                          @Primary @Nullable ClientResources defaultClientResources,
+                                          @Nullable List<ClientResourcesMutator> mutators) {
+        return super.redisClient(config, defaultClientResources, mutators);
     }
 
-    /**
-     * Establish redis connection.
-     * @param redisClient client.
-     * @return connection
-     */
+    @Override
     @Bean(preDestroy = "close")
     @Singleton
     @Primary
     public StatefulRedisClusterConnection<String, String> redisConnection(@Primary RedisClusterClient redisClient) {
-        return redisClient.connect();
+        return super.redisConnection(redisClient);
     }
 
-    /**
-     *
-     * @param redisClient redisClient
-     * @return connection
-     */
+    @Override
     @Bean(preDestroy = "close")
     @Singleton
     public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(@Primary RedisClusterClient redisClient) {
-        return redisClient.connectPubSub();
+        return super.redisPubSubConnection(redisClient);
     }
 }

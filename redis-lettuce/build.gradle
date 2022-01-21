@@ -11,7 +11,7 @@ dependencies {
     compileOnly "io.micronaut:micronaut-session"
     compileOnly "io.micronaut:micronaut-management"
     compileOnly "io.micronaut.micrometer:micronaut-micrometer-core:$micronautMicrometerVersion"
-    compileOnly "com.github.kstyrc:embedded-redis:0.6"
+    compileOnly "it.ozimov:embedded-redis:0.7.3"
 
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
 
@@ -31,5 +31,5 @@ dependencies {
     testImplementation "io.micronaut:micronaut-session"
     testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
     testImplementation "io.micronaut:micronaut-http-client"
-    testImplementation "com.github.kstyrc:embedded-redis:0.6"
+    testImplementation "it.ozimov:embedded-redis:0.7.3"
 }

@@ -4,7 +4,7 @@ You can run an embedded version of Redis for testing and CI scenarios by adding 
 .build.gradle
 [source,groovy]
 ----
-testCompile it.ozimov:embedded-redis:0.7.3"
+testCompile "it.ozimov:embedded-redis:0.7.3"
 ----
 
 If Redis is unavailable for the configured Redis URI an embedded instance of Redis will be automatically started and then shutdown at the end of the test (when `stop` is called on the `ApplicationContext`).

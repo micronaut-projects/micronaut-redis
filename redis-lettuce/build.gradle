@@ -7,9 +7,6 @@ dependencies {
     annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
     annotationProcessor "io.micronaut:micronaut-graal"
 
-    // needed because otherwise IntelliJ integration broken
-    compileOnly "io.micronaut:micronaut-inject-java"
-
     api "io.lettuce:lettuce-core:$lettuceVersion"
     api "io.micronaut.cache:micronaut-cache-core:$micronautCacheVersion"
 

@@ -11,4 +11,5 @@ plugins {
 
 rootProject.name = 'redis-parent'
 
+include 'redis-bom'
 include 'redis-lettuce'

@@ -28,6 +28,5 @@ projectreactor = { module = 'io.projectreactor:reactor-core' }
 
 redis-embedded = { module = "com.github.kstyrc:embedded-redis", version.ref = "redis-embedded" }
 
-testcontainers = { module = "org.testcontainers:testcontainers" }
 testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
 testcontainers-spock = { module = "org.testcontainers:spock" }

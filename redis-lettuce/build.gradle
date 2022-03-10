@@ -18,7 +18,6 @@ dependencies {
     testAnnotationProcessor libs.micronaut.inject.java
 
     testImplementation platform(libs.testcontainers.bom)
-    testImplementation libs.testcontainers
     testImplementation libs.testcontainers.spock
 
     testImplementation libs.projectreactor

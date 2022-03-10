@@ -1,0 +1,8 @@
+plugins {
+    id "io.micronaut.build.internal.bom"
+}
+dependencies {
+    constraints {
+        api("io.lettuce:lettuce-core:$lettuceVersion")
+    }
+}

@@ -3,35 +3,33 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor "io.micronaut:micronaut-inject-java"
-    annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
     annotationProcessor "io.micronaut:micronaut-graal"
 
     api "io.lettuce:lettuce-core:$lettuceVersion"
-    api "io.micronaut.cache:micronaut-cache-core:$micronautCacheVersion"
+    api "io.micronaut.cache:micronaut-cache-core"
 
     compileOnly "io.micronaut:micronaut-session"
     compileOnly "io.micronaut:micronaut-management"
-    compileOnly "io.micronaut.micrometer:micronaut-micrometer-core:$micronautMicrometerVersion"
+    compileOnly "io.micronaut.micrometer:micronaut-micrometer-core"
     compileOnly "com.github.kstyrc:embedded-redis:0.6"
 
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
 
-    testImplementation platform("org.testcontainers:testcontainers-bom:$testContainersVersion")
+    testImplementation platform("org.testcontainers:testcontainers-bom")
     testImplementation "org.testcontainers:testcontainers"
     testImplementation "org.testcontainers:spock"
 
     testImplementation "io.projectreactor:reactor-core"
 
-    testImplementation "io.micronaut.cache:micronaut-cache-core:$micronautCacheVersion"
+    testImplementation "io.micronaut.cache:micronaut-cache-core"
     testImplementation "io.micronaut:micronaut-inject-java"
     testImplementation "io.micronaut:micronaut-management"
-    testImplementation "io.micronaut.micrometer:micronaut-micrometer-core:$micronautMicrometerVersion"
+    testImplementation "io.micronaut.micrometer:micronaut-micrometer-core"
     testImplementation "io.micronaut:micronaut-inject-groovy"
     testImplementation "io.micronaut:micronaut-function-web"
 
     testImplementation "io.micronaut:micronaut-session"
     testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
     testImplementation "io.micronaut:micronaut-http-client"
-    testImplementation "com.github.kstyrc:embedded-redis:0.6"
+    testImplementation "com.github.kstyrc:embedded-redis:$embeddedRedisVersion"
 }

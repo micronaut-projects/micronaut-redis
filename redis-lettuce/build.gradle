@@ -3,8 +3,6 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor libs.micronaut.inject.java
-    annotationProcessor libs.micronaut.asciidoc.props
     annotationProcessor libs.micronaut.graal
 
     api libs.managed.lettuce
@@ -22,6 +20,7 @@ dependencies {
 
     testImplementation libs.projectreactor
 
+    testImplementation libs.micronaut.cache
     testImplementation libs.micronaut.inject.java
     testImplementation libs.micronaut.management
     testImplementation libs.micronaut.micrometer

@@ -1,7 +1,6 @@
 [versions]
 managed-lettuce = "6.1.6.RELEASE"
 
-micronaut-cache = "3.2.0"
 micronaut-docs = "2.0.0"
 micronaut-micrometer = "4.1.1"
 
@@ -13,7 +12,7 @@ testcontainers = "1.16.3"
 managed-lettuce = { module = "io.lettuce:lettuce-core", version.ref = "managed-lettuce" }
 
 micronaut-asciidoc-props = { module = 'io.micronaut.docs:micronaut-docs-asciidoc-config-props', version.ref = 'micronaut-docs' }
-micronaut-cache = { module = 'io.micronaut.cache:micronaut-cache-core', version.ref = 'micronaut-cache' }
+micronaut-cache = { module = 'io.micronaut.cache:micronaut-cache-core'}
 micronaut-function-web = { module = 'io.micronaut:micronaut-function-web' }
 micronaut-graal = { module = 'io.micronaut:micronaut-graal' }
 micronaut-http-client = { module = 'io.micronaut:micronaut-http-client' }

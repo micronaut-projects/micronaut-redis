@@ -17,7 +17,7 @@ dependencies {
 
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
 
-    testImplementation platform("org.testcontainers:testcontainers-bom:$testContainersVersion")
+    testImplementation platform("org.testcontainers:testcontainers-bom")
     testImplementation "org.testcontainers:testcontainers"
     testImplementation "org.testcontainers:spock"
 

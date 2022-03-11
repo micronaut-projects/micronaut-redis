@@ -2,7 +2,6 @@
 managed-lettuce = "6.1.6.RELEASE"
 
 micronaut-docs = "2.0.0"
-micronaut-micrometer = "4.1.1"
 
 redis-embedded = "0.6"
 
@@ -20,7 +19,7 @@ micronaut-http-server-netty = { module = 'io.micronaut:micronaut-http-server-net
 micronaut-inject-groovy = { module = 'io.micronaut:micronaut-inject-groovy' }
 micronaut-inject-java = { module = 'io.micronaut:micronaut-inject-java' }
 micronaut-management = { module = 'io.micronaut:micronaut-management' }
-micronaut-micrometer = { module = 'io.micronaut.micrometer:micronaut-micrometer-core', version.ref = 'micronaut-micrometer' }
+micronaut-micrometer = { module = 'io.micronaut.micrometer:micronaut-micrometer-core'}
 micronaut-session = { module = 'io.micronaut:micronaut-session' }
 
 projectreactor = { module = 'io.projectreactor:reactor-core' }

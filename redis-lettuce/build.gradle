@@ -8,7 +8,7 @@ dependencies {
     annotationProcessor "io.micronaut:micronaut-graal"
 
     api "io.lettuce:lettuce-core:$lettuceVersion"
-    api "io.micronaut.cache:micronaut-cache-core:$micronautCacheVersion"
+    api "io.micronaut.cache:micronaut-cache-core"
 
     compileOnly "io.micronaut:micronaut-session"
     compileOnly "io.micronaut:micronaut-management"
@@ -23,7 +23,7 @@ dependencies {
 
     testImplementation "io.projectreactor:reactor-core"
 
-    testImplementation "io.micronaut.cache:micronaut-cache-core:$micronautCacheVersion"
+    testImplementation "io.micronaut.cache:micronaut-cache-core"
     testImplementation "io.micronaut:micronaut-inject-java"
     testImplementation "io.micronaut:micronaut-management"
     testImplementation "io.micronaut.micrometer:micronaut-micrometer-core:$micronautMicrometerVersion"

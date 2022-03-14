@@ -40,9 +40,9 @@ import java.util.function.Supplier;
 /**
  * An abstract class implementing SyncCache for the redis.
  * Author: Graeme Rocher, Kovalov Illia
- * @param <T> – The native cache implementation
+ * @param <Impl> – The native cache implementation
  */
-public abstract class AbstractRedisCache<T> implements SyncCache<T>, AutoCloseable {
+public abstract class AbstractRedisCache<Impl> implements SyncCache<Impl>, AutoCloseable {
     protected final ObjectSerializer keySerializer;
     protected final ObjectSerializer valueSerializer;
     protected final RedisCacheConfiguration redisCacheConfiguration;
@@ -267,24 +267,25 @@ public abstract class AbstractRedisCache<T> implements SyncCache<T>, AutoCloseab
     }
 
     private ExpirationAfterWritePolicy configureExpirationAfterWritePolicy(AbstractRedisCacheConfiguration redisCacheConfiguration, BeanLocator beanLocator) {
-        if (redisCacheConfiguration.getExpireAfterWrite().isPresent()) {
-            Duration expiration = redisCacheConfiguration.getExpireAfterWrite().get();
+        Optional<Duration> expireAfterWrite = redisCacheConfiguration.getExpireAfterWrite();
+        Optional<String> expirationAfterWritePolicy = redisCacheConfiguration.getExpirationAfterWritePolicy();
+        if (expireAfterWrite.isPresent()) {
+            Duration expiration = expireAfterWrite.get();
             return new ConstantExpirationAfterWritePolicy(expiration.toMillis());
-        } else if (redisCacheConfiguration.getExpirationAfterWritePolicy().isPresent()) {
-            return (ExpirationAfterWritePolicy) redisCacheConfiguration
-                    .getExpirationAfterWritePolicy()
-                    .flatMap(className -> findExpirationAfterWritePolicyBean(beanLocator, className))
-                    .get();
+        } else if (expirationAfterWritePolicy.isPresent()) {
+            Optional<ExpirationAfterWritePolicy> policy = expirationAfterWritePolicy.map(className -> findExpirationAfterWritePolicyBean(beanLocator, className));
+            return policy.orElseThrow(() -> new IllegalArgumentException("Unknown policy " + expirationAfterWritePolicy));
         }
         return null;
     }
 
-    private Optional<?> findExpirationAfterWritePolicyBean(BeanLocator beanLocator, String className) {
+    private ExpirationAfterWritePolicy findExpirationAfterWritePolicyBean(BeanLocator beanLocator, String className) {
         try {
             Optional<?> bean = beanLocator.findOrInstantiateBean(Class.forName(className));
             if (bean.isPresent()) {
-                if (bean.get() instanceof ExpirationAfterWritePolicy) {
-                    return bean;
+                Object foundBean = bean.get();
+                if (foundBean instanceof ExpirationAfterWritePolicy) {
+                    return (ExpirationAfterWritePolicy) foundBean;
                 }
                 throw new ConfigurationException("Redis expiration-after-write-policy was not of type ExpirationAfterWritePolicy");
             } else {

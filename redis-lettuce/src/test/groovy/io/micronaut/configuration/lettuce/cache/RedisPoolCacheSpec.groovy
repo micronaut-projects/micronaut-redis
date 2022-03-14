@@ -43,6 +43,7 @@ class RedisPoolCacheSpec extends Specification {
         redisCache.put("three", 3)
         redisCache.put("four", "four")
         Foo foo = redisCache.get("test", Foo).get()
+
         then:
         foo != null
         foo.name == 'test'

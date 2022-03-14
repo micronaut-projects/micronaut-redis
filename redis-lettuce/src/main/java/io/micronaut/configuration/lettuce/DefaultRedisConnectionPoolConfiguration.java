@@ -46,15 +46,9 @@ public class DefaultRedisConnectionPoolConfiguration extends AbstractRedisConnec
      */
     public BoundedPoolConfig getBoundedPoolConfig() {
         BoundedPoolConfig.Builder builder = BoundedPoolConfig.builder();
-        if (this.getMaxIdle().isPresent()) {
-            builder.maxIdle(this.getMaxIdle().get());
-        }
-        if (this.getMinIdle().isPresent()) {
-            builder.minIdle(this.getMinIdle().get());
-        }
-        if (this.getMaxTotal().isPresent()) {
-            builder.maxTotal(this.getMaxTotal().get());
-        }
+        this.getMaxIdle().ifPresent(builder::maxIdle);
+        this.getMinIdle().ifPresent(builder::minIdle);
+        this.getMaxTotal().ifPresent(builder::maxTotal);
         return builder.build();
     }
 }

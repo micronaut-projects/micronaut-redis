@@ -102,6 +102,7 @@ class RedisPoolCacheSpec extends Specification {
         redisCache.async().get("four", String.class).get().get() == "four"
         redisCache.async().get("test-list", Argument.listOf(Foo)).get().get().get(0) instanceof Foo
         redisCache.async().get("test-list", Argument.listOf(Foo)).get().get().get(0).name == "abc"
+        redisCache.async().get("supplier-test", Argument.listOf(Foo), {-> new Foo(name: "cool")}).get() == new Foo(name: "cool")
 
         when:
         redisCache.invalidate("test")
@@ -149,6 +150,42 @@ class RedisPoolCacheSpec extends Specification {
 
         cleanup:
         applicationContext.stop()
+    }
+
+    void "check expiration after access"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext(
+                'redis.pool.max-total': 32,
+                'redis.pool.max-idle': 12,
+                'redis.pool.min-idle': 1,
+                'redis.caches.test.expire-after-access': '1s',
+        )
+
+        when:
+        RedisConnectionPoolCache redisCache = applicationContext.getBean(RedisConnectionPoolCache, Qualifiers.byName("test"))
+
+        redisCache.get('a', Argument.of(Foo), {-> new Foo(name: 'a')})
+        redisCache.put('b', new Foo(name: 'b'))
+        redisCache.async().get('c', Argument.of(Foo), {-> new Foo(name: 'c')}).get()
+        redisCache.async().put('d', new Foo(name: 'd')).get()
+
+        then:
+        redisCache.get('a', Argument.of(Foo)).get() == new Foo(name: 'a')
+        redisCache.get('b', Argument.of(Foo)).get() == new Foo(name: 'b')
+        redisCache.get('c', Argument.of(Foo)).get() == new Foo(name: 'c')
+        redisCache.get('d', Argument.of(Foo)).get() == new Foo(name: 'd')
+
+        when:
+        Thread.sleep(1500)
+
+        then:
+        !redisCache.get("a", Argument.of(Foo)).present
+        !redisCache.get("b", Argument.of(Foo)).present
+        !redisCache.get("c", Argument.of(Foo)).present
+        !redisCache.get("d", Argument.of(Foo)).present
+
+        cleanup:
+        applicationContext.close()
     }
 
     void "test creating expiration after write policy that is not of type ExpirationAfterWritePolicy"() {

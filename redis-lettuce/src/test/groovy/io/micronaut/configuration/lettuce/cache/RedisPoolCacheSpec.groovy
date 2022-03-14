@@ -1,5 +1,6 @@
 package io.micronaut.configuration.lettuce.cache
 
+import groovy.transform.Canonical
 import io.lettuce.core.support.AsyncPool
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.BeanLocator
@@ -60,6 +61,7 @@ class RedisPoolCacheSpec extends Specification {
         !redisCache.get("test", Foo).isPresent()
         !redisCache.async().get("test", Foo).get().isPresent()
         redisCache.get("two", Foo).isPresent()
+        redisCache.get("test", Foo, {-> new Foo(name: "test")}) == new Foo(name: "test")
 
         when:
         redisCache.async().put("three", new Foo(name: "three")).get()
@@ -173,6 +175,7 @@ class RedisPoolCacheSpec extends Specification {
         applicationContext.stop()
     }
 
+    @Canonical
     static class Foo implements Serializable {
         String name
     }

@@ -2,9 +2,12 @@ package io.micronaut.configuration.lettuce.cache
 
 import groovy.transform.Canonical
 import io.lettuce.core.support.AsyncPool
+import io.micronaut.configuration.lettuce.AbstractRedisConnectionPoolConfiguration
+import io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.BeanLocator
 import io.micronaut.context.exceptions.ConfigurationException
+import io.micronaut.context.exceptions.NoSuchBeanException
 import io.micronaut.core.convert.DefaultConversionService
 import io.micronaut.core.type.Argument
 import io.micronaut.inject.qualifiers.Qualifiers
@@ -21,12 +24,52 @@ class RedisPoolCacheSpec extends Specification {
 
     private PollingConditions pollingConditions = new PollingConditions()
 
-    static ApplicationContext createApplicationContext() {
-        ApplicationContext.run(
+    static ApplicationContext createApplicationContext(Map options = [:]) {
+        ApplicationContext.run([
                 'redis.type': 'embedded',
                 'redis.caches.test.enabled': 'true',
                 'redis.pool.enabled': 'true'
+        ] + options)
+    }
+
+    void "can be disabled"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext('redis.pool.enabled': 'false')
+
+        when:
+        applicationContext.getBean(RedisConnectionPoolCache, Qualifiers.byName("test"))
+
+        then:
+        thrown NoSuchBeanException
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "accepts configuration"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext(
+                'redis.pool.max-total': 32,
+                'redis.pool.max-idle': 12,
+                'redis.pool.min-idle': 1
         )
+
+        when:
+        applicationContext.getBean(RedisConnectionPoolCache, Qualifiers.byName("test"))
+
+        then:
+        noExceptionThrown()
+
+        when:
+        def cfg = applicationContext.getBean(AbstractRedisConnectionPoolConfiguration)
+
+        then:
+        cfg.maxTotal.get() == 32
+        cfg.maxIdle.get() == 12
+        cfg.minIdle.get() == 1
+
+        cleanup:
+        applicationContext.stop()
     }
 
     void "test read/write object from redis sync cache"() {

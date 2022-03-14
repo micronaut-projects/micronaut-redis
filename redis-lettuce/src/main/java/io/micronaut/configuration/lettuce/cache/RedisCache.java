@@ -29,6 +29,7 @@ import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.type.Argument;
+import io.micronaut.core.util.StringUtils;
 
 import javax.annotation.PreDestroy;
 import java.util.List;
@@ -45,7 +46,7 @@ import java.util.function.Supplier;
  * @since 1.0
  */
 @EachBean(RedisCacheConfiguration.class)
-@Requires(classes = SyncCache.class, missingProperty = RedisSetting.REDIS_POOL)
+@Requires(classes = SyncCache.class, property = RedisSetting.REDIS_POOL + ".enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.TRUE)
 public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], byte[]>> {
     private final RedisAsyncCache asyncCache;
     private final StatefulConnection<byte[], byte[]> connection;

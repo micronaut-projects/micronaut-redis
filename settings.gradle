@@ -1,2 +1,15 @@
-rootProject.name = 'redis'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id("io.micronaut.build.shared.settings") version "5.2.3"
+}
+
+rootProject.name = 'redis-parent'
+
+include 'redis-bom'
 include 'redis-lettuce'

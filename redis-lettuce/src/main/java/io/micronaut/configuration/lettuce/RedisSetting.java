@@ -49,4 +49,8 @@ public interface RedisSetting {
      * Configured Redis caches.
      */
     String REDIS_CACHES = PREFIX + ".caches";
+    /**
+     * Default configuration for Redis caches pool.
+     */
+    String REDIS_POOL = PREFIX + ".pool";
 }

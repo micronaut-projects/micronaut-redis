@@ -10,6 +10,7 @@ import io.micronaut.core.type.Argument
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.runtime.ApplicationConfiguration
 import spock.lang.Specification
+import spock.util.concurrent.PollingConditions
 
 import java.nio.charset.Charset
 
@@ -17,6 +18,8 @@ import java.nio.charset.Charset
  * @author Kovalov Illia
  */
 class RedisPoolCacheSpec extends Specification {
+
+    private PollingConditions pollingConditions = new PollingConditions()
 
     static ApplicationContext createApplicationContext() {
         ApplicationContext.run(
@@ -40,6 +43,10 @@ class RedisPoolCacheSpec extends Specification {
         when:
         redisCache.put("test", new Foo(name: "test"))
         redisCache.put("two", new Foo(name: "two"))
+        redisCache.putIfAbsent("two", new Foo(name: "absent"))
+        redisCache.async().putIfAbsent("two", new Foo(name: "async-absent"))
+        redisCache.async().putIfAbsent("new", new Foo(name: "new"))
+
         redisCache.put("test-list", [new Foo(name: "abc")] as List<Foo>)
         redisCache.put("three", 3)
         redisCache.put("four", "four")
@@ -48,6 +55,12 @@ class RedisPoolCacheSpec extends Specification {
         then:
         foo != null
         foo.name == 'test'
+
+        // Wait for the async putIfAbsent to complete
+        pollingConditions.within(5) {
+            redisCache.async().get("new", Foo.class).get().get().name == "new"
+        }
+
         redisCache.async().get("two", Foo.class).get().get().name == "two"
         redisCache.async().get("three", Integer.class).get().get() == 3
         redisCache.async().get("four", String.class).get().get() == "four"

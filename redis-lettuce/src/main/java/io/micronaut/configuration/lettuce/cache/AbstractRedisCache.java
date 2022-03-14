@@ -40,16 +40,20 @@ import java.util.function.Supplier;
 /**
  * An abstract class implementing SyncCache for the redis.
  * Author: Graeme Rocher, Kovalov Illia
- * @param <Impl> – The native cache implementation
+ *
+ * @param <C> – The native cache implementation
  */
-public abstract class AbstractRedisCache<Impl> implements SyncCache<Impl>, AutoCloseable {
+public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseable {
+
+    public static final String INVALID_REDIS_CONNECTION_MESSAGE = "Invalid Redis connection";
+
     protected final ObjectSerializer keySerializer;
     protected final ObjectSerializer valueSerializer;
     protected final RedisCacheConfiguration redisCacheConfiguration;
     protected final ExpirationAfterWritePolicy expireAfterWritePolicy;
     protected final Long expireAfterAccess;
 
-    public AbstractRedisCache(
+    protected AbstractRedisCache(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
             RedisCacheConfiguration redisCacheConfiguration,
             ConversionService<?> conversionService,
@@ -119,7 +123,6 @@ public abstract class AbstractRedisCache<Impl> implements SyncCache<Impl>, AutoC
     }
 
     /**
-     *
      * @param key
      * @param requiredType
      * @param supplier
@@ -142,7 +145,6 @@ public abstract class AbstractRedisCache<Impl> implements SyncCache<Impl>, AutoC
     }
 
     /**
-     *
      * @param connection
      * @return RedisStringAsyncCommands
      */
@@ -153,13 +155,12 @@ public abstract class AbstractRedisCache<Impl> implements SyncCache<Impl>, AutoC
         } else if (connection instanceof StatefulRedisClusterConnection) {
             commands = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).async();
         } else {
-            throw new ConfigurationException("Invalid Redis connection");
+            throw new ConfigurationException(INVALID_REDIS_CONNECTION_MESSAGE);
         }
         return commands;
     }
 
     /**
-     *
      * @param connection
      * @return RedisKeyAsyncCommands
      */
@@ -170,13 +171,12 @@ public abstract class AbstractRedisCache<Impl> implements SyncCache<Impl>, AutoC
         } else if (connection instanceof StatefulRedisClusterConnection) {
             commands = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).async();
         } else {
-            throw new ConfigurationException("Invalid Redis connection");
+            throw new ConfigurationException(INVALID_REDIS_CONNECTION_MESSAGE);
         }
         return commands;
     }
 
     /**
-     *
      * @param connection
      * @return RedisStringCommands
      */
@@ -187,13 +187,12 @@ public abstract class AbstractRedisCache<Impl> implements SyncCache<Impl>, AutoC
         } else if (connection instanceof StatefulRedisClusterConnection) {
             commands = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).sync();
         } else {
-            throw new ConfigurationException("Invalid Redis connection");
+            throw new ConfigurationException(INVALID_REDIS_CONNECTION_MESSAGE);
         }
         return commands;
     }
 
     /**
-     *
      * @param connection
      * @return RedisKeyCommands
      */
@@ -204,13 +203,12 @@ public abstract class AbstractRedisCache<Impl> implements SyncCache<Impl>, AutoC
         } else if (connection instanceof StatefulRedisClusterConnection) {
             commands = ((StatefulRedisClusterConnection<byte[], byte[]>) connection).sync();
         } else {
-            throw new ConfigurationException("Invalid Redis connection");
+            throw new ConfigurationException(INVALID_REDIS_CONNECTION_MESSAGE);
         }
         return commands;
     }
 
     /**
-     *
      * @param requiredType
      * @param serializedKey
      * @param <T>
@@ -219,7 +217,6 @@ public abstract class AbstractRedisCache<Impl> implements SyncCache<Impl>, AutoC
     protected abstract <T> Optional<T> getValue(Argument<T> requiredType, byte[] serializedKey);
 
     /**
-     *
      * @param serializedKey
      * @param value
      * @param <T>
@@ -227,7 +224,6 @@ public abstract class AbstractRedisCache<Impl> implements SyncCache<Impl>, AutoC
     protected abstract <T> void putValue(byte[] serializedKey, T value);
 
     /**
-     *
      * @param serializedKey
      * @param serialized
      * @param policy

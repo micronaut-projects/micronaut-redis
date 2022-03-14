@@ -51,7 +51,7 @@ import java.util.function.Supplier;
 @EachBean(RedisCacheConfiguration.class)
 @Requires(classes = SyncCache.class, property = RedisSetting.REDIS_POOL)
 public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<StatefulConnection<byte[], byte[]>>> {
-    private static final Logger LOG  = LoggerFactory.getLogger(RedisConnectionPoolCache.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RedisConnectionPoolCache.class);
     private final RedisAsyncCache asyncCache;
     private final AsyncPool<StatefulConnection<byte[], byte[]>> asyncPool;
 
@@ -60,9 +60,9 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
      *
      * @param defaultRedisCacheConfiguration The default configuration
      * @param redisCacheConfiguration        The configuration
-     * @param conversionService             The conversion service
-     * @param beanLocator                   The bean locator used to discover the redis connection from the configuration
-     * @param asyncPool                     Redis async pool
+     * @param conversionService              The conversion service
+     * @param beanLocator                    The bean locator used to discover the redis connection from the configuration
+     * @param asyncPool                      Redis async pool
      */
     @SuppressWarnings("unchecked")
     public RedisConnectionPoolCache(
@@ -200,10 +200,10 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
         }).join();
     }
 
-    private <T> void putValue(byte[] serializedKey,
-                              Optional<byte[]> value,
-                              RedisStringCommands<byte[], byte[]> stringCommands,
-                              RedisKeyCommands<byte[], byte[]> keyCommands
+    private void putValue(byte[] serializedKey,
+                          Optional<byte[]> value,
+                          RedisStringCommands<byte[], byte[]> stringCommands,
+                          RedisKeyCommands<byte[], byte[]> keyCommands
     ) {
         putValue(serializedKey,
                 value,
@@ -311,8 +311,8 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
         @Override
         public CompletableFuture<Boolean> invalidateAll() {
             return asyncPool.acquire().thenCompose(connection -> {
-               RedisKeyAsyncCommands<byte[], byte[]> commands = getRedisKeyAsyncCommands(connection);
-               return commands.keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()))
+                RedisKeyAsyncCommands<byte[], byte[]> commands = getRedisKeyAsyncCommands(connection);
+                return commands.keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()))
                         .thenCompose(keys -> deleteByKeys(keys.toArray(new byte[keys.size()][])))
                         .whenComplete((data, ex) -> {
                             asyncPool.release(connection);
@@ -380,7 +380,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
             CompletableFuture<T> completableFuture = new CompletableFuture<>();
             try {
                 completableFuture.complete(supplier.get());
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 completableFuture.completeExceptionally(e);
             }
             return completableFuture;

@@ -20,6 +20,7 @@ import io.micronaut.cache.SyncCache;
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.runtime.ApplicationConfiguration;
 
 /**
@@ -29,7 +30,7 @@ import io.micronaut.runtime.ApplicationConfiguration;
  * @since 1.3
  */
 @ConfigurationProperties(RedisSetting.REDIS_POOL)
-@Requires(classes = SyncCache.class)
+@Requires(classes = SyncCache.class, property = RedisSetting.REDIS_POOL + ".enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
 @Primary
 public class DefaultRedisConnectionPoolConfiguration extends AbstractRedisConnectionPoolConfiguration {
     /**

@@ -326,15 +326,20 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
 
         private CompletableFuture<Boolean> deleteByKeys(byte[]... serializedKey) {
             return asyncPool.acquire().thenCompose(connection -> {
-                RedisKeyAsyncCommands<byte[], byte[]> commands = getRedisKeyAsyncCommands(connection);
-                return commands.del(serializedKey)
-                        .thenApply(keysDeleted -> keysDeleted > 0)
-                        .whenComplete((data, ex) -> {
-                            asyncPool.release(connection);
-                            if (ex != null) {
-                                LOG.error(ex.getMessage(), ex);
-                            }
-                        });
+                // Async del cannot handle empty keys
+                if (serializedKey.length > 0) {
+                    RedisKeyAsyncCommands<byte[], byte[]> commands = getRedisKeyAsyncCommands(connection);
+                    return commands.del(serializedKey)
+                            .thenApply(keysDeleted -> keysDeleted > 0)
+                            .whenComplete((data, ex) -> {
+                                asyncPool.release(connection);
+                                if (ex != null) {
+                                    LOG.error(ex.getMessage(), ex);
+                                }
+                            });
+                } else {
+                    return CompletableFuture.completedFuture(true);
+                }
             });
         }
 

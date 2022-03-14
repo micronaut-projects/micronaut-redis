@@ -3,7 +3,6 @@ package io.micronaut.configuration.lettuce.cache
 import groovy.transform.Canonical
 import io.lettuce.core.support.AsyncPool
 import io.micronaut.configuration.lettuce.AbstractRedisConnectionPoolConfiguration
-import io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.BeanLocator
 import io.micronaut.context.exceptions.ConfigurationException
@@ -13,7 +12,6 @@ import io.micronaut.core.type.Argument
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.runtime.ApplicationConfiguration
 import spock.lang.Specification
-import spock.util.concurrent.PollingConditions
 
 import java.nio.charset.Charset
 
@@ -21,8 +19,6 @@ import java.nio.charset.Charset
  * @author Kovalov Illia
  */
 class RedisPoolCacheSpec extends Specification {
-
-    private PollingConditions pollingConditions = new PollingConditions()
 
     static ApplicationContext createApplicationContext(Map options = [:]) {
         ApplicationContext.run([
@@ -87,8 +83,9 @@ class RedisPoolCacheSpec extends Specification {
         redisCache.put("test", new Foo(name: "test"))
         redisCache.put("two", new Foo(name: "two"))
         redisCache.putIfAbsent("two", new Foo(name: "absent"))
-        redisCache.async().putIfAbsent("two", new Foo(name: "async-absent"))
-        redisCache.async().putIfAbsent("new", new Foo(name: "new"))
+
+        redisCache.async().putIfAbsent("two", new Foo(name: "async-absent")).get()
+        redisCache.async().putIfAbsent("new", new Foo(name: "new")).get()
 
         redisCache.put("test-list", [new Foo(name: "abc")] as List<Foo>)
         redisCache.put("three", 3)
@@ -99,11 +96,7 @@ class RedisPoolCacheSpec extends Specification {
         foo != null
         foo.name == 'test'
 
-        // Wait for the async putIfAbsent to complete
-        pollingConditions.within(5) {
-            redisCache.async().get("new", Foo.class).get().get().name == "new"
-        }
-
+        redisCache.async().get("new", Foo.class).get().get().name == "new"
         redisCache.async().get("two", Foo.class).get().get().name == "two"
         redisCache.async().get("three", Integer.class).get().get() == 3
         redisCache.async().get("four", String.class).get().get() == "four"
@@ -140,9 +133,10 @@ class RedisPoolCacheSpec extends Specification {
         redisCache.get("new", Foo).isPresent()
 
         when:
-        redisCache.invalidateAll()
+        def result = redisCache.async().invalidateAll().get()
 
         then:
+        result
         !redisCache.get("test", Foo).isPresent()
         !redisCache.get("two", Foo).isPresent()
         !redisCache.get("new", Foo).isPresent()
@@ -151,6 +145,7 @@ class RedisPoolCacheSpec extends Specification {
         then:
         // invalidate an empty cache should not fail
         redisCache.invalidateAll()
+        redisCache.async().invalidateAll().get()
 
         cleanup:
         applicationContext.stop()

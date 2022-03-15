@@ -37,28 +37,21 @@ import java.util.concurrent.CompletionStage;
 
 /**
  * Default redis connection pool factory.
- * Author: Kovalov Illia
+ *
+ * @author Kovalov Illia
+ * @since 5.3.0
  */
 @Factory
 public final class RedisAsyncConnectionPoolFactory {
-    private final BeanLocator beanLocator;
-    private final DefaultRedisCacheConfiguration defaultRedisCacheConfiguration;
-    private final DefaultRedisConnectionPoolConfiguration defaultRedisConnectionPoolConfiguration;
 
-    public RedisAsyncConnectionPoolFactory(
+    @Singleton
+    public AsyncPool<StatefulConnection<byte[], byte[]>> getAsyncPool(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
             BeanLocator beanLocator,
             DefaultRedisConnectionPoolConfiguration defaultRedisConnectionPoolConfiguration
     ) {
-        this.beanLocator = beanLocator;
-        this.defaultRedisCacheConfiguration = defaultRedisCacheConfiguration;
-        this.defaultRedisConnectionPoolConfiguration = defaultRedisConnectionPoolConfiguration;
-    }
-
-    @Singleton
-    public AsyncPool<StatefulConnection<byte[], byte[]>> getAsyncPool() {
         Optional<String> server = defaultRedisCacheConfiguration.getServer();
-        AbstractRedisClient client = RedisConnectionUtil.findClient(this.beanLocator, server, "No Redis server configured to allow caching");
+        AbstractRedisClient client = RedisConnectionUtil.findClient(beanLocator, server, "No Redis server configured to allow caching");
         BoundedPoolConfig asyncConfig = defaultRedisConnectionPoolConfiguration.getBoundedPoolConfig();
         CompletionStage<BoundedAsyncPool<StatefulConnection<byte[], byte[]>>> stage =  AsyncConnectionPoolSupport.createBoundedObjectPoolAsync(() -> {
                     if (client instanceof RedisClusterClient) {

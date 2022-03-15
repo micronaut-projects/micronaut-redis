@@ -47,7 +47,7 @@ import java.util.function.Supplier;
  * An implementation of {@link SyncCache} for Lettuce / Redis using connection pooling.
  *
  * @author Graeme Rocher, Kovalov Illia
- * @since 1.0
+ * @since 5.3.0
  */
 @EachBean(RedisCacheConfiguration.class)
 @Requires(classes = SyncCache.class, property = RedisSetting.REDIS_POOL + ".enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)

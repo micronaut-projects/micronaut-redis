@@ -221,9 +221,10 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>findClient</h4>
-<pre>public static&nbsp;io.lettuce.core.AbstractRedisClient&nbsp;findClient(io.micronaut.context.BeanLocator&nbsp;beanLocator,
-                                                             java.util.Optional&lt;java.lang.String&gt;&nbsp;serverName,
-                                                             java.lang.String&nbsp;errorMessage)</pre>
+<pre>@NonNull
+public static&nbsp;io.lettuce.core.AbstractRedisClient&nbsp;findClient(io.micronaut.context.BeanLocator&nbsp;beanLocator,
+                                                                      java.util.Optional&lt;java.lang.String&gt;&nbsp;serverName,
+                                                                      java.lang.String&nbsp;errorMessage)</pre>
 <div class="block">Utility method for establishing a redis connection.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

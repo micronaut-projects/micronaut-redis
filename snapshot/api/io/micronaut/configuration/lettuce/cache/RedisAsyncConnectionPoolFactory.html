@@ -110,8 +110,13 @@ var activeTableTab = "activeTableTab";
 <pre>@Factory
 public final class <span class="typeNameLabel">RedisAsyncConnectionPoolFactory</span>
 extends java.lang.Object</pre>
-<div class="block">Default redis connection pool factory.
- Author: Kovalov Illia</div>
+<div class="block">Default redis connection pool factory.</div>
+<dl>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>5.3.0</dd>
+<dt><span class="simpleTagLabel">Author:</span></dt>
+<dd>Kovalov Illia</dd>
+</dl>
 </li>
 </ul>
 </div>
@@ -130,9 +135,7 @@ extends java.lang.Object</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisAsyncConnectionPoolFactory.html#RedisAsyncConnectionPoolFactory-io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration-io.micronaut.context.BeanLocator-io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration-">RedisAsyncConnectionPoolFactory</a></span>(<a href="../../../../../io/micronaut/configuration/lettuce/cache/DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a>&nbsp;defaultRedisCacheConfiguration,
-                               io.micronaut.context.BeanLocator&nbsp;beanLocator,
-                               <a href="../../../../../io/micronaut/configuration/lettuce/DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration</a>&nbsp;defaultRedisConnectionPoolConfiguration)</code>&nbsp;</td>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisAsyncConnectionPoolFactory.html#RedisAsyncConnectionPoolFactory--">RedisAsyncConnectionPoolFactory</a></span>()</code>&nbsp;</td>
 </tr>
 </table>
 </li>
@@ -151,7 +154,9 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisAsyncConnectionPoolFactory.html#getAsyncPool--">getAsyncPool</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisAsyncConnectionPoolFactory.html#getAsyncPool-io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration-io.micronaut.context.BeanLocator-io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration-">getAsyncPool</a></span>(<a href="../../../../../io/micronaut/configuration/lettuce/cache/DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a>&nbsp;defaultRedisCacheConfiguration,
+            io.micronaut.context.BeanLocator&nbsp;beanLocator,
+            <a href="../../../../../io/micronaut/configuration/lettuce/DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration</a>&nbsp;defaultRedisConnectionPoolConfiguration)</code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -175,15 +180,13 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="RedisAsyncConnectionPoolFactory-io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration-io.micronaut.context.BeanLocator-io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration-">
+<a name="RedisAsyncConnectionPoolFactory--">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>RedisAsyncConnectionPoolFactory</h4>
-<pre>public&nbsp;RedisAsyncConnectionPoolFactory(<a href="../../../../../io/micronaut/configuration/lettuce/cache/DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a>&nbsp;defaultRedisCacheConfiguration,
-                                       io.micronaut.context.BeanLocator&nbsp;beanLocator,
-                                       <a href="../../../../../io/micronaut/configuration/lettuce/DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration</a>&nbsp;defaultRedisConnectionPoolConfiguration)</pre>
+<pre>public&nbsp;RedisAsyncConnectionPoolFactory()</pre>
 </li>
 </ul>
 </li>
@@ -194,14 +197,16 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="getAsyncPool--">
+<a name="getAsyncPool-io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration-io.micronaut.context.BeanLocator-io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>getAsyncPool</h4>
 <pre>@Singleton
-public&nbsp;io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;&gt;&nbsp;getAsyncPool()</pre>
+public&nbsp;io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;&gt;&nbsp;getAsyncPool(<a href="../../../../../io/micronaut/configuration/lettuce/cache/DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a>&nbsp;defaultRedisCacheConfiguration,
+                                                                                                                        io.micronaut.context.BeanLocator&nbsp;beanLocator,
+                                                                                                                        <a href="../../../../../io/micronaut/configuration/lettuce/DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration</a>&nbsp;defaultRedisConnectionPoolConfiguration)</pre>
 </li>
 </ul>
 </li>

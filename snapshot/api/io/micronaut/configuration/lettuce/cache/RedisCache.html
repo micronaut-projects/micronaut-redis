@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -215,39 +215,64 @@ extends <a href="../../../../../io/micronaut/configuration/lettuce/cache/Abstrac
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#close--">close</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i2" class="altColor">
+<td class="colFirst"><code>&lt;T&gt;&nbsp;java.util.Optional&lt;T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#get-java.lang.Object-io.micronaut.core.type.Argument-">get</a></span>(java.lang.Object&nbsp;key,
+   io.micronaut.core.type.Argument&lt;T&gt;&nbsp;requiredType)</code>&nbsp;</td>
+</tr>
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#get-java.lang.Object-io.micronaut.core.type.Argument-java.util.function.Supplier-">get</a></span>(java.lang.Object&nbsp;key,
    io.micronaut.core.type.Argument&lt;T&gt;&nbsp;requiredType,
    java.util.function.Supplier&lt;T&gt;&nbsp;supplier)</code>&nbsp;</td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>protected java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#getKeysPattern--">getKeysPattern</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#getName--">getName</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#getNativeCache--">getNativeCache</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>protected &lt;T&gt;&nbsp;java.util.Optional&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#getValue-io.micronaut.core.type.Argument-byte:A-">getValue</a></span>(io.micronaut.core.type.Argument&lt;T&gt;&nbsp;requiredType,
         byte[]&nbsp;serializedKey)</code>
 <div class="block">Get the value based on the parameters.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#invalidate-java.lang.Object-">invalidate</a></span>(java.lang.Object&nbsp;key)</code>&nbsp;</td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#invalidateAll--">invalidateAll</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i10" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#put-java.lang.Object-java.lang.Object-">put</a></span>(java.lang.Object&nbsp;key,
+   java.lang.Object&nbsp;value)</code>&nbsp;</td>
+</tr>
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code>&lt;T&gt;&nbsp;java.util.Optional&lt;T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#putIfAbsent-java.lang.Object-T-">putIfAbsent</a></span>(java.lang.Object&nbsp;key,
+           T&nbsp;value)</code>&nbsp;</td>
+</tr>
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>protected &lt;T&gt;&nbsp;void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#putValue-byte:A-T-">putValue</a></span>(byte[]&nbsp;serializedKey,
         T&nbsp;value)</code>
 <div class="block">Place the value in the cache.</div>
+</td>
+</tr>
+<tr id="i13" class="rowColor">
+<td class="colFirst"><code>protected byte[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/lettuce/cache/RedisCache.html#serializeKey-java.lang.Object-">serializeKey</a></span>(java.lang.Object&nbsp;key)</code>
+<div class="block">Serialize the key.</div>
 </td>
 </tr>
 </table>
@@ -256,7 +281,7 @@ extends <a href="../../../../../io/micronaut/configuration/lettuce/cache/Abstrac
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;io.micronaut.configuration.lettuce.cache.<a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></h3>
-<code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#get-byte:A-io.micronaut.core.type.Argument-java.util.function.Supplier-io.lettuce.core.api.sync.RedisStringCommands-">get</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#get-java.lang.Object-io.micronaut.core.type.Argument-">get</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getKeysPattern--">getKeysPattern</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisKeyAsyncCommands-io.lettuce.core.api.StatefulConnection-">getRedisKeyAsyncCommands</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisKeyCommands-io.lettuce.core.api.StatefulConnection-">getRedisKeyCommands</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisStringAsyncCommands-io.lettuce.core.api.StatefulConnection-">getRedisStringAsyncCommands</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisStringCommands-io.lettuce.core.api.StatefulConnection-">getRedisStringCommands</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#put-java.lang.Object-java.lang.Object-">put</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#putIfAbsent-java.lang.Object-T-">putIfAbsent</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#putValue-byte:A-java.util.Optional-io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy-io.lettuce.core.api.sync.RedisStringCommands-io.lettuce.core.api.sync.RedisKeyCommands-T-">putValue</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#serializeKey-java.lang.Object-">serializeKey</a></code></li>
+<code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#get-byte:A-io.micronaut.core.type.Argument-java.util.function.Supplier-io.lettuce.core.api.sync.RedisStringCommands-">get</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisKeyAsyncCommands-io.lettuce.core.api.StatefulConnection-">getRedisKeyAsyncCommands</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisKeyCommands-io.lettuce.core.api.StatefulConnection-">getRedisKeyCommands</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisStringAsyncCommands-io.lettuce.core.api.StatefulConnection-">getRedisStringAsyncCommands</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisStringCommands-io.lettuce.core.api.StatefulConnection-">getRedisStringCommands</a>, <a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#putValue-byte:A-java.util.Optional-io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy-io.lettuce.core.api.sync.RedisStringCommands-io.lettuce.core.api.sync.RedisKeyCommands-T-">putValue</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -418,6 +443,92 @@ extends <a href="../../../../../io/micronaut/configuration/lettuce/cache/Abstrac
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>serializedKey</code> - serializedKey</dd>
 <dd><code>value</code> - value</dd>
+</dl>
+</li>
+</ul>
+<a name="get-java.lang.Object-io.micronaut.core.type.Argument-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>get</h4>
+<pre>@NonNull
+public&nbsp;&lt;T&gt;&nbsp;java.util.Optional&lt;T&gt;&nbsp;get(java.lang.Object&nbsp;key,
+                                              io.micronaut.core.type.Argument&lt;T&gt;&nbsp;requiredType)</pre>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code>get</code>&nbsp;in interface&nbsp;<code>io.micronaut.cache.SyncCache&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;&gt;</code></dd>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#get-java.lang.Object-io.micronaut.core.type.Argument-">get</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a>&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;&gt;</code></dd>
+</dl>
+</li>
+</ul>
+<a name="put-java.lang.Object-java.lang.Object-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>put</h4>
+<pre>public&nbsp;void&nbsp;put(java.lang.Object&nbsp;key,
+                java.lang.Object&nbsp;value)</pre>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code>put</code>&nbsp;in interface&nbsp;<code>io.micronaut.cache.SyncCache&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;&gt;</code></dd>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#put-java.lang.Object-java.lang.Object-">put</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a>&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;&gt;</code></dd>
+</dl>
+</li>
+</ul>
+<a name="putIfAbsent-java.lang.Object-java.lang.Object-">
+<!--   -->
+</a><a name="putIfAbsent-java.lang.Object-T-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>putIfAbsent</h4>
+<pre>@NonNull
+public&nbsp;&lt;T&gt;&nbsp;java.util.Optional&lt;T&gt;&nbsp;putIfAbsent(java.lang.Object&nbsp;key,
+                                                      T&nbsp;value)</pre>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code>putIfAbsent</code>&nbsp;in interface&nbsp;<code>io.micronaut.cache.SyncCache&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;&gt;</code></dd>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#putIfAbsent-java.lang.Object-T-">putIfAbsent</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a>&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;&gt;</code></dd>
+</dl>
+</li>
+</ul>
+<a name="getKeysPattern--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getKeysPattern</h4>
+<pre>protected&nbsp;java.lang.String&nbsp;getKeysPattern()</pre>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getKeysPattern--">getKeysPattern</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a>&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;&gt;</code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The default keys pattern.</dd>
+</dl>
+</li>
+</ul>
+<a name="serializeKey-java.lang.Object-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>serializeKey</h4>
+<pre>protected&nbsp;byte[]&nbsp;serializeKey(java.lang.Object&nbsp;key)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#serializeKey-java.lang.Object-">AbstractRedisCache</a></code></span></div>
+<div class="block">Serialize the key.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#serializeKey-java.lang.Object-">serializeKey</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a>&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;&gt;</code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>key</code> - The key</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>bytes of the object</dd>
 </dl>
 </li>
 </ul>

@@ -27,6 +27,7 @@ import io.micronaut.configuration.lettuce.RedisSetting;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.type.Argument;
 import io.micronaut.core.util.StringUtils;
@@ -158,6 +159,38 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
                 redisStringCommands,
                 redisKeyCommands,
                 value);
+    }
+
+    @Override
+    @NonNull
+    @SuppressWarnings("java:S1185") // This is here for binary compatibility
+    public <T> Optional<T> get(Object key, Argument<T> requiredType) {
+        return super.get(key, requiredType);
+    }
+
+    @Override
+    @SuppressWarnings("java:S1185") // This is here for binary compatibility
+    public void put(Object key, Object value) {
+        super.put(key, value);
+    }
+
+    @Override
+    @NonNull
+    @SuppressWarnings("java:S1185") // This is here for binary compatibility
+    public <T> Optional<T> putIfAbsent(Object key, T value) {
+        return super.putIfAbsent(key, value);
+    }
+
+    @Override
+    @SuppressWarnings("java:S1185") // This is here for binary compatibility
+    protected String getKeysPattern() {
+        return super.getKeysPattern();
+    }
+
+    @Override
+    @SuppressWarnings("java:S1185") // This is here for binary compatibility
+    protected byte[] serializeKey(Object key) {
+        return super.serializeKey(key);
     }
 
     @PreDestroy

@@ -27,7 +27,7 @@ import io.micronaut.runtime.ApplicationConfiguration;
  * Allows configuration of redis connection pool.
  *
  * @author Graeme Rocher, Illia Kovalov
- * @since 1.3
+ * @since 5.3.0
  */
 @ConfigurationProperties(RedisSetting.REDIS_POOL)
 @Requires(classes = SyncCache.class, property = RedisSetting.REDIS_POOL + ".enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)

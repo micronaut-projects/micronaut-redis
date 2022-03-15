@@ -25,6 +25,7 @@ import io.lettuce.core.codec.ByteArrayCodec;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.annotation.Internal;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.inject.qualifiers.Qualifiers;
 
 import java.util.Optional;
@@ -46,7 +47,7 @@ public class RedisConnectionUtil {
      * @return The connection
      * @throws ConfigurationException If the connection cannot be found
      */
-    public static AbstractRedisClient findClient(BeanLocator beanLocator, Optional<String> serverName, String errorMessage) {
+    public static @NonNull AbstractRedisClient findClient(BeanLocator beanLocator, Optional<String> serverName, String errorMessage) {
         Optional<? extends AbstractRedisClient> clusterConn = findRedisClusterClient(beanLocator, serverName);
         if (clusterConn.isPresent()) {
             return clusterConn.get();

@@ -15,6 +15,8 @@
  */
 package io.micronaut.configuration.lettuce;
 
+import io.micronaut.core.annotation.NonNull;
+
 import java.util.Optional;
 
 /**
@@ -34,47 +36,31 @@ public abstract class AbstractRedisConnectionPoolConfiguration {
      * @return The minimum idle connections count.
      * @see io.micronaut.configuration.lettuce.NamedRedisServersConfiguration
      */
-    public Optional<Integer> getMinIdle() {
-        if (minIdle != null) {
-            return Optional.of(minIdle);
-        } else {
-            return Optional.empty();
-        }
+    public @NonNull Optional<Integer> getMinIdle() {
+        return Optional.ofNullable(minIdle);
     }
 
     /**
      * @return The maximum idle connections count.
      * @see io.micronaut.configuration.lettuce.NamedRedisServersConfiguration
      */
-    public Optional<Integer> getMaxIdle() {
-        if (maxIdle != null) {
-            return Optional.of(maxIdle);
-        } else {
-            return Optional.empty();
-        }
+    public @NonNull Optional<Integer> getMaxIdle() {
+        return Optional.ofNullable(maxIdle);
     }
 
     /**
      * @return The maximum total connections count.
      * @see io.micronaut.configuration.lettuce.NamedRedisServersConfiguration
      */
-    public Optional<Integer> getMaxTotal() {
-        if (maxTotal != null) {
-            return Optional.of(maxTotal);
-        } else {
-            return Optional.empty();
-        }
+    public @NonNull Optional<Integer> getMaxTotal() {
+        return Optional.ofNullable(maxTotal);
     }
 
     /**
      * @return The maximum total connections count.
      * @see io.micronaut.configuration.lettuce.NamedRedisServersConfiguration
      */
-    public Optional<Boolean> getEnabled() {
-        if (enabled != null) {
-            return Optional.of(enabled);
-        } else {
-            return Optional.empty();
-        }
+    public @NonNull Optional<Boolean> getEnabled() {
+        return Optional.ofNullable(enabled);
     }
 }

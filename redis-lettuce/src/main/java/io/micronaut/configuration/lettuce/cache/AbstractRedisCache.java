@@ -39,9 +39,10 @@ import java.util.function.Supplier;
 
 /**
  * An abstract class implementing SyncCache for the redis.
- * Author: Graeme Rocher, Kovalov Illia
  *
+ * @author Graeme Rocher, Kovalov Illia
  * @param <C> – The native cache implementation
+ * @since 5.3.0
  */
 public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseable {
 

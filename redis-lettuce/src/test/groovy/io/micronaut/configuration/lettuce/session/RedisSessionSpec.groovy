@@ -243,6 +243,9 @@ class RedisSessionSpec extends Specification {
         retrieved.get("username", String).get() == "fred"
         retrieved.get("foo", Foo).get().name == "Fred"
         retrieved.get("foo", Foo).get().age == 10
+
+        cleanup:
+        applicationContext.stop()
     }
 
     void "test super class properties can be configured"() {
@@ -255,6 +258,9 @@ class RedisSessionSpec extends Specification {
 
         expect:
         applicationContext.getBean(RedisHttpSessionConfiguration).getCookiePath().get() == "/foo"
+
+        cleanup:
+        applicationContext.stop()
     }
 
     static class Foo implements Serializable{

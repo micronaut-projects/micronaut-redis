@@ -7,6 +7,8 @@ dependencies {
 
     api libs.managed.lettuce
     api libs.micronaut.cache
+    // FIXME
+    implementation 'io.micronaut:micronaut-messaging:3.3.4'
 
     compileOnly libs.micronaut.session
     compileOnly libs.micronaut.management

@@ -53,4 +53,8 @@ public interface RedisSetting {
      * Default configuration for Redis caches pool.
      */
     String REDIS_POOL = PREFIX + ".pool";
+    /**
+     * Configured Redis pubsub.
+     */
+    String REDIS_PUBSUB = PREFIX + ".pubsub";
 }

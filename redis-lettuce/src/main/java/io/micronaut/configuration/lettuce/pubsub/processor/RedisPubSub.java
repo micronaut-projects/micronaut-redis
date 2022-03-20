@@ -2,8 +2,6 @@ package io.micronaut.configuration.lettuce.pubsub.processor;
 
 import io.lettuce.core.pubsub.RedisPubSubListener;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
-import io.lettuce.core.pubsub.api.async.RedisPubSubAsyncCommands;
-import io.lettuce.core.pubsub.api.reactive.RedisPubSubReactiveCommands;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
 import io.micronaut.configuration.lettuce.pubsub.MessageChannel;
@@ -57,6 +55,7 @@ public class RedisPubSub {
         this.connection = RedisConnectionUtil.openBytesRedisPubSubConnection(beanLocator,
                 configuration.getServer(), "No Redis server configured.");
 
+        // TODO: use reactive instead ?
         this.syncCommands = connection.sync();
 
         this.connection.addListener(messageRouter);
@@ -94,6 +93,7 @@ public class RedisPubSub {
         public void message(byte[] channelArg, byte[] message) {
             // FIXME -- Proper conversion
             MessageChannel channel = MessageChannel.individual(new String(channelArg));
+
             subscribers.get(channel).forEach(subscriber -> executorService.submit(() -> {
                 Publisher<RedisMessage> publisher = Publishers.just(new RedisMessage(message, channel));
                 publisher.subscribe(subscriber);

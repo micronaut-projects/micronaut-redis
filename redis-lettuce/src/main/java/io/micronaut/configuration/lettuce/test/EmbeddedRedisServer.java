@@ -39,10 +39,13 @@ import java.util.Optional;
  *
  * @author Graeme Rocher
  * @since 1.0
+ *
+ * @deprecated since 5.3.0, use TestContainers RedisContainer instead.
  */
 @Requires(classes = RedisServer.class)
 @Requires(beans = AbstractRedisConfiguration.class)
 @Factory
+@Deprecated
 public class EmbeddedRedisServer implements BeanCreatedEventListener<AbstractRedisConfiguration>, Closeable {
 
     private static final String DEFAULT_MAXMEMORY_SETTING = "maxmemory 256M";
@@ -91,9 +94,12 @@ public class EmbeddedRedisServer implements BeanCreatedEventListener<AbstractRed
 
     /**
      * Configuration properties for embedded Redis.
+     *
+     * @deprecated since 5.3.0, use TestContainers RedisContainer instead.
      */
     @ConfigurationProperties(RedisSetting.REDIS_EMBEDDED)
     @Requires(classes = RedisServerBuilder.class)
+    @Deprecated
     public static class Configuration {
         @ConfigurationBuilder(
                 prefixes = ""

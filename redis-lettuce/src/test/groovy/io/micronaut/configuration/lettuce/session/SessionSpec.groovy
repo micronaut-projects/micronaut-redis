@@ -59,7 +59,7 @@ class SessionSpec extends Specification  implements TestPropertyProvider {
     Map<String, String> getProperties() {
         redis.start()
         return [
-                'redis.uri': 'redis://' + redis.getContainerIpAddress() + ":" + redis.getMappedPort(6379)
+                'redis.uri': 'redis://' + redis.getHost() + ":" + redis.getMappedPort(6379)
         ]
     }
 

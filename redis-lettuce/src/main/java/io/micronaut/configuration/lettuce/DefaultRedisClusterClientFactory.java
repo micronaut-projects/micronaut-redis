@@ -18,6 +18,7 @@ package io.micronaut.configuration.lettuce;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.annotation.Bean;
@@ -51,7 +52,7 @@ public class DefaultRedisClusterClientFactory {
     @Bean(preDestroy = "shutdown")
     @Singleton
     @Primary
-    public RedisClusterClient redisClient(@Primary AbstractRedisConfiguration config, @Primary @Nullable ClientResources defaultClientResources) {
+    public RedisClusterClient redisClusterClient(@Primary AbstractRedisConfiguration config, @Primary @Nullable ClientResources defaultClientResources) {
         List<RedisURI> uris = config.getUris();
         if (CollectionUtils.isEmpty(uris)) {
             throw new ConfigurationException("Redis URIs must be specified");
@@ -67,7 +68,7 @@ public class DefaultRedisClusterClientFactory {
     @Bean(preDestroy = "close")
     @Singleton
     @Primary
-    public StatefulRedisClusterConnection<String, String> redisConnection(@Primary RedisClusterClient redisClient) {
+    public StatefulRedisClusterConnection<String, String> redisClusterConnection(@Primary RedisClusterClient redisClient) {
         return redisClient.connect();
     }
 
@@ -78,7 +79,7 @@ public class DefaultRedisClusterClientFactory {
      */
     @Bean(preDestroy = "close")
     @Singleton
-    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(@Primary RedisClusterClient redisClient) {
+    public StatefulRedisClusterPubSubConnection<String, String> redisClusterPubSubConnection(@Primary RedisClusterClient redisClient) {
         return redisClient.connectPubSub();
     }
 }

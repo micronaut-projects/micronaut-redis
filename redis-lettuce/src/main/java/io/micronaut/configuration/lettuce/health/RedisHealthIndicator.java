@@ -18,28 +18,30 @@ package io.micronaut.configuration.lettuce.health;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.reactive.BaseRedisReactiveCommands;
+import io.lettuce.core.api.sync.BaseRedisCommands;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.micronaut.context.BeanContext;
 import io.micronaut.context.BeanRegistration;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.async.publisher.AsyncSingleResultPublisher;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.health.HealthStatus;
 import io.micronaut.management.health.aggregator.HealthAggregator;
 import io.micronaut.management.health.indicator.HealthIndicator;
 import io.micronaut.management.health.indicator.HealthResult;
+import io.micronaut.scheduling.TaskExecutors;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.SignalType;
 
-import jakarta.inject.Singleton;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 /**
@@ -57,11 +59,12 @@ public class RedisHealthIndicator implements HealthIndicator {
      * Default name to use for health indication for Redis.
      */
     public static final String NAME = "redis";
-
+    public static final String PING_RESPONSE = "pong";
     private static final int TIMEOUT_SECONDS = 3;
     private static final int RETRY = 3;
 
     private final BeanContext beanContext;
+    private final ExecutorService executorService;
     private final HealthAggregator<?> healthAggregator;
 
     // Must include the connections otherwise the health check will be unknown until the first Redis command executed
@@ -71,13 +74,18 @@ public class RedisHealthIndicator implements HealthIndicator {
     /**
      * Constructor.
      *
-     * @param beanContext         beanContext
-     * @param healthAggregator    healthAggregator
-     * @param redisClients        redisClients
+     * @param beanContext beanContext
+     * @param executorService executor service
+     * @param healthAggregator healthAggregator
+     * @param redisClients redisClients
      * @param redisClusterClients redisClusterClients
      */
-    public RedisHealthIndicator(BeanContext beanContext, HealthAggregator<?> healthAggregator, RedisClient[] redisClients, RedisClusterClient[] redisClusterClients) {
+    public RedisHealthIndicator(BeanContext beanContext,
+                                @Named(TaskExecutors.IO) ExecutorService executorService,
+                                HealthAggregator<?> healthAggregator, RedisClient[] redisClients,
+                                RedisClusterClient[] redisClusterClients) {
         this.beanContext = beanContext;
+        this.executorService = executorService;
         this.healthAggregator = healthAggregator;
         this.redisClients = redisClients;
         this.redisClusterClients = redisClusterClients;
@@ -85,39 +93,58 @@ public class RedisHealthIndicator implements HealthIndicator {
 
     @Override
     public Publisher<HealthResult> getResult() {
-        Flux<HealthResult> clientResults = getResult(RedisClient.class, RedisClient::connect, StatefulRedisConnection::reactive);
-        Flux<HealthResult> clusteredClientResults = getResult(RedisClusterClient.class, RedisClusterClient::connect, StatefulRedisClusterConnection::reactive);
+        Flux<HealthResult> clientResults = getResult(RedisClient.class, RedisClient::connect, StatefulRedisConnection::sync);
+        Flux<HealthResult> clusteredClientResults = getResult(RedisClusterClient.class, RedisClusterClient::connect, StatefulRedisClusterConnection::sync);
         return this.healthAggregator.aggregate(
                 NAME,
                 Flux.concat(clientResults, clusteredClientResults)
         );
     }
 
-    private <T, R extends StatefulConnection<K, V>, K, V> Flux<HealthResult> getResult(Class<T> type, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
+    private <T, R extends StatefulConnection<K, V>, K, V> Flux<HealthResult> getResult(Class<T> type, Function<T, R> getConnection, Function<R, BaseRedisCommands<K, V>> getSync) {
         Collection<BeanRegistration<T>> registrations = beanContext.getActiveBeanRegistrations(type);
         Flux<BeanRegistration<T>> redisClients = Flux.fromIterable(registrations);
-        return redisClients.flatMap(client -> healthResultForClient(client, getConnection, getReactive));
+        return redisClients.flatMap(client -> healthResultForClient(client, getConnection, getSync));
     }
 
-    private <T, R extends StatefulConnection<K, V>, K, V> Mono<HealthResult> healthResultForClient(BeanRegistration<T> client, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
-        R connection;
-        String connectionName = client.getIdentifier().getName();
-        String dbName = "redis(" + connectionName + ")";
-        try {
-            connection = getConnection.apply(client.getBean());
-        } catch (Exception e) {
-            return Mono.just(healthResultForThrowable(e, dbName));
+    private <T, R extends StatefulConnection<K, V>, K, V> Publisher<HealthResult> healthResultForClient(BeanRegistration<T> client, Function<T, R> getConnection, Function<R, BaseRedisCommands<K, V>> getSync) {
+        if (executorService == null) {
+            throw new IllegalStateException("I/O ExecutorService is null");
         }
-        Mono<String> pingCommand = getReactive.apply(connection).ping();
-        pingCommand = pingCommand.timeout(Duration.ofSeconds(TIMEOUT_SECONDS)).retry(RETRY);
-        return pingCommand.map(s -> healthResultForPingResponse(s, dbName))
-                .onErrorResume(throwable -> Mono.just(healthResultForThrowable(throwable, dbName)))
-                .doFinally(f -> closeOnSignal(connection, f));
+        return new AsyncSingleResultPublisher<>(executorService, () -> {
+            R connection = null;
+            String connectionName = client.getIdentifier().getName();
+            String dbName = "redis(" + connectionName + ")";
+            try {
+                connection = getConnection.apply(client.getBean());
+                connection.setTimeout(Duration.ofSeconds(TIMEOUT_SECONDS));
+                String pingResponse;
+                int pingAttempt = 0;
+                while(true) {
+                    try {
+                        pingResponse = getSync.apply(connection).ping();
+                        break;
+                    } catch (Exception e) {
+                        LOG.error("Error executing ping command: ", e);
+                        if (++pingAttempt == RETRY) {
+                            return healthResultForThrowable(e, dbName);
+                        }
+                    }
+                }
+                return healthResultForPingResponse(pingResponse, dbName);
+            } catch (Exception e) {
+                return healthResultForThrowable(e, dbName);
+            } finally {
+                if (connection != null) {
+                    close(connection);
+                }
+            }
+        });
     }
 
-    private <R extends StatefulConnection<K, V>, K, V> void closeOnSignal(R connection, SignalType signalType) {
+    private <R extends StatefulConnection<K, V>, K, V> void close(R connection) {
         try {
-            LOG.trace("Closing connection on signal " + signalType);
+            LOG.trace("Closing connection");
             connection.close();
         } catch (Exception e) {
             LOG.error("Failed to close connection", e);
@@ -132,7 +159,7 @@ public class RedisHealthIndicator implements HealthIndicator {
     }
 
     private HealthResult healthResultForPingResponse(String pingResponse, String name) {
-        if (pingResponse.equalsIgnoreCase("pong")) {
+        if (PING_RESPONSE.equalsIgnoreCase(pingResponse)) {
             return HealthResult
                     .builder(name, HealthStatus.UP)
                     .build();

@@ -120,7 +120,7 @@ public class RedisHealthIndicator implements HealthIndicator {
                 connection.setTimeout(Duration.ofSeconds(TIMEOUT_SECONDS));
                 String pingResponse;
                 int pingAttempt = 0;
-                while(true) {
+                while (true) {
                     try {
                         pingResponse = getSync.apply(connection).ping();
                         break;

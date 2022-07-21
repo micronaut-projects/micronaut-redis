@@ -78,6 +78,7 @@ public class RedisHealthIndicator implements HealthIndicator {
      * Constructor.
      *
      * @param beanContext         beanContext
+     * @param executorService     executor service
      * @param healthAggregator    healthAggregator
      * @param redisClients        redisClients
      * @param redisClusterClients redisClusterClients

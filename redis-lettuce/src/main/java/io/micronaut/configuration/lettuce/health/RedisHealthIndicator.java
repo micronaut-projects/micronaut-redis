@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.SignalType;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
@@ -66,7 +67,7 @@ public class RedisHealthIndicator implements HealthIndicator {
     private static final int RETRY = 3;
 
     private final BeanContext beanContext;
-    private final ExecutorService executorService;
+    private final Scheduler scheduler;
     private final HealthAggregator<?> healthAggregator;
 
     // Must include the connections otherwise the health check will be unknown until the first Redis command executed
@@ -84,7 +85,7 @@ public class RedisHealthIndicator implements HealthIndicator {
     public RedisHealthIndicator(BeanContext beanContext, @Named(TaskExecutors.IO) ExecutorService executorService, HealthAggregator<?> healthAggregator, RedisClient[] redisClients, RedisClusterClient[] redisClusterClients) {
         this.beanContext = beanContext;
         this.healthAggregator = healthAggregator;
-        this.executorService = executorService;
+        this.scheduler = Schedulers.fromExecutorService(executorService);
         this.redisClients = redisClients;
         this.redisClusterClients = redisClusterClients;
     }
@@ -102,7 +103,7 @@ public class RedisHealthIndicator implements HealthIndicator {
     private <T, R extends StatefulConnection<K, V>, K, V> Flux<HealthResult> getResult(Class<T> type, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
         Collection<BeanRegistration<T>> registrations = beanContext.getActiveBeanRegistrations(type);
         Flux<BeanRegistration<T>> redisClients = Flux.fromIterable(registrations);
-        return redisClients.flatMap(client -> healthResultForClient(client, getConnection, getReactive)).subscribeOn(Schedulers.fromExecutorService(executorService));
+        return redisClients.flatMap(client -> healthResultForClient(client, getConnection, getReactive)).subscribeOn(scheduler);
     }
 
     private <T, R extends StatefulConnection<K, V>, K, V> Mono<HealthResult> healthResultForClient(BeanRegistration<T> client, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {

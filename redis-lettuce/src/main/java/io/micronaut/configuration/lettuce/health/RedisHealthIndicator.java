@@ -30,6 +30,7 @@ import io.micronaut.management.health.aggregator.HealthAggregator;
 import io.micronaut.management.health.indicator.HealthIndicator;
 import io.micronaut.management.health.indicator.HealthResult;
 import io.micronaut.scheduling.TaskExecutors;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.reactivestreams.Publisher;
@@ -83,10 +84,27 @@ public class RedisHealthIndicator implements HealthIndicator {
      * @param redisClients        redisClients
      * @param redisClusterClients redisClusterClients
      */
+    @Inject
     public RedisHealthIndicator(BeanContext beanContext, @Named(TaskExecutors.IO) ExecutorService executorService, HealthAggregator<?> healthAggregator, RedisClient[] redisClients, RedisClusterClient[] redisClusterClients) {
         this.beanContext = beanContext;
         this.healthAggregator = healthAggregator;
         this.scheduler = Schedulers.fromExecutorService(executorService);
+        this.redisClients = redisClients;
+        this.redisClusterClients = redisClusterClients;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param beanContext         beanContext
+     * @param healthAggregator    healthAggregator
+     * @param redisClients        redisClients
+     * @param redisClusterClients redisClusterClients
+     */
+    public RedisHealthIndicator(BeanContext beanContext, HealthAggregator<?> healthAggregator, RedisClient[] redisClients, RedisClusterClient[] redisClusterClients) {
+        this.beanContext = beanContext;
+        this.healthAggregator = healthAggregator;
+        this.scheduler = Schedulers.immediate();
         this.redisClients = redisClients;
         this.redisClusterClients = redisClusterClients;
     }

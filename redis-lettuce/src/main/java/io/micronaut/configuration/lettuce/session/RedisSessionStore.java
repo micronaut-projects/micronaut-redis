@@ -281,13 +281,12 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
 
     @Override
     public CompletableFuture<Optional<RedisSession>> findSession(String id) {
-        return findSessionInternal(id, false).thenCompose(session -> {
-            if (session.isPresent()) {
-                RedisSession redisSession = session.get();
-                redisSession.setLastAccessedTime(Instant.now());
-            }
-            return CompletableFuture.completedFuture(session);
-        }).toCompletableFuture();
+        return findSessionInternal(id, false).thenApply(session -> {
+            session.ifPresent(redisSession ->
+                    redisSession.setLastAccessedTime(Instant.now())
+            );
+            return session;
+        });
     }
 
 

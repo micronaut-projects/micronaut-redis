@@ -101,6 +101,7 @@ public class RedisHealthIndicator implements HealthIndicator {
      * @param redisClients        redisClients
      * @param redisClusterClients redisClusterClients
      */
+    @Deprecated
     public RedisHealthIndicator(BeanContext beanContext, HealthAggregator<?> healthAggregator, RedisClient[] redisClients, RedisClusterClient[] redisClusterClients) {
         this.beanContext = beanContext;
         this.healthAggregator = healthAggregator;

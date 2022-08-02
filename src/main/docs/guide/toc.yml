@@ -7,3 +7,6 @@ cache: Redis for Caching
 sessions: Session State with Redis
 graalvm: GraalVM support
 repository: Repository
+appendix:
+  title: Appendices
+  breaks: Breaking Changes

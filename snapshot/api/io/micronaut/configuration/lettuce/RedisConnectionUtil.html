@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":9,"i1":9,"i2":9};
+var methods = {"i0":9,"i1":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -115,7 +115,7 @@ extends java.lang.Object</pre>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0</dd>
 <dt><span class="simpleTagLabel">Author:</span></dt>
-<dd>Graeme Rocher, Illia Kovalov</dd>
+<dd>Graeme Rocher</dd>
 </dl>
 </li>
 </ul>
@@ -153,14 +153,6 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>static io.lettuce.core.AbstractRedisClient</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/RedisConnectionUtil.html#findClient-io.micronaut.context.BeanLocator-java.util.Optional-java.lang.String-">findClient</a></span>(io.micronaut.context.BeanLocator&nbsp;beanLocator,
-          java.util.Optional&lt;java.lang.String&gt;&nbsp;serverName,
-          java.lang.String&nbsp;errorMessage)</code>
-<div class="block">Utility method for establishing a redis connection.</div>
-</td>
-</tr>
-<tr id="i1" class="rowColor">
 <td class="colFirst"><code>static io.lettuce.core.api.StatefulConnection</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/RedisConnectionUtil.html#findRedisConnection-io.micronaut.context.BeanLocator-java.util.Optional-java.lang.String-">findRedisConnection</a></span>(io.micronaut.context.BeanLocator&nbsp;beanLocator,
                    java.util.Optional&lt;java.lang.String&gt;&nbsp;serverName,
@@ -168,7 +160,7 @@ extends java.lang.Object</pre>
 <div class="block">Utility method for establishing a redis connection.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i1" class="rowColor">
 <td class="colFirst"><code>static io.lettuce.core.api.StatefulConnection&lt;byte[],byte[]&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/configuration/lettuce/RedisConnectionUtil.html#openBytesRedisConnection-io.micronaut.context.BeanLocator-java.util.Optional-java.lang.String-">openBytesRedisConnection</a></span>(io.micronaut.context.BeanLocator&nbsp;beanLocator,
                         java.util.Optional&lt;java.lang.String&gt;&nbsp;serverName,
@@ -215,29 +207,6 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="findClient-io.micronaut.context.BeanLocator-java.util.Optional-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>findClient</h4>
-<pre>@NonNull
-public static&nbsp;io.lettuce.core.AbstractRedisClient&nbsp;findClient(io.micronaut.context.BeanLocator&nbsp;beanLocator,
-                                                                      java.util.Optional&lt;java.lang.String&gt;&nbsp;serverName,
-                                                                      java.lang.String&nbsp;errorMessage)</pre>
-<div class="block">Utility method for establishing a redis connection.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>beanLocator</code> - The bean locator to use</dd>
-<dd><code>serverName</code> - The server name to use</dd>
-<dd><code>errorMessage</code> - The error message to use if the connection can't be found</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The connection</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>io.micronaut.context.exceptions.ConfigurationException</code> - If the connection cannot be found</dd>
-</dl>
-</li>
-</ul>
 <a name="findRedisConnection-io.micronaut.context.BeanLocator-java.util.Optional-java.lang.String-">
 <!--   -->
 </a>

@@ -410,16 +410,20 @@ The Lettuce driver&#8217;s <code>StatefulRedisConnection</code> interface is des
 
 
 <div class="paragraph">
-<p>You can run an embedded version of Redis for testing and CI scenarios by adding a dependency on the Embedded Redis project:</p>
+<p>For testing purposes, we recommend running a real version of Redis inside a Docker container <a href="https://www.testcontainers.org/features/creating_container/#examples">via TestContainers</a>.</p>
 </div>
 <div class="listingblock">
-<div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">testCompile "com.github.kstyrc:embedded-redis:0.6"</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">GenericContainer&lt;?&gt; redisContainer = new GenericContainer&lt;&gt;(DockerImageName.parse(REDIS_DOCKER_NAME))
+    .withExposedPorts(REDIS_PORT)
+    .waitingFor(
+            Wait.forLogMessage(".*Ready to accept connections.*\\n", 1)
+    );
+redisContainer.start();</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If Redis is unavailable for the configured Redis URI an embedded instance of Redis will be automatically started and then shutdown at the end of the test (when <code>stop</code> is called on the <code>ApplicationContext</code>).</p>
+<p>The embedded redis container we used to recommend has been deprecated as of 5.3.0 and will be removed at a later date.</p>
 </div>
 
 <h1 id="cache"><a class="anchor" href="#cache"></a>6 Redis for Caching</h1>

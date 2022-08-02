@@ -1,6 +1,6 @@
 package io.micronaut.configuration.lettuce.session
 
-import io.micronaut.configuration.lettuce.RedisContainerTrait
+import io.micronaut.configuration.lettuce.RedisSpec
 import io.micronaut.context.annotation.Property
 import io.micronaut.context.annotation.Requires
 import io.micronaut.http.HttpHeaders
@@ -10,6 +10,7 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
+import io.micronaut.redis.test.RedisContainerUtils
 import io.micronaut.session.Session
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import io.micronaut.test.support.TestPropertyProvider
@@ -19,7 +20,7 @@ import spock.lang.Specification
 @MicronautTest
 @Property(name = 'spec.name', value = 'SessionSpec')
 @Property(name = "micronaut.session.http.redis.enabled", value = "true")
-class SessionSpec extends Specification  implements TestPropertyProvider, RedisContainerTrait {
+class SessionSpec extends RedisSpec  implements TestPropertyProvider {
 
     @Inject
     @Client("/")
@@ -49,7 +50,7 @@ class SessionSpec extends Specification  implements TestPropertyProvider, RedisC
     @Override
     Map<String, String> getProperties() {
         return [
-                'redis.uri': getRedisPort('redis://localhost')
+                'redis.uri': RedisContainerUtils.getRedisPort('redis://localhost')
         ]
     }
 

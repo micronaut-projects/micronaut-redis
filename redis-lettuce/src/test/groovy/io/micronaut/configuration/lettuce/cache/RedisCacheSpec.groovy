@@ -4,13 +4,14 @@ import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.async.RedisStringAsyncCommands
 import io.lettuce.core.protocol.AsyncCommand
 import io.lettuce.core.protocol.RedisCommand
-import io.micronaut.configuration.lettuce.RedisContainerTrait
+import io.micronaut.configuration.lettuce.RedisSpec
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.BeanLocator
 import io.micronaut.context.exceptions.ConfigurationException
 import io.micronaut.core.convert.DefaultConversionService
 import io.micronaut.core.type.Argument
 import io.micronaut.inject.qualifiers.Qualifiers
+import io.micronaut.redis.test.RedisContainerUtils
 import io.micronaut.runtime.ApplicationConfiguration
 import spock.lang.Requires
 import spock.lang.Specification
@@ -24,11 +25,11 @@ import java.util.concurrent.ExecutionException
  * @author Graeme Rocher
  * @since 1.0
  */
-class RedisCacheSpec extends Specification implements RedisContainerTrait {
+class RedisCacheSpec extends RedisSpec {
 
     ApplicationContext createApplicationContext() {
         ApplicationContext.run(
-                'redis.port': redisPort,
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'redis.caches.test.enabled': 'true'
         )
     }

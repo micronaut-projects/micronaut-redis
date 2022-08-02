@@ -61,6 +61,8 @@
                                 
                                 <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
                                 
+                                <div class="toc-item" style="margin-left:0"><a href="#appendix"><strong>10</strong><span>Appendices</span></a></div>
+                                
                             </div>
                         </div>
                     </li>
@@ -107,6 +109,10 @@
         <div class="toc-item" style="margin-left:0px" id="toc-item-graalvm"><a href="#graalvm"><strong>8</strong><span>GraalVM support</span></a></div>
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-appendix"><a href="#appendix"><strong>10</strong><span>Appendices</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-breaks"><a href="#breaks"><strong>10.1</strong><span>Breaking Changes</span></a></div>
         
         </div>
     </div>
@@ -613,6 +619,59 @@ information.
 </div>
 <div class="paragraph">
 <p><a href="https://github.com/micronaut-projects/micronaut-redis">https://github.com/micronaut-projects/micronaut-redis</a></p>
+</div>
+
+<h1 id="appendix"><a class="anchor" href="#appendix"></a>10 Appendices</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/appendix.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+<h2 id="breaks"><a class="anchor" href="#breaks"></a>10.1 Breaking Changes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/appendix/breaks.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>This section documents breaking changes between versions</p>
+</div>
+<div class="sect1">
+<h2 id="_5_3_0">5.3.0</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>The embedded Redis server that can be used for testing has been changed to only bind to localhost.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If you wish to revert to the previous behavior, you will need to use a configuration file specified in your test specific <code>application.yml</code> file.</p>
+</div>
+<div class="listingblock">
+<div class="title">embedded-redis.conf</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-plain hljs" data-lang="plain">maxmemory 256M</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">test-application.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+  embedded:
+    config-file: '/full/path/to/embedded-redis.conf'</code></pre>
+</div>
+</div>
+</div>
 </div>
 
     </div>

@@ -1,10 +1,14 @@
 
-You can run an embedded version of Redis for testing and CI scenarios by adding a dependency on the Embedded Redis project:
+For testing purposes, we recommend running a real version of Redis inside a Docker container https://www.testcontainers.org/features/creating_container/#examples[via TestContainers].
 
-.build.gradle
-[source,groovy]
+[source,java]
 ----
-testCompile "com.github.kstyrc:embedded-redis:0.6"
+GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse(REDIS_DOCKER_NAME))
+    .withExposedPorts(REDIS_PORT)
+    .waitingFor(
+            Wait.forLogMessage(".*Ready to accept connections.*\\n", 1)
+    );
+redisContainer.start();
 ----
 
-If Redis is unavailable for the configured Redis URI an embedded instance of Redis will be automatically started and then shutdown at the end of the test (when `stop` is called on the `ApplicationContext`).
+The embedded redis container we used to recommend has been deprecated as of 5.3.0 and will be removed at a later date.

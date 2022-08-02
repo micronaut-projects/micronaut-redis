@@ -26,8 +26,11 @@ import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.io.socket.SocketUtils;
 import io.micronaut.core.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.embedded.RedisServer;
 import redis.embedded.RedisServerBuilder;
+import redis.embedded.exceptions.RedisBuildingException;
 
 import javax.annotation.PreDestroy;
 import java.io.Closeable;
@@ -39,13 +42,20 @@ import java.util.Optional;
  *
  * @author Graeme Rocher
  * @since 1.0
+ *
+ * @deprecated since 5.3.0, use TestContainers RedisContainer instead.
  */
 @Requires(classes = RedisServer.class)
 @Requires(beans = AbstractRedisConfiguration.class)
 @Factory
+@Deprecated
 public class EmbeddedRedisServer implements BeanCreatedEventListener<AbstractRedisConfiguration>, Closeable {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedRedisServer.class);
+
     private static final String DEFAULT_MAXMEMORY_SETTING = "maxmemory 256M";
+    private static final String DEFAULT_BIND_SETTING = "bind 127.0.0.1 ::1";
+
     private final Configuration embeddedConfiguration;
     private RedisServer redisServer;
 
@@ -68,15 +78,18 @@ public class EmbeddedRedisServer implements BeanCreatedEventListener<AbstractRed
             RedisURI redisURI = uri.get();
             port = redisURI.getPort();
             host = redisURI.getHost();
-
         }
         if (StringUtils.isNotEmpty(host) && host.equals("localhost") && SocketUtils.isTcpPortAvailable(port)) {
             RedisServerBuilder builder = embeddedConfiguration.builder;
             builder.port(port);
-            builder.setting(DEFAULT_MAXMEMORY_SETTING);
+            try {
+                builder.setting(DEFAULT_MAXMEMORY_SETTING);
+                builder.setting(DEFAULT_BIND_SETTING);
+            } catch (RedisBuildingException e) {
+                LOGGER.debug("Embedded settings failed as config file is present");
+            }
             redisServer = builder.build();
             redisServer.start();
-
         }
         return configuration;
     }
@@ -91,9 +104,12 @@ public class EmbeddedRedisServer implements BeanCreatedEventListener<AbstractRed
 
     /**
      * Configuration properties for embedded Redis.
+     *
+     * @deprecated since 5.3.0, use TestContainers RedisContainer instead.
      */
     @ConfigurationProperties(RedisSetting.REDIS_EMBEDDED)
     @Requires(classes = RedisServerBuilder.class)
+    @Deprecated
     public static class Configuration {
         @ConfigurationBuilder(
                 prefixes = ""

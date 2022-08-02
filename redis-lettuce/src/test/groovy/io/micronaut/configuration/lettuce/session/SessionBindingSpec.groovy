@@ -1,6 +1,6 @@
 package io.micronaut.configuration.lettuce.session
 
-import io.micronaut.configuration.lettuce.RedisContainerTrait
+import io.micronaut.configuration.lettuce.RedisSpec
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Requires
 import io.micronaut.http.HttpHeaders
@@ -9,6 +9,7 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.HttpClient
+import io.micronaut.redis.test.RedisContainerUtils
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.session.Session
 import io.micronaut.session.annotation.SessionValue
@@ -18,12 +19,12 @@ import spock.lang.Specification
  * @author Graeme Rocher
  * @since 1.0
  */
-class SessionBindingSpec extends Specification implements RedisContainerTrait {
+class SessionBindingSpec extends RedisSpec {
 
     void "test bind simple session argument using HTTP header processing"() {
         given:
         ApplicationContext context = ApplicationContext.run([
-                'redis.port': redisPort,
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'micronaut.session.http.redis.enabled':'true',
                 'spec.name': 'SessionBindingSpec'
         ])
@@ -57,7 +58,7 @@ class SessionBindingSpec extends Specification implements RedisContainerTrait {
     void "test bind simple session argument using Cookie processing"() {
         given:
         ApplicationContext context = ApplicationContext.run([
-                'redis.port': redisPort,
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'micronaut.session.http.redis.enabled':'true',
                 'spec.name': 'SessionBindingSpec'
         ])
@@ -92,7 +93,7 @@ class SessionBindingSpec extends Specification implements RedisContainerTrait {
     void "test bind optional session"() {
         given:
         ApplicationContext context = ApplicationContext.run([
-                'redis.port': redisPort,
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'micronaut.session.http.redis.enabled':'true',
                 'spec.name': 'SessionBindingSpec'
         ])

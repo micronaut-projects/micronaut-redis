@@ -1,9 +1,10 @@
 package io.micronaut.configuration.lettuce.session
 
-import io.micronaut.configuration.lettuce.RedisContainerTrait
+import io.micronaut.configuration.lettuce.RedisSpec
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.event.ApplicationEventListener
 import io.micronaut.jackson.serialize.JacksonObjectSerializer
+import io.micronaut.redis.test.RedisContainerUtils
 import io.micronaut.session.Session
 import io.micronaut.session.event.AbstractSessionEvent
 import io.micronaut.session.event.SessionCreatedEvent
@@ -22,13 +23,13 @@ import java.time.temporal.ChronoUnit
  * @author Graeme Rocher
  * @since 1.0
  */
-class RedisSessionSpec extends Specification implements RedisContainerTrait {
+class RedisSessionSpec extends RedisSpec {
 
     void "test redis session create"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run(
                 'micronaut.session.http.redis.enabled':'true',
-                'redis.port': redisPort
+                'redis.port': RedisContainerUtils.getRedisPort()
         )
         RedisSessionStore sessionStore = applicationContext.getBean(RedisSessionStore)
         TestListener listener = applicationContext.getBean(TestListener)
@@ -119,7 +120,7 @@ class RedisSessionSpec extends Specification implements RedisContainerTrait {
     void "test redis session expiry"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run(
-                'redis.port': redisPort,
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'micronaut.session.http.redis.enabled':'true'
         )
         RedisSessionStore sessionStore = applicationContext.getBean(RedisSessionStore)
@@ -149,7 +150,7 @@ class RedisSessionSpec extends Specification implements RedisContainerTrait {
     void "test redis session write behind"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run(
-                'redis.port': redisPort,
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'micronaut.session.http.redis.enabled':'true',
                 'micronaut.session.http.redis.writeMode':'background',
         )
@@ -185,7 +186,7 @@ class RedisSessionSpec extends Specification implements RedisContainerTrait {
     void "test redis JSON sessions"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run(
-                'redis.port': redisPort,
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'micronaut.session.http.redis.valueSerializer':JacksonObjectSerializer.name,
                 'micronaut.session.http.redis.enabled':'true'
         )
@@ -236,7 +237,7 @@ class RedisSessionSpec extends Specification implements RedisContainerTrait {
     void "test super class properties can be configured"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run(
-                'redis.port': redisPort,
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'micronaut.session.http.cookiePath':'/foo',
                 'micronaut.session.http.redis.enabled': true
         )

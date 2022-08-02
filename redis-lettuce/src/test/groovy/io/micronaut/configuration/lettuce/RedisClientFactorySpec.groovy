@@ -7,19 +7,20 @@ import io.lettuce.core.api.sync.RedisCommands
 import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.inject.qualifiers.Qualifiers
+import io.micronaut.redis.test.RedisContainerUtils
 import spock.lang.Specification
 
 /**
  * @author Graeme Rocher
  * @since 1.0
  */
-class RedisClientFactorySpec extends Specification implements RedisContainerTrait {
+class RedisClientFactorySpec extends RedisSpec {
 
     private static final String MAX_HEAP_SETTING = "maxmemory 256M"
 
     void "test redis server config by port"() {
         when:
-        ApplicationContext applicationContext = ApplicationContext.run('redis.port': redisPort)
+        ApplicationContext applicationContext = ApplicationContext.run('redis.port': RedisContainerUtils.getRedisPort())
         StatefulRedisConnection connection = applicationContext.getBean(StatefulRedisConnection)
 
         then:
@@ -35,7 +36,7 @@ class RedisClientFactorySpec extends Specification implements RedisContainerTrai
 
     void "test redis server config by URI"() {
         when:
-        ApplicationContext applicationContext = ApplicationContext.run('redis.uri': getRedisPort("redis://localhost"))
+        ApplicationContext applicationContext = ApplicationContext.run('redis.uri': RedisContainerUtils.getRedisPort("redis://localhost"))
         StatefulRedisConnection client = applicationContext.getBean(StatefulRedisConnection)
         RedisCommands<?,?> command = client.sync()
         then:
@@ -48,18 +49,18 @@ class RedisClientFactorySpec extends Specification implements RedisContainerTrai
 
     void "test multi redis server config by URI"() {
         given:
-        ApplicationContext applicationContext = ApplicationContext.run(['redis.servers.foo.uri': getRedisPort("redis://localhost"),
+        ApplicationContext applicationContext = ApplicationContext.run(['redis.servers.foo.uri': RedisContainerUtils.getRedisPort("redis://localhost"),
                                                                         'redis.servers.foo.client-name': "foo-client-name",
-                                                                        'redis.servers.bar.uri': getRedisPort("redis://localhost")])
+                                                                        'redis.servers.bar.uri': RedisContainerUtils.getRedisPort("redis://localhost")])
         when:
         RedisClient clientFoo = applicationContext.getBean(RedisClient, Qualifiers.byName("foo"))
         RedisURI innerRedisURI = clientFoo.@redisURI
         RedisCommands<?,?> commandFoo = clientFoo.connect().sync()
 
         then:
-        innerRedisURI.port == redisPort
+        innerRedisURI.port == RedisContainerUtils.getRedisPort()
         innerRedisURI.clientName == "foo-client-name"
-        commandFoo.info().contains("tcp_port:$REDIS_PORT")
+        commandFoo.info().contains("tcp_port:$RedisContainerUtils.REDIS_PORT")
         commandFoo.set("foo", "bar")
         commandFoo.get("foo") == "bar"
 
@@ -68,7 +69,7 @@ class RedisClientFactorySpec extends Specification implements RedisContainerTrai
         RedisURI innerBarRedisURI = clientBar.@redisURI
         RedisCommands<?,?> commandBar = clientBar.connect().sync()
         then:
-        commandBar.info().contains("tcp_port:$REDIS_PORT")
+        commandBar.info().contains("tcp_port:$RedisContainerUtils.REDIS_PORT")
         !innerBarRedisURI.clientName
 
         cleanup:
@@ -78,7 +79,7 @@ class RedisClientFactorySpec extends Specification implements RedisContainerTrai
     void "test redis thread pool settings"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run([
-                'redis.uri': getRedisPort("redis://localhost"),
+                'redis.uri': RedisContainerUtils.getRedisPort("redis://localhost"),
                 'redis.io-thread-pool-size':10,
                 'redis.computation-thread-pool-size':20,
         ])
@@ -96,7 +97,7 @@ class RedisClientFactorySpec extends Specification implements RedisContainerTrai
     void "test redis client name settings"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run([
-                'redis.uri': getRedisPort("redis://localhost"),
+                'redis.uri': RedisContainerUtils.getRedisPort("redis://localhost"),
                 'redis.client-name':"test-name"
         ])
         when:
@@ -113,7 +114,7 @@ class RedisClientFactorySpec extends Specification implements RedisContainerTrai
     void "test redis metrics settings"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run([
-                'redis.uri': getRedisPort("redis://localhost"),
+                'redis.uri': RedisContainerUtils.getRedisPort("redis://localhost"),
         ])
 
         when:

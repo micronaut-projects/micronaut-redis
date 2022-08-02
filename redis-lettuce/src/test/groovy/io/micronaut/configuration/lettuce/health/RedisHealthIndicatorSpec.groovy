@@ -1,10 +1,11 @@
 package io.micronaut.configuration.lettuce.health
 
 import io.lettuce.core.RedisClient
-import io.micronaut.configuration.lettuce.RedisContainerTrait
+import io.micronaut.configuration.lettuce.RedisSpec
 import io.micronaut.context.ApplicationContext
 import io.micronaut.health.HealthStatus
 import io.micronaut.management.health.indicator.HealthResult
+import io.micronaut.redis.test.RedisContainerUtils
 import reactor.core.publisher.Flux
 import spock.lang.Specification
 
@@ -12,13 +13,13 @@ import spock.lang.Specification
  * @author graemerocher
  * @since 1.0
  */
-class RedisHealthIndicatorSpec extends Specification implements RedisContainerTrait {
+class RedisHealthIndicatorSpec extends RedisSpec {
 
     private static String MAX_HEAP_SETTING = "maxmemory 256M"
 
     void "test redis health indicator"() {
         when:
-        ApplicationContext applicationContext = ApplicationContext.run('redis.port':redisPort)
+        ApplicationContext applicationContext = ApplicationContext.run('redis.port': RedisContainerUtils.getRedisPort())
         RedisClient client = applicationContext.getBean(RedisClient)
 
         then:
@@ -27,13 +28,13 @@ class RedisHealthIndicatorSpec extends Specification implements RedisContainerTr
         when:
         RedisHealthIndicator healthIndicator = applicationContext.getBean(RedisHealthIndicator)
         HealthResult result = Flux.from(healthIndicator.getResult()).blockFirst()
-        
+
         then:
         result != null
         result.status == HealthStatus.UP
 
         when:
-        stopRedis()
+        RedisContainerUtils.stopRedis()
         result = Flux.from(healthIndicator.getResult()).blockFirst()
 
         then:
@@ -48,7 +49,7 @@ class RedisHealthIndicatorSpec extends Specification implements RedisContainerTr
         when:
         ApplicationContext applicationContext = ApplicationContext.run([
                 'redis.health.enabled': 'false',
-                'redis.port': redisPort
+                'redis.port': RedisContainerUtils.getRedisPort()
         ])
         RedisClient client = applicationContext.getBean(RedisClient)
 

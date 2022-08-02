@@ -1,17 +1,18 @@
 package io.micronaut.configuration.lettuce.cache
 
-import io.micronaut.configuration.lettuce.RedisContainerTrait
+import io.micronaut.configuration.lettuce.RedisSpec
 import io.micronaut.context.ApplicationContext
+import io.micronaut.redis.test.RedisContainerUtils
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
 
-class ExpirationSpec extends Specification implements RedisContainerTrait {
+class ExpirationSpec extends RedisSpec {
 
     @Shared
     @AutoCleanup
     ApplicationContext applicationContext = ApplicationContext.run(
-            'redis.port': redisPort,
+            'redis.port': RedisContainerUtils.getRedisPort(),
             'redis.caches.test1.enabled': 'true',
             'redis.caches.test1.expire-after-write': '1s',
             'redis.caches.test2.enabled': 'true',

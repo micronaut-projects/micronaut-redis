@@ -3,7 +3,7 @@ package io.micronaut.configuration.lettuce.cache
 import groovy.transform.Canonical
 import io.lettuce.core.support.AsyncPool
 import io.micronaut.configuration.lettuce.AbstractRedisConnectionPoolConfiguration
-import io.micronaut.configuration.lettuce.RedisContainerTrait
+import io.micronaut.configuration.lettuce.RedisSpec
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.BeanLocator
 import io.micronaut.context.exceptions.ConfigurationException
@@ -11,6 +11,7 @@ import io.micronaut.context.exceptions.NoSuchBeanException
 import io.micronaut.core.convert.DefaultConversionService
 import io.micronaut.core.type.Argument
 import io.micronaut.inject.qualifiers.Qualifiers
+import io.micronaut.redis.test.RedisContainerUtils
 import io.micronaut.runtime.ApplicationConfiguration
 import spock.lang.Specification
 
@@ -19,11 +20,11 @@ import java.nio.charset.Charset
 /**
  * @author Kovalov Illia
  */
-class RedisPoolCacheSpec extends Specification implements RedisContainerTrait {
+class RedisPoolCacheSpec extends RedisSpec {
 
     ApplicationContext createApplicationContext(Map options = [:]) {
         ApplicationContext.run([
-                'redis.port': redisPort,
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'redis.caches.test.enabled': 'true',
                 'redis.pool.enabled': 'true'
         ] + options)

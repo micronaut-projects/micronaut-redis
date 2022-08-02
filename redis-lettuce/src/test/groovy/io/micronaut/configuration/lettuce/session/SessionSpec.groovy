@@ -1,6 +1,6 @@
 package io.micronaut.configuration.lettuce.session
 
-
+import io.micronaut.configuration.lettuce.RedisContainerTrait
 import io.micronaut.context.annotation.Property
 import io.micronaut.context.annotation.Requires
 import io.micronaut.http.HttpHeaders
@@ -14,21 +14,12 @@ import io.micronaut.session.Session
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import io.micronaut.test.support.TestPropertyProvider
 import jakarta.inject.Inject
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.utility.DockerImageName
-import spock.lang.AutoCleanup
-import spock.lang.Shared
 import spock.lang.Specification
 
 @MicronautTest
 @Property(name = 'spec.name', value = 'SessionSpec')
 @Property(name = "micronaut.session.http.redis.enabled", value = "true")
-class SessionSpec extends Specification  implements TestPropertyProvider {
-
-    @Shared
-    @AutoCleanup
-    GenericContainer redis = new GenericContainer(DockerImageName.parse("redis:5.0.3-alpine"))
-            .withExposedPorts(6379)
+class SessionSpec extends Specification  implements TestPropertyProvider, RedisContainerTrait {
 
     @Inject
     @Client("/")
@@ -57,9 +48,8 @@ class SessionSpec extends Specification  implements TestPropertyProvider {
 
     @Override
     Map<String, String> getProperties() {
-        redis.start()
         return [
-                'redis.uri': 'redis://' + redis.getHost() + ":" + redis.getMappedPort(6379)
+                'redis.uri': getRedisPort('redis://localhost')
         ]
     }
 

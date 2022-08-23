@@ -66,19 +66,6 @@ public abstract class AbstractRedisClientFactory {
     }
 
     /**
-     * Creates the {@link RedisClient} from the configuration.
-     *
-     * @param config The configuration
-     * @param optionalClientResources The ClientResources
-     * @deprecated use {@link #redisClient(AbstractRedisConfiguration, ClientResources, List)} instead
-     * @return The {@link RedisClient}
-     */
-    @Deprecated
-    public RedisClient redisClient(AbstractRedisConfiguration config, @Nullable ClientResources optionalClientResources) {
-        return this.redisClient(config, optionalClientResources, Collections.emptyList());
-    }
-
-    /**
      * Creates the {@link StatefulRedisConnection} from the {@link RedisClient}.
      *
      * @param redisClient The {@link RedisClient}

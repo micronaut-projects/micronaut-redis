@@ -1,7 +1,7 @@
 package io.micronaut.configuration.lettuce.cache
 
 import io.micronaut.context.ApplicationContext
-import io.micronaut.core.io.socket.SocketUtils
+import io.micronaut.redis.test.RedisContainerUtils
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import spock.lang.AutoCleanup
@@ -15,7 +15,7 @@ import spock.lang.Specification
 class SyncCacheSpec extends Specification{
 
     @Shared @AutoCleanup ApplicationContext applicationContext = ApplicationContext.run(
-            'redis.uri':"redis://localhost:${SocketUtils.findAvailableTcpPort()}",
+            'redis.uri':"redis://localhost:${RedisContainerUtils.getRedisPort()}",
             'redis.caches.counter.enabled':'true',
             'redis.caches.counter2.enabled':'true'
     )
@@ -59,7 +59,7 @@ class SyncCacheSpec extends Specification{
         counterService.reset("test")
         then:
         counterService.futureValue("test").get() == 0
-        
+
         when:
         counterService.set("test", 3)
 

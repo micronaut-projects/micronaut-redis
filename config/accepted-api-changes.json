@@ -1,0 +1,37 @@
+[
+  {
+    "type": "io.micronaut.configuration.lettuce.RedisSetting",
+    "member": "Field REDIS_EMBEDDED",
+    "reason": "Removed deprecated field for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Configuration$Definition$Reference",
+    "member": "Field $ANNOTATION_METADATA",
+    "reason": "Removed deprecated field for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Configuration$Definition$Reference",
+    "member": "Constructor io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Configuration$Definition$Reference()",
+    "reason": "Removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Definition$Reference",
+    "member": "Field $ANNOTATION_METADATA",
+    "reason": "Removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Definition$Reference",
+    "member": "Constructor io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Definition$Reference()",
+    "reason": "Removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.EmbeddedRedisServer",
+    "member": "Constructor io.micronaut.configuration.lettuce.test.EmbeddedRedisServer(io.micronaut.configuration.lettuce.test.EmbeddedRedisServer$Configuration)",
+    "reason": "Removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.EmbeddedRedisServer$Configuration",
+    "member": "Constructor io.micronaut.configuration.lettuce.test.EmbeddedRedisServer$Configuration()",
+    "reason": "Removed deprecated class for Micronaut 4.0.x"
+  }
+]

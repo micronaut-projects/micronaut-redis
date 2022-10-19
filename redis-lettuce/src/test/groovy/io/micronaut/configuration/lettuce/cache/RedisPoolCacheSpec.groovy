@@ -22,17 +22,31 @@ import java.nio.charset.Charset
  */
 class RedisPoolCacheSpec extends RedisSpec {
 
-    ApplicationContext createApplicationContext(Map options = [:]) {
-        ApplicationContext.run([
+    ApplicationContext createApplicationContext(Map options = [:], boolean eagerInit = false) {
+        ApplicationContext.builder().properties([
                 'redis.port': RedisContainerUtils.getRedisPort(),
                 'redis.caches.test.enabled': 'true',
                 'redis.pool.enabled': 'true'
-        ] + options)
+        ] + options).environments("test").eagerInitSingletons(eagerInit).start()
     }
 
     void "can be disabled"() {
         setup:
         ApplicationContext applicationContext = createApplicationContext('redis.pool.enabled': 'false')
+
+        when:
+        applicationContext.getBean(RedisConnectionPoolCache, Qualifiers.byName("test"))
+
+        then:
+        thrown NoSuchBeanException
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "can be disabled with eager init enabled"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext('redis.pool.enabled': 'false', true)
 
         when:
         applicationContext.getBean(RedisConnectionPoolCache, Qualifiers.byName("test"))

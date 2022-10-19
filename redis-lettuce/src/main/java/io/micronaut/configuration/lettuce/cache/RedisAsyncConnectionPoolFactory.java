@@ -28,6 +28,7 @@ import io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguratio
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.exceptions.ConfigurationException;
 import jakarta.inject.Singleton;
 
@@ -45,6 +46,7 @@ import java.util.concurrent.CompletionStage;
 public final class RedisAsyncConnectionPoolFactory {
 
     @Singleton
+    @Requires(beans = {DefaultRedisCacheConfiguration.class, DefaultRedisConnectionPoolConfiguration.class})
     public AsyncPool<StatefulConnection<byte[], byte[]>> getAsyncPool(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
             BeanLocator beanLocator,

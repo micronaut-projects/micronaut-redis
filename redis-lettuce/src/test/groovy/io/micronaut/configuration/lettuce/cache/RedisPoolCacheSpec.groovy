@@ -13,7 +13,6 @@ import io.micronaut.core.type.Argument
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.redis.test.RedisContainerUtils
 import io.micronaut.runtime.ApplicationConfiguration
-import spock.lang.Specification
 
 import java.nio.charset.Charset
 
@@ -30,9 +29,9 @@ class RedisPoolCacheSpec extends RedisSpec {
         ] + options).environments("test").eagerInitSingletons(eagerInit).start()
     }
 
-    void "can be disabled"() {
+    void "can be disabled where initialization is #description"() {
         setup:
-        ApplicationContext applicationContext = createApplicationContext('redis.pool.enabled': 'false')
+        ApplicationContext applicationContext = createApplicationContext('redis.pool.enabled': 'false', eager)
 
         when:
         applicationContext.getBean(RedisConnectionPoolCache, Qualifiers.byName("test"))
@@ -42,20 +41,11 @@ class RedisPoolCacheSpec extends RedisSpec {
 
         cleanup:
         applicationContext.stop()
-    }
 
-    void "can be disabled with eager init enabled"() {
-        setup:
-        ApplicationContext applicationContext = createApplicationContext('redis.pool.enabled': 'false', true)
-
-        when:
-        applicationContext.getBean(RedisConnectionPoolCache, Qualifiers.byName("test"))
-
-        then:
-        thrown NoSuchBeanException
-
-        cleanup:
-        applicationContext.stop()
+        where:
+        eager | description
+        true  | 'eager'
+        false | 'lazy'
     }
 
     void "accepts configuration"() {

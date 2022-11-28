@@ -13,7 +13,6 @@ import io.micronaut.core.type.Argument
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.redis.test.RedisContainerUtils
 import io.micronaut.runtime.ApplicationConfiguration
-import spock.lang.Specification
 
 import java.nio.charset.Charset
 
@@ -22,17 +21,17 @@ import java.nio.charset.Charset
  */
 class RedisPoolCacheSpec extends RedisSpec {
 
-    ApplicationContext createApplicationContext(Map options = [:]) {
-        ApplicationContext.run([
+    ApplicationContext createApplicationContext(Map options = [:], boolean eagerInit = false) {
+        ApplicationContext.builder().properties([
                 'redis.port': RedisContainerUtils.getRedisPort(),
                 'redis.caches.test.enabled': 'true',
                 'redis.pool.enabled': 'true'
-        ] + options)
+        ] + options).environments("test").eagerInitSingletons(eagerInit).start()
     }
 
-    void "can be disabled"() {
+    void "can be disabled where initialization is #description"() {
         setup:
-        ApplicationContext applicationContext = createApplicationContext('redis.pool.enabled': 'false')
+        ApplicationContext applicationContext = createApplicationContext('redis.pool.enabled': 'false', eager)
 
         when:
         applicationContext.getBean(RedisConnectionPoolCache, Qualifiers.byName("test"))
@@ -42,6 +41,11 @@ class RedisPoolCacheSpec extends RedisSpec {
 
         cleanup:
         applicationContext.stop()
+
+        where:
+        eager | description
+        true  | 'eager'
+        false | 'lazy'
     }
 
     void "accepts configuration"() {

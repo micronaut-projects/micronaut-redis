@@ -9,6 +9,13 @@ plugins {
     id("io.micronaut.build.shared.settings") version "6.1.0"
 }
 
+micronautBuild {
+    addSnapshotRepository()
+    importMicronautCatalog()
+    importMicronautCatalog("micronaut-cache")
+    importMicronautCatalog("micronaut-micrometer")
+}
+
 rootProject.name = 'redis-parent'
 
 include 'redis-bom'

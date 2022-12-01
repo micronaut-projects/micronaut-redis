@@ -1,25 +1,22 @@
 [versions]
 managed-lettuce = "6.2.1.RELEASE"
 
+micronaut-cache = "4.0.0-SNAPSHOT"
+micronaut-micrometer = "5.0.0-SNAPSHOT"
+
 redis-embedded = "0.6"
+
+testcontainers = "1.17.5"
 
 [libraries]
 managed-lettuce = { module = "io.lettuce:lettuce-core", version.ref = "managed-lettuce" }
 
-micronaut-cache = { module = 'io.micronaut.cache:micronaut-cache-core'}
-micronaut-function-web = { module = 'io.micronaut:micronaut-function-web' }
-micronaut-graal = { module = 'io.micronaut:micronaut-graal' }
-micronaut-http-client = { module = 'io.micronaut:micronaut-http-client' }
-micronaut-http-server-netty = { module = 'io.micronaut:micronaut-http-server-netty' }
-micronaut-inject-groovy = { module = 'io.micronaut:micronaut-inject-groovy' }
-micronaut-inject-java = { module = 'io.micronaut:micronaut-inject-java' }
-micronaut-management = { module = 'io.micronaut:micronaut-management' }
-micronaut-micrometer = { module = 'io.micronaut.micrometer:micronaut-micrometer-core'}
-micronaut-session = { module = 'io.micronaut:micronaut-session' }
+micronaut-cache = { module = "io.micronaut.cache:micronaut-cache-bom", version.ref = "micronaut-cache" }
+micronaut-micrometer = { module = "io.micronaut.micrometer:micronaut-micrometer-bom", version.ref = "micronaut-micrometer" }
 
 projectreactor = { module = 'io.projectreactor:reactor-core' }
 
 redis-embedded = { module = "com.github.kstyrc:embedded-redis", version.ref = "redis-embedded" }
 
-testcontainers-bom = { module = "org.testcontainers:testcontainers-bom" }
+testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
 testcontainers-spock = { module = "org.testcontainers:spock" }

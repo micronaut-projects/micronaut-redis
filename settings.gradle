@@ -14,6 +14,7 @@ micronautBuild {
     importMicronautCatalog()
     importMicronautCatalog("micronaut-cache")
     importMicronautCatalog("micronaut-micrometer")
+    importMicronautCatalog("micronaut-serde")
 }
 
 rootProject.name = 'redis-parent'

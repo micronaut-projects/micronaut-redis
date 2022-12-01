@@ -22,12 +22,11 @@ import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 
 import io.micronaut.core.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Abstract version of the a factory class for creating Redis clients.
+ * Abstract version of a factory class for creating Redis clients.
  *
  * @author Graeme Rocher
  * @since 1.0

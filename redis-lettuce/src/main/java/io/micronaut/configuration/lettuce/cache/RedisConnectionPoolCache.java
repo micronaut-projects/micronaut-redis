@@ -69,7 +69,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
     public RedisConnectionPoolCache(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
             RedisCacheConfiguration redisCacheConfiguration,
-            ConversionService<?> conversionService,
+            ConversionService conversionService,
             BeanLocator beanLocator,
             AsyncPool<StatefulConnection<byte[], byte[]>> asyncPool
     ) {

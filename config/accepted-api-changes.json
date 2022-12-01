@@ -33,5 +33,90 @@
     "type": "io.micronaut.configuration.lettuce.test.EmbeddedRedisServer$Configuration",
     "member": "Constructor io.micronaut.configuration.lettuce.test.EmbeddedRedisServer$Configuration()",
     "reason": "Removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.cache.AsyncCacheCommands",
+    "member": "Implemented interface io.lettuce.core.dynamic.Commands",
+    "reason": "Lettuce change in major update"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.cache.SyncCacheCommands",
+    "member": "Implemented interface io.lettuce.core.dynamic.Commands",
+    "reason": "Lettuce change in major update"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.session.RedisSessionCommands",
+    "member": "Implemented interface io.lettuce.core.dynamic.Commands",
+    "reason": "Lettuce change in major update"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Configuration$Definition$Reference",
+    "member": "Implemented interface io.micronaut.core.annotation.AnnotationSource",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Configuration$Definition$Reference",
+    "member": "Implemented interface io.micronaut.inject.BeanContextConditional",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Configuration$Definition$Reference",
+    "member": "Implemented interface io.micronaut.core.annotation.AnnotationMetadataProvider",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Configuration$Definition$Reference",
+    "member": "Implemented interface io.micronaut.inject.BeanType",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Configuration$Definition$Reference",
+    "member": "Implemented interface io.micronaut.inject.BeanDefinitionReference",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Definition$Reference",
+    "member": "Implemented interface io.micronaut.core.annotation.AnnotationSource",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Definition$Reference",
+    "member": "Implemented interface io.micronaut.inject.BeanContextConditional",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Definition$Reference",
+    "member": "Implemented interface io.micronaut.core.annotation.AnnotationMetadataProvider",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Definition$Reference",
+    "member": "Implemented interface io.micronaut.inject.BeanType",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.$EmbeddedRedisServer$Definition$Reference",
+    "member": "Implemented interface io.micronaut.inject.BeanDefinitionReference",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.EmbeddedRedisServer",
+    "member": "Implemented interface java.util.EventListener",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.EmbeddedRedisServer",
+    "member": "Implemented interface java.io.Closeable",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.EmbeddedRedisServer",
+    "member": "Implemented interface io.micronaut.context.event.BeanCreatedEventListener",
+    "reason": "Deprecated embedded server was removed"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.test.EmbeddedRedisServer",
+    "member": "Implemented interface java.lang.AutoCloseable",
+    "reason": "Deprecated embedded server was removed"
   }
 ]

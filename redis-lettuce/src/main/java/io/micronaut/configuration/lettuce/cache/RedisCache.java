@@ -68,7 +68,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
     public RedisCache(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
             RedisCacheConfiguration redisCacheConfiguration,
-            ConversionService<?> conversionService,
+            ConversionService conversionService,
             BeanLocator beanLocator
     ) {
         super(defaultRedisCacheConfiguration, redisCacheConfiguration, conversionService, beanLocator);

@@ -22,6 +22,7 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.codec.ByteArrayCodec;
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.annotation.Internal;
@@ -37,6 +38,7 @@ import java.util.Optional;
  * @since 1.0
  */
 @Internal
+@SuppressWarnings("rawtypes")
 public class RedisConnectionUtil {
     /**
      * Utility method for establishing a redis connection.
@@ -113,6 +115,27 @@ public class RedisConnectionUtil {
         Optional<RedisClient> redisClient = findRedisClient(beanLocator, serverName);
         if (redisClient.isPresent()) {
             return redisClient.get().connect(ByteArrayCodec.INSTANCE);
+        }
+        throw new ConfigurationException(errorMessage);
+    }
+
+    /**
+     * Utility method for opening a new bytes redis pubsub connection.
+     *
+     * @param beanLocator  The bean locator to use
+     * @param serverName   The server name to use
+     * @param errorMessage The error message to use if the connection can't be found
+     * @return The connection
+     * @throws ConfigurationException If the connection cannot be found
+     */
+    public static StatefulRedisPubSubConnection<byte[], byte[]> openBytesRedisPubSubConnection(BeanLocator beanLocator, Optional<String> serverName, String errorMessage) {
+        Optional<RedisClusterClient> redisClusterClient = findRedisClusterClient(beanLocator, serverName);
+        if (redisClusterClient.isPresent()) {
+            return redisClusterClient.get().connectPubSub(ByteArrayCodec.INSTANCE);
+        }
+        Optional<RedisClient> redisClient = findRedisClient(beanLocator, serverName);
+        if (redisClient.isPresent()) {
+            return redisClient.get().connectPubSub(ByteArrayCodec.INSTANCE);
         }
         throw new ConfigurationException(errorMessage);
     }

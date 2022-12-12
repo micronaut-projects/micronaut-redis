@@ -8,7 +8,7 @@ dependencies {
     api libs.managed.lettuce
     api mnCache.micronaut.cache.core
 
-    compileOnly mn.micronaut.session
+    compileOnly mnSession.micronaut.session
     compileOnly mn.micronaut.management
     compileOnly mnMicrometer.micronaut.micrometer.core
     compileOnly libs.redis.embedded
@@ -27,7 +27,7 @@ dependencies {
     testImplementation mn.micronaut.jackson.databind
     testImplementation mn.micronaut.function.web
 
-    testImplementation mn.micronaut.session
+    testImplementation mnSession.micronaut.session
     testRuntimeOnly mn.micronaut.http.server.netty
     testImplementation mn.micronaut.http.client
     testImplementation libs.redis.embedded

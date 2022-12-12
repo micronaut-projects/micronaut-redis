@@ -44,6 +44,8 @@ import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.convert.ArgumentConversionContext;
+import io.micronaut.core.convert.ConversionContext;
+import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.convert.value.MutableConvertibleValues;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.util.CollectionUtils;
@@ -121,6 +123,7 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
     private static final Logger LOG  = LoggerFactory.getLogger(RedisSessionStore.class);
     private final RedisHttpSessionConfiguration sessionConfiguration;
     private final SessionIdGenerator sessionIdGenerator;
+    private final ConversionService conversionService;
     private final ApplicationEventPublisher eventPublisher;
     private final ObjectSerializer valueSerializer;
     private final Charset charset;
@@ -150,10 +153,12 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
             RedisHttpSessionConfiguration sessionConfiguration,
             BeanLocator beanLocator,
             ObjectSerializer defaultSerializer,
+            ConversionService conversionService,
             @Named(TaskExecutors.SCHEDULED) ExecutorService scheduledExecutorService,
             ApplicationEventPublisher eventPublisher) {
         this.writeMode = sessionConfiguration.getWriteMode();
         this.sessionIdGenerator = sessionIdGenerator;
+        this.conversionService = conversionService;
         this.valueSerializer = sessionConfiguration
                 .getValueSerializer()
                 .flatMap(beanLocator::findOrInstantiateBean)
@@ -546,16 +551,12 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
 
         @Override
         public <T> Optional<T> get(CharSequence name, ArgumentConversionContext<T> conversionContext) {
-            Optional<T> result = super.get(name, conversionContext);
-            if (!result.isPresent() && attributeMap.containsKey(name)) {
-                Object val = attributeMap.get(name);
-                if (val instanceof byte[]) {
-                    Optional<T> deserialized = valueSerializer.deserialize((byte[]) val, conversionContext.getArgument());
-                    deserialized.ifPresent(t -> attributeMap.put(name, t));
-                    return deserialized;
+            return super.get(name, ConversionContext.of(Object.class)).flatMap(o -> {
+                if (o instanceof byte[] rawBytes) {
+                    return valueSerializer.deserialize(rawBytes, conversionContext.getArgument());
                 }
-            }
-            return result;
+                return conversionService.convert(o, conversionContext);
+            });
         }
 
         @Override

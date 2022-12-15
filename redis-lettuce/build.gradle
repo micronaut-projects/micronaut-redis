@@ -18,7 +18,7 @@ dependencies {
     testImplementation platform(libs.testcontainers.bom)
     testImplementation libs.testcontainers.spock
 
-    testImplementation libs.projectreactor
+    testImplementation mn.reactor
 
     testImplementation mn.micronaut.inject.java
     testImplementation mn.micronaut.management

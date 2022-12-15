@@ -145,29 +145,6 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
      * @param sessionConfiguration sessionConfiguration
      * @param beanLocator beanLocator
      * @param defaultSerializer The default value serializer
-     * @param scheduledExecutorService scheduledExecutorService
-     * @param eventPublisher eventPublisher
-     *
-     * @deprecated Use {@link #RedisSessionStore(SessionIdGenerator, RedisHttpSessionConfiguration, BeanLocator, ObjectSerializer, ConversionService, ExecutorService, ApplicationEventPublisher)} instead
-     */
-    @Deprecated
-    public RedisSessionStore(
-        SessionIdGenerator sessionIdGenerator,
-        RedisHttpSessionConfiguration sessionConfiguration,
-        BeanLocator beanLocator,
-        ObjectSerializer defaultSerializer,
-        @Named(TaskExecutors.SCHEDULED) ExecutorService scheduledExecutorService,
-        ApplicationEventPublisher eventPublisher
-    ) {
-        this(sessionIdGenerator, sessionConfiguration, beanLocator, defaultSerializer, ConversionService.SHARED, scheduledExecutorService, eventPublisher);
-    }
-
-    /**
-     * Constructor.
-     * @param sessionIdGenerator sessionIdGenerator
-     * @param sessionConfiguration sessionConfiguration
-     * @param beanLocator beanLocator
-     * @param defaultSerializer The default value serializer
      * @param conversionService The conversion service
      * @param scheduledExecutorService scheduledExecutorService
      * @param eventPublisher eventPublisher

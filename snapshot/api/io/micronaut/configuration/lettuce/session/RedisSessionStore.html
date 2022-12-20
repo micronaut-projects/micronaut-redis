@@ -35,7 +35,6 @@ loadScripts(document, 'script');</script>
 <li><a href="package-summary.html">Package</a></li>
 <li class="nav-bar-cell1-rev">Class</li>
 <li><a href="package-tree.html">Tree</a></li>
-<li><a href="../../../../../deprecated-list.html">Deprecated</a></li>
 <li><a href="../../../../../index-all.html">Index</a></li>
 <li><a href="../../../../../help-doc.html#class">Help</a></li>
 </ul>
@@ -140,10 +139,11 @@ implements io.micronaut.session.SessionStore&lt;io.micronaut.configuration.lettu
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.session.SessionIdGenerator,io.micronaut.configuration.lettuce.session.RedisHttpSessionConfiguration,io.micronaut.context.BeanLocator,io.micronaut.core.serialize.ObjectSerializer,java.util.concurrent.ExecutorService,io.micronaut.context.event.ApplicationEventPublisher)" class="member-name-link">RedisSessionStore</a><wbr>(io.micronaut.session.SessionIdGenerator&nbsp;sessionIdGenerator,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.session.SessionIdGenerator,io.micronaut.configuration.lettuce.session.RedisHttpSessionConfiguration,io.micronaut.context.BeanLocator,io.micronaut.core.serialize.ObjectSerializer,io.micronaut.core.convert.ConversionService,java.util.concurrent.ExecutorService,io.micronaut.context.event.ApplicationEventPublisher)" class="member-name-link">RedisSessionStore</a><wbr>(io.micronaut.session.SessionIdGenerator&nbsp;sessionIdGenerator,
  <a href="RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a>&nbsp;sessionConfiguration,
  io.micronaut.context.BeanLocator&nbsp;beanLocator,
  io.micronaut.core.serialize.ObjectSerializer&nbsp;defaultSerializer,
+ io.micronaut.core.convert.ConversionService&nbsp;conversionService,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="class or interface in java.util.concurrent" class="external-link">ExecutorService</a>&nbsp;scheduledExecutorService,
  io.micronaut.context.event.ApplicationEventPublisher&nbsp;eventPublisher)</code></div>
 <div class="col-last even-row-color">
@@ -235,12 +235,13 @@ implements io.micronaut.session.SessionStore&lt;io.micronaut.configuration.lettu
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(io.micronaut.session.SessionIdGenerator,io.micronaut.configuration.lettuce.session.RedisHttpSessionConfiguration,io.micronaut.context.BeanLocator,io.micronaut.core.serialize.ObjectSerializer,java.util.concurrent.ExecutorService,io.micronaut.context.event.ApplicationEventPublisher)">
+<section class="detail" id="&lt;init&gt;(io.micronaut.session.SessionIdGenerator,io.micronaut.configuration.lettuce.session.RedisHttpSessionConfiguration,io.micronaut.context.BeanLocator,io.micronaut.core.serialize.ObjectSerializer,io.micronaut.core.convert.ConversionService,java.util.concurrent.ExecutorService,io.micronaut.context.event.ApplicationEventPublisher)">
 <h3>RedisSessionStore</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">RedisSessionStore</span><wbr><span class="parameters">(io.micronaut.session.SessionIdGenerator&nbsp;sessionIdGenerator,
  <a href="RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a>&nbsp;sessionConfiguration,
  io.micronaut.context.BeanLocator&nbsp;beanLocator,
  io.micronaut.core.serialize.ObjectSerializer&nbsp;defaultSerializer,
+ io.micronaut.core.convert.ConversionService&nbsp;conversionService,
  @Named("scheduled")
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="class or interface in java.util.concurrent" class="external-link">ExecutorService</a>&nbsp;scheduledExecutorService,
  io.micronaut.context.event.ApplicationEventPublisher&nbsp;eventPublisher)</span></div>
@@ -251,8 +252,11 @@ implements io.micronaut.session.SessionStore&lt;io.micronaut.configuration.lettu
 <dd><code>sessionConfiguration</code> - sessionConfiguration</dd>
 <dd><code>beanLocator</code> - beanLocator</dd>
 <dd><code>defaultSerializer</code> - The default value serializer</dd>
+<dd><code>conversionService</code> - The conversion service</dd>
 <dd><code>scheduledExecutorService</code> - scheduledExecutorService</dd>
 <dd><code>eventPublisher</code> - eventPublisher</dd>
+<dt>Since:</dt>
+<dd>6.0.0</dd>
 </dl>
 </section>
 </li>

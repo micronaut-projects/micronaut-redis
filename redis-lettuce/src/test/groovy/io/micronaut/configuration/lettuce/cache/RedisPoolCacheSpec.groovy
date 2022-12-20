@@ -8,7 +8,7 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.context.BeanLocator
 import io.micronaut.context.exceptions.ConfigurationException
 import io.micronaut.context.exceptions.NoSuchBeanException
-import io.micronaut.core.convert.DefaultConversionService
+import io.micronaut.core.convert.ConversionService
 import io.micronaut.core.type.Argument
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.redis.test.RedisContainerUtils
@@ -207,7 +207,7 @@ class RedisPoolCacheSpec extends RedisSpec {
         new RedisConnectionPoolCache(
                 new DefaultRedisCacheConfiguration(appConfig),
                 cacheConfig,
-                new DefaultConversionService(),
+                ConversionService.SHARED,
                 applicationContext.getBean(BeanLocator.class),
                 applicationContext.getBean(AsyncPool.class)
         )
@@ -232,7 +232,7 @@ class RedisPoolCacheSpec extends RedisSpec {
         new RedisConnectionPoolCache(
                 new DefaultRedisCacheConfiguration(appConfig),
                 cacheConfig,
-                new DefaultConversionService(),
+                ConversionService.SHARED,
                 applicationContext.getBean(BeanLocator.class),
                 applicationContext.getBean(AsyncPool.class)
         )
@@ -257,7 +257,7 @@ class RedisPoolCacheSpec extends RedisSpec {
         new RedisConnectionPoolCache(
                 new DefaultRedisCacheConfiguration(appConfig),
                 cacheConfig,
-                new DefaultConversionService(),
+                ConversionService.SHARED,
                 applicationContext.getBean(BeanLocator.class),
                 applicationContext.getBean(AsyncPool.class)
         )

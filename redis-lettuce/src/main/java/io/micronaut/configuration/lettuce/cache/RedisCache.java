@@ -31,8 +31,8 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.type.Argument;
 import io.micronaut.core.util.StringUtils;
+import jakarta.annotation.PreDestroy;
 
-import javax.annotation.PreDestroy;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -68,7 +68,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
     public RedisCache(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
             RedisCacheConfiguration redisCacheConfiguration,
-            ConversionService<?> conversionService,
+            ConversionService conversionService,
             BeanLocator beanLocator
     ) {
         super(defaultRedisCacheConfiguration, redisCacheConfiguration, conversionService, beanLocator);

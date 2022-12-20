@@ -22,12 +22,11 @@ import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 
 import io.micronaut.core.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Abstract version of the a factory class for creating Redis clients.
+ * Abstract version of a factory class for creating Redis clients.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -63,19 +62,6 @@ public abstract class AbstractRedisClientFactory {
         Optional<RedisURI> uri = config.getUri();
         return uri.map(redisURI -> RedisClient.create(clientResources, redisURI))
             .orElseGet(() -> RedisClient.create(clientResources, config));
-    }
-
-    /**
-     * Creates the {@link RedisClient} from the configuration.
-     *
-     * @param config The configuration
-     * @param optionalClientResources The ClientResources
-     * @deprecated use {@link #redisClient(AbstractRedisConfiguration, ClientResources, List)} instead
-     * @return The {@link RedisClient}
-     */
-    @Deprecated
-    public RedisClient redisClient(AbstractRedisConfiguration config, @Nullable ClientResources optionalClientResources) {
-        return this.redisClient(config, optionalClientResources, Collections.emptyList());
     }
 
     /**

@@ -31,10 +31,10 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.type.Argument;
 import io.micronaut.core.util.StringUtils;
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PreDestroy;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -69,7 +69,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
     public RedisConnectionPoolCache(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
             RedisCacheConfiguration redisCacheConfiguration,
-            ConversionService<?> conversionService,
+            ConversionService conversionService,
             BeanLocator beanLocator,
             AsyncPool<StatefulConnection<byte[], byte[]>> asyncPool
     ) {

@@ -5,12 +5,12 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.context.event.ApplicationEventListener
 import io.micronaut.jackson.serialize.JacksonObjectSerializer
 import io.micronaut.redis.test.RedisContainerUtils
+import io.micronaut.serde.annotation.Serdeable
 import io.micronaut.session.Session
 import io.micronaut.session.event.AbstractSessionEvent
 import io.micronaut.session.event.SessionCreatedEvent
 import io.micronaut.session.event.SessionDeletedEvent
 import io.micronaut.session.event.SessionExpiredEvent
-import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
 import jakarta.inject.Singleton
@@ -170,8 +170,6 @@ class RedisSessionSpec extends RedisSpec {
         session.put("username","bob")
         session.remove("foo")
 
-
-
         then:"The session was updated in the background"
         conditions.eventually {
             Session retrieved = sessionStore.findSession(session.id).get().get()
@@ -249,7 +247,8 @@ class RedisSessionSpec extends RedisSpec {
         applicationContext.stop()
     }
 
-    static class Foo implements Serializable{
+    @Serdeable
+    static class Foo implements Serializable {
         String name
         Integer age
     }

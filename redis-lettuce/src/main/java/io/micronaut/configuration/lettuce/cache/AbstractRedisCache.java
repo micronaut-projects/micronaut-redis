@@ -57,7 +57,7 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
     protected AbstractRedisCache(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
             RedisCacheConfiguration redisCacheConfiguration,
-            ConversionService<?> conversionService,
+            ConversionService conversionService,
             BeanLocator beanLocator
     ) {
         if (redisCacheConfiguration == null) {
@@ -293,7 +293,7 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
         }
     }
 
-    private DefaultStringKeySerializer newDefaultKeySerializer(RedisCacheConfiguration redisCacheConfiguration, ConversionService<?> conversionService) {
+    private DefaultStringKeySerializer newDefaultKeySerializer(RedisCacheConfiguration redisCacheConfiguration, ConversionService conversionService) {
         return new DefaultStringKeySerializer(redisCacheConfiguration.getCacheName(), redisCacheConfiguration.getCharset(), conversionService);
     }
 }

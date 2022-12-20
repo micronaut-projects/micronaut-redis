@@ -37,13 +37,7 @@ public interface RedisSetting {
      * The named redis servers.
      */
     String REDIS_SERVERS = PREFIX + ".servers";
-    /**
-     * Embedded Redis configuration.
-     *
-     * @deprecated since 5.3.0, use TestContainers RedisContainer instead.
-     */
-    @Deprecated
-    String REDIS_EMBEDDED = PREFIX + ".embedded";
+
     /**
      * Default configuration for Redis caches.
      */

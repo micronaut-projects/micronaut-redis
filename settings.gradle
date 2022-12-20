@@ -13,3 +13,12 @@ rootProject.name = 'redis-parent'
 
 include 'redis-bom'
 include 'redis-lettuce'
+
+micronautBuild {
+    addSnapshotRepository()
+    importMicronautCatalog()
+    importMicronautCatalog("micronaut-cache")
+    importMicronautCatalog("micronaut-micrometer")
+    importMicronautCatalog("micronaut-serde")
+    importMicronautCatalog("micronaut-session")
+}

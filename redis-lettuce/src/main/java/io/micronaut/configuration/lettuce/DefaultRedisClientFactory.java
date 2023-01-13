@@ -17,6 +17,7 @@ package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.annotation.Bean;
@@ -38,7 +39,11 @@ import java.util.List;
 @Singleton
 @Factory
 @Requires(missingProperty = RedisSetting.REDIS_URIS)
-public class DefaultRedisClientFactory extends AbstractRedisClientFactory {
+public class DefaultRedisClientFactory<K, V> extends AbstractRedisClientFactory<K, V> {
+
+    public DefaultRedisClientFactory(@Primary RedisCodec<K, V> codec) {
+        super(codec);
+    }
 
     @Bean(preDestroy = "shutdown")
     @Singleton
@@ -52,14 +57,14 @@ public class DefaultRedisClientFactory extends AbstractRedisClientFactory {
     @Bean(preDestroy = "close")
     @Singleton
     @Primary
-    public StatefulRedisConnection<String, String> redisConnection(@Primary RedisClient redisClient) {
+    public StatefulRedisConnection<K, V> redisConnection(@Primary RedisClient redisClient) {
         return super.redisConnection(redisClient);
     }
 
     @Override
     @Bean(preDestroy = "close")
     @Singleton
-    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(@Primary RedisClient redisClient) {
+    public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClient redisClient) {
         return super.redisPubSubConnection(redisClient);
     }
 }

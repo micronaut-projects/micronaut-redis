@@ -4,6 +4,7 @@ import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.sync.RedisCommands
+import io.lettuce.core.codec.ByteArrayCodec
 import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.inject.qualifiers.Qualifiers
@@ -125,6 +126,25 @@ class RedisClientFactorySpec extends RedisSpec {
 
         then:
         meterRegistry.getMeters().findAll {it.getId().getName().startsWith("lettuce")}.size() > 0
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test redis client uses defined codec"() {
+        when:
+        ApplicationContext applicationContext = ApplicationContext.run('redis.port': RedisContainerUtils.getRedisPort())
+        applicationContext.registerSingleton(ByteArrayCodec.class, ByteArrayCodec.INSTANCE)
+        StatefulRedisConnection connection = applicationContext.getBean(StatefulRedisConnection)
+
+        then:
+        // tag::commands[]
+        final key = "foo".bytes
+        final value = "bar".bytes
+        RedisCommands<byte[], byte[]> commands = connection.sync()
+        commands.set(key, value)
+        commands.get(key) == value
+        // end::commands[]
 
         cleanup:
         applicationContext.stop()

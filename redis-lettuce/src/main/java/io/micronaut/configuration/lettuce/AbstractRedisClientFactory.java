@@ -18,6 +18,7 @@ package io.micronaut.configuration.lettuce;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 
@@ -31,7 +32,13 @@ import java.util.Optional;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractRedisClientFactory {
+public abstract class AbstractRedisClientFactory<K, V> {
+    private final RedisCodec<K, V> codec;
+
+    protected AbstractRedisClientFactory(RedisCodec<K, V> codec) {
+        this.codec = codec;
+    }
+
     /**
      * Creates the {@link RedisClient} from the configuration.
      *
@@ -70,8 +77,8 @@ public abstract class AbstractRedisClientFactory {
      * @param redisClient The {@link RedisClient}
      * @return The {@link StatefulRedisConnection}
      */
-    public StatefulRedisConnection<String, String> redisConnection(RedisClient redisClient) {
-        return redisClient.connect();
+    public StatefulRedisConnection<K, V> redisConnection(RedisClient redisClient) {
+        return redisClient.connect(codec);
     }
 
     /**
@@ -80,8 +87,8 @@ public abstract class AbstractRedisClientFactory {
      * @param redisClient The {@link RedisClient}
      * @return The {@link StatefulRedisPubSubConnection}
      */
-    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(RedisClient redisClient) {
-        return redisClient.connectPubSub();
+    public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(RedisClient redisClient) {
+        return redisClient.connectPubSub(codec);
     }
 
     @Nullable

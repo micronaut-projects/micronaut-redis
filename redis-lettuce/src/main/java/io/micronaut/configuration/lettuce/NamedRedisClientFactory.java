@@ -17,6 +17,7 @@ package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.BeanLocator;
@@ -37,7 +38,7 @@ import java.util.List;
  * @since 1.0
  */
 @Factory
-public class NamedRedisClientFactory extends AbstractRedisClientFactory {
+public class NamedRedisClientFactory<K, V> extends AbstractRedisClientFactory<K, V> {
 
     private final BeanLocator beanLocator;
     private final ClientResources defaultClientResources;
@@ -46,7 +47,8 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
      * @param beanLocator The BeanLocator
      * @param defaultClientResources The ClientResources
      */
-    public NamedRedisClientFactory(BeanLocator beanLocator, @Primary @Nullable ClientResources defaultClientResources) {
+    public NamedRedisClientFactory(BeanLocator beanLocator, @Primary @Nullable ClientResources defaultClientResources, @Primary RedisCodec<K, V> codec) {
+        super(codec);
         this.beanLocator = beanLocator;
         this.defaultClientResources = defaultClientResources;
     }
@@ -72,7 +74,7 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
      */
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
-    public StatefulRedisConnection<String, String> redisConnection(NamedRedisServersConfiguration config) {
+    public StatefulRedisConnection<K, V> redisConnection(NamedRedisServersConfiguration config) {
         return super.redisConnection(getRedisClient(config));
     }
 
@@ -84,7 +86,7 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
      */
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
-    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(NamedRedisServersConfiguration config) {
+    public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(NamedRedisServersConfiguration config) {
         return super.redisPubSubConnection(getRedisClient(config));
     }
 

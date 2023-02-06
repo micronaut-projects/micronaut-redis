@@ -1,9 +1,9 @@
 === Customizing The Redis Configuration
 
-You can customize the Redis configuration using any properties exposed by the api:configuration.lettuce.DefaultRedisConfiguration[] class. For example, in `application.yml`:
+You can customize the Redis configuration using any properties exposed by the api:configuration.lettuce.DefaultRedisConfiguration[] class. For example, in the application configuration file:
 
 .Customizing Redis Configuration
-[source,yaml]
+[configuration]
 ----
 redis:
     uri: redis://localhost
@@ -16,7 +16,7 @@ redis:
 You can configure multiple Redis connections using the `redis.servers` setting. For example:
 
 .Customizing Redis Configuration
-[source,yaml]
+[configuration]
 ----
 redis:
     servers:

@@ -35,6 +35,8 @@ import java.util.List;
  * A factory bean for constructing {@link RedisClient} instances from {@link NamedRedisServersConfiguration} instances.
  *
  * @author Graeme Rocher
+ * @param <K> Key type
+ * @param <V> Value type
  * @since 1.0
  */
 @Factory
@@ -46,6 +48,7 @@ public class NamedRedisClientFactory<K, V> extends AbstractRedisClientFactory<K,
     /**
      * @param beanLocator The BeanLocator
      * @param defaultClientResources The ClientResources
+     * @param codec The RedisCodec
      */
     public NamedRedisClientFactory(BeanLocator beanLocator, @Primary @Nullable ClientResources defaultClientResources, @Primary RedisCodec<K, V> codec) {
         super(codec);

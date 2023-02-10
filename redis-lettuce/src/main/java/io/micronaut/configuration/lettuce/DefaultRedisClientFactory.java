@@ -33,6 +33,8 @@ import java.util.List;
  * Factory for the default {@link RedisClient}. Creates the injectable {@link Primary} bean.
  *
  * @author Graeme Rocher
+ * @param <K> Key type
+ * @param <V> Value type
  * @since 1.0
  */
 @Requires(beans = DefaultRedisConfiguration.class)

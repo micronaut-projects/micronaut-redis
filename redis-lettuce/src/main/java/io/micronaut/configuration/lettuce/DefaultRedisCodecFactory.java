@@ -28,7 +28,7 @@ import jakarta.inject.Singleton;
  * @author Jorge F. Sánchez
  */
 @Factory
-public class DefaultRedisCodecFactory {
+public final class DefaultRedisCodecFactory {
     @Requires(missingBeans = RedisCodec.class)
     @Singleton
     @Primary

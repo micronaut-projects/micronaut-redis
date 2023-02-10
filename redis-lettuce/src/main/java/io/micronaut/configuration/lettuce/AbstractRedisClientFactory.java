@@ -30,6 +30,8 @@ import java.util.Optional;
  * Abstract version of a factory class for creating Redis clients.
  *
  * @author Graeme Rocher
+ * @param <K> Key type
+ * @param <V> Value type
  * @since 1.0
  */
 public abstract class AbstractRedisClientFactory<K, V> {

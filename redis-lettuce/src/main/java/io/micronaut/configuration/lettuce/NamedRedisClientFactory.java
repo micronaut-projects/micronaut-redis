@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2023 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,8 @@ public class NamedRedisClientFactory<K, V> extends AbstractRedisClientFactory<K,
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
     public StatefulRedisConnection<K, V> redisConnection(NamedRedisServersConfiguration config) {
-        return super.redisConnection(getRedisClient(config));
+        RedisCodec<K, V> namedCodec = beanLocator.findBean(RedisCodec.class, Qualifiers.byName(config.getName())).orElse(defaultCodec);
+        return super.redisConnection(getRedisClient(config), namedCodec);
     }
 
     /**
@@ -90,7 +91,8 @@ public class NamedRedisClientFactory<K, V> extends AbstractRedisClientFactory<K,
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
     public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(NamedRedisServersConfiguration config) {
-        return super.redisPubSubConnection(getRedisClient(config));
+        RedisCodec<K, V> namedCodec = beanLocator.findBean(RedisCodec.class, Qualifiers.byName(config.getName())).orElse(defaultCodec);
+        return super.redisPubSubConnection(getRedisClient(config), namedCodec);
     }
 
     /**

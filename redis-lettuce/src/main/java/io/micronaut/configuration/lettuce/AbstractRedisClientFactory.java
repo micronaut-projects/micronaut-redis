@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2023 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,14 @@ import java.util.Optional;
  * @since 1.0
  */
 public abstract class AbstractRedisClientFactory<K, V> {
-    private final RedisCodec<K, V> codec;
 
-    protected AbstractRedisClientFactory(RedisCodec<K, V> codec) {
-        this.codec = codec;
+    protected final RedisCodec<K, V> defaultCodec;
+
+    /**
+     * @param defaultCodec The default codec
+     */
+    protected AbstractRedisClientFactory(RedisCodec<K, V> defaultCodec) {
+        this.defaultCodec = defaultCodec;
     }
 
     /**
@@ -77,9 +81,10 @@ public abstract class AbstractRedisClientFactory<K, V> {
      * Creates the {@link StatefulRedisConnection} from the {@link RedisClient}.
      *
      * @param redisClient The {@link RedisClient}
+     * @param codec The codec to use
      * @return The {@link StatefulRedisConnection}
      */
-    public StatefulRedisConnection<K, V> redisConnection(RedisClient redisClient) {
+    public StatefulRedisConnection<K, V> redisConnection(RedisClient redisClient, RedisCodec<K, V> codec) {
         return redisClient.connect(codec);
     }
 
@@ -87,9 +92,10 @@ public abstract class AbstractRedisClientFactory<K, V> {
      * Creates the {@link StatefulRedisPubSubConnection} from the {@link RedisClient}.
      *
      * @param redisClient The {@link RedisClient}
+     * @param codec The codec to use
      * @return The {@link StatefulRedisPubSubConnection}
      */
-    public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(RedisClient redisClient) {
+    public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(RedisClient redisClient, RedisCodec<K, V> codec) {
         return redisClient.connectPubSub(codec);
     }
 

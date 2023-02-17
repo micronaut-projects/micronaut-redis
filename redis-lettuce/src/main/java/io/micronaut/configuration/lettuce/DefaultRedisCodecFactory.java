@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2023 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.codec.StringCodec;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
-import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Singleton;
 
 /**
@@ -29,7 +28,7 @@ import jakarta.inject.Singleton;
  */
 @Factory
 public final class DefaultRedisCodecFactory {
-    @Requires(missingBeans = RedisCodec.class)
+
     @Singleton
     @Primary
     public RedisCodec<String, String> stringCodec() {

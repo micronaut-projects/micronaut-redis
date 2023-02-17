@@ -36,6 +36,18 @@ In which case the same beans will be created for each entry under `redis.servers
 
 The above example will inject the connection named `foo`.
 
+=== Named connection codec configuration
+
+When using named redis connections, you can change the codec for each connection by supplying a named RedisCodec bean.
+For example:
+
+.Supply different codecs for named connections
+[source,groovy]
+----
+include::{testsredis}/NamedCodecFactory.groovy[tags=namedCodec, indent=0]
+include::{testsredis}/NamedCodecFactory.groovy[tags=namedCodec2, indent=0]
+----
+
 == Redis Health Checks
 
 When the `redis-lettuce` module is activated a api:configuration.lettuce.health.RedisHealthIndicator[] is activated resulting in the `/health` endpoint and https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html[CurrentHealthStatus] interface resolving the health of the Redis connection or connections.

@@ -8,7 +8,6 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.redis.test.RedisContainerUtils
-import spock.lang.Specification
 
 /**
  * @author Graeme Rocher
@@ -125,6 +124,27 @@ class RedisClientFactorySpec extends RedisSpec {
 
         then:
         meterRegistry.getMeters().findAll {it.getId().getName().startsWith("lettuce")}.size() > 0
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test redis client uses defined codec"() {
+        when:
+        ApplicationContext applicationContext = ApplicationContext.run(
+                'spec.name': ByteArrayCodecReplacementFactory.SPEC_NAME,
+                'redis.port': RedisContainerUtils.getRedisPort()
+        )
+        StatefulRedisConnection connection = applicationContext.getBean(StatefulRedisConnection)
+
+        then:
+        // tag::commands[]
+        final key = "foo".bytes
+        final value = "bar".bytes
+        RedisCommands<byte[], byte[]> commands = connection.sync()
+        commands.set(key, value)
+        commands.get(key) == value
+        // end::commands[]
 
         cleanup:
         applicationContext.stop()

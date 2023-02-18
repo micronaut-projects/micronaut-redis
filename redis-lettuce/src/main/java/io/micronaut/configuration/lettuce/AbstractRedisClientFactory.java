@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2023 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package io.micronaut.configuration.lettuce;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 
@@ -29,9 +30,21 @@ import java.util.Optional;
  * Abstract version of a factory class for creating Redis clients.
  *
  * @author Graeme Rocher
+ * @param <K> Key type
+ * @param <V> Value type
  * @since 1.0
  */
-public abstract class AbstractRedisClientFactory {
+public abstract class AbstractRedisClientFactory<K, V> {
+
+    protected final RedisCodec<K, V> defaultCodec;
+
+    /**
+     * @param defaultCodec The default codec
+     */
+    protected AbstractRedisClientFactory(RedisCodec<K, V> defaultCodec) {
+        this.defaultCodec = defaultCodec;
+    }
+
     /**
      * Creates the {@link RedisClient} from the configuration.
      *
@@ -68,20 +81,22 @@ public abstract class AbstractRedisClientFactory {
      * Creates the {@link StatefulRedisConnection} from the {@link RedisClient}.
      *
      * @param redisClient The {@link RedisClient}
+     * @param codec The codec to use
      * @return The {@link StatefulRedisConnection}
      */
-    public StatefulRedisConnection<String, String> redisConnection(RedisClient redisClient) {
-        return redisClient.connect();
+    public StatefulRedisConnection<K, V> redisConnection(RedisClient redisClient, RedisCodec<K, V> codec) {
+        return redisClient.connect(codec);
     }
 
     /**
      * Creates the {@link StatefulRedisPubSubConnection} from the {@link RedisClient}.
      *
      * @param redisClient The {@link RedisClient}
+     * @param codec The codec to use
      * @return The {@link StatefulRedisPubSubConnection}
      */
-    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(RedisClient redisClient) {
-        return redisClient.connectPubSub();
+    public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(RedisClient redisClient, RedisCodec<K, V> codec) {
+        return redisClient.connectPubSub(codec);
     }
 
     @Nullable

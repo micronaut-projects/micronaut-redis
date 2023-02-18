@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2023 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.BeanLocator;
@@ -34,10 +35,12 @@ import java.util.List;
  * A factory bean for constructing {@link RedisClient} instances from {@link NamedRedisServersConfiguration} instances.
  *
  * @author Graeme Rocher
+ * @param <K> Key type
+ * @param <V> Value type
  * @since 1.0
  */
 @Factory
-public class NamedRedisClientFactory extends AbstractRedisClientFactory {
+public class NamedRedisClientFactory<K, V> extends AbstractRedisClientFactory<K, V> {
 
     private final BeanLocator beanLocator;
     private final ClientResources defaultClientResources;
@@ -45,8 +48,10 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
     /**
      * @param beanLocator The BeanLocator
      * @param defaultClientResources The ClientResources
+     * @param codec The RedisCodec
      */
-    public NamedRedisClientFactory(BeanLocator beanLocator, @Primary @Nullable ClientResources defaultClientResources) {
+    public NamedRedisClientFactory(BeanLocator beanLocator, @Primary @Nullable ClientResources defaultClientResources, @Primary RedisCodec<K, V> codec) {
+        super(codec);
         this.beanLocator = beanLocator;
         this.defaultClientResources = defaultClientResources;
     }
@@ -72,8 +77,9 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
      */
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
-    public StatefulRedisConnection<String, String> redisConnection(NamedRedisServersConfiguration config) {
-        return super.redisConnection(getRedisClient(config));
+    public StatefulRedisConnection<K, V> redisConnection(NamedRedisServersConfiguration config) {
+        RedisCodec<K, V> namedCodec = beanLocator.findBean(RedisCodec.class, Qualifiers.byName(config.getName())).orElse(defaultCodec);
+        return super.redisConnection(getRedisClient(config), namedCodec);
     }
 
     /**
@@ -84,8 +90,9 @@ public class NamedRedisClientFactory extends AbstractRedisClientFactory {
      */
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
-    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(NamedRedisServersConfiguration config) {
-        return super.redisPubSubConnection(getRedisClient(config));
+    public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(NamedRedisServersConfiguration config) {
+        RedisCodec<K, V> namedCodec = beanLocator.findBean(RedisCodec.class, Qualifiers.byName(config.getName())).orElse(defaultCodec);
+        return super.redisPubSubConnection(getRedisClient(config), namedCodec);
     }
 
     /**

@@ -66,11 +66,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructor.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a>&lt;<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="type parameter in AbstractRedisClientFactory">K</a>,<wbr><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="type parameter in AbstractRedisClientFactory">V</a>&gt; - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
 <div class="block">Abstract version of a factory class for creating Redis clients.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#%3Cinit%3E()" class="member-name-link">AbstractRedisClientFactory()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#%3Cinit%3E(io.lettuce.core.codec.RedisCodec)" class="member-name-link">AbstractRedisClientFactory(RedisCodec&lt;K, V&gt;)</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
@@ -116,6 +116,8 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:D">D</h2>
 <dl class="index">
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#defaultCodec" class="member-name-link">defaultCodec</a> - Variable in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/DefaultRedisCacheConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/cache/package-summary.html">io.micronaut.configuration.lettuce.cache</a></dt>
 <dd>
 <div class="block">Allows providing default configuration values for the actual caches.</div>
@@ -124,17 +126,23 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructor.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a>&lt;<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">K</a>,<wbr><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">V</a>&gt; - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
 <div class="block">Factory for the default <code>RedisClient</code>.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#%3Cinit%3E()" class="member-name-link">DefaultRedisClientFactory()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></dt>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#%3Cinit%3E(io.lettuce.core.codec.RedisCodec)" class="member-name-link">DefaultRedisClientFactory(RedisCodec&lt;K, V&gt;)</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
 <div class="block">Allows connecting to a Redis cluster via the the <code>"redis.uris"</code> setting.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#%3Cinit%3E()" class="member-name-link">DefaultRedisClusterClientFactory()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisCodecFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">DefaultRedisCodecFactory</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
+<dd>
+<div class="block">Factory for the default <code>RedisCodec</code>.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisCodecFactory.html#%3Cinit%3E()" class="member-name-link">DefaultRedisCodecFactory()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisCodecFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisCodecFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
@@ -404,11 +412,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Default name to use for health indication for Redis.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
+<dt><a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a>&lt;<a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">K</a>,<wbr><a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">V</a>&gt; - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
 <div class="block">A factory bean for constructing <code>RedisClient</code> instances from <a href="io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce"><code>NamedRedisServersConfiguration</code></a> instances.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html#%3Cinit%3E(io.micronaut.context.BeanLocator,io.lettuce.core.resource.ClientResources)" class="member-name-link">NamedRedisClientFactory(BeanLocator, ClientResources)</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a></dt>
+<dt><a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html#%3Cinit%3E(io.micronaut.context.BeanLocator,io.lettuce.core.resource.ClientResources,io.lettuce.core.codec.RedisCodec)" class="member-name-link">NamedRedisClientFactory(BeanLocator, ClientResources, RedisCodec&lt;K, V&gt;)</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
@@ -545,12 +553,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Establish redis connection.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#redisConnection(io.lettuce.core.RedisClient)" class="member-name-link">redisConnection(RedisClient)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#redisConnection(io.lettuce.core.RedisClient)" class="member-name-link">redisConnection(RedisClient)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></dt>
 <dd>
 <div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#redisConnection(io.lettuce.core.RedisClient)" class="member-name-link">redisConnection(RedisClient)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></dt>
-<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#redisConnection(io.lettuce.core.RedisClient,io.lettuce.core.codec.RedisCodec)" class="member-name-link">redisConnection(RedisClient, RedisCodec&lt;K, V&gt;)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
+<dd>
+<div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html#redisConnection(io.micronaut.configuration.lettuce.NamedRedisServersConfiguration)" class="member-name-link">redisConnection(NamedRedisServersConfiguration)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a></dt>
 <dd>
 <div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
@@ -589,12 +599,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#redisPubSubConnection(io.lettuce.core.cluster.RedisClusterClient)" class="member-name-link">redisPubSubConnection(RedisClusterClient)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#redisPubSubConnection(io.lettuce.core.RedisClient)" class="member-name-link">redisPubSubConnection(RedisClient)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#redisPubSubConnection(io.lettuce.core.RedisClient)" class="member-name-link">redisPubSubConnection(RedisClient)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></dt>
 <dd>
 <div class="block">Creates the <code>StatefulRedisPubSubConnection</code> from the <code>RedisClient</code>.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#redisPubSubConnection(io.lettuce.core.RedisClient)" class="member-name-link">redisPubSubConnection(RedisClient)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></dt>
-<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#redisPubSubConnection(io.lettuce.core.RedisClient,io.lettuce.core.codec.RedisCodec)" class="member-name-link">redisPubSubConnection(RedisClient, RedisCodec&lt;K, V&gt;)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
+<dd>
+<div class="block">Creates the <code>StatefulRedisPubSubConnection</code> from the <code>RedisClient</code>.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html#redisPubSubConnection(io.micronaut.configuration.lettuce.NamedRedisServersConfiguration)" class="member-name-link">redisPubSubConnection(NamedRedisServersConfiguration)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a></dt>
 <dd>
 <div class="block">Creates the <code>StatefulRedisPubSubConnection</code> from the <code>RedisClient</code>.</div>
@@ -689,6 +701,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Sets the write mode to use.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisCodecFactory.html#stringCodec()" class="member-name-link">stringCodec()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisCodecFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisCodecFactory</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:T">T</h2>
 <dl class="index">

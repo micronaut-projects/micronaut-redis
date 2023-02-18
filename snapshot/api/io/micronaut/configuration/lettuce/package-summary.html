@@ -104,7 +104,7 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary" aria-labelledby="class-summary-tab0">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a>&lt;K,<wbr>V&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Abstract version of a factory class for creating Redis clients.</div>
 </div>
@@ -120,7 +120,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Mutates a <code>ClientResources.Builder</code>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a>&lt;K,<wbr>V&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Factory for the default <code>RedisClient</code>.</div>
 </div>
@@ -128,36 +128,40 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Allows connecting to a Redis cluster via the the <code>"redis.uris"</code> setting.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration</a></div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="DefaultRedisCodecFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisCodecFactory</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">Factory for the default <code>RedisCodec</code>.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">In the case where the <tt>redis.uri</tt> is not specified use the default configuration.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Allows configuration of redis connection pool.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="MetricsClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce">MetricsClientResourceMutator</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="MetricsClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce">MetricsClientResourceMutator</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Mutates a <code>ClientResources.Builder</code> adding <code>MicrometerCommandLatencyRecorder</code>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="NamedRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="NamedRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a>&lt;K,<wbr>V&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">A factory bean for constructing <code>RedisClient</code> instances from <a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce"><code>NamedRedisServersConfiguration</code></a> instances.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Allows the configuration of multiple redis servers.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="RedisConnectionUtil.html" title="class in io.micronaut.configuration.lettuce">RedisConnectionUtil</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="RedisConnectionUtil.html" title="class in io.micronaut.configuration.lettuce">RedisConnectionUtil</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Internal utility methods for configuration.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="RedisSetting.html" title="interface in io.micronaut.configuration.lettuce">RedisSetting</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="RedisSetting.html" title="interface in io.micronaut.configuration.lettuce">RedisSetting</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Interface for common Redis settings.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ThreadPoolClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce">ThreadPoolClientResourceMutator</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="ThreadPoolClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce">ThreadPoolClientResourceMutator</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Mutates a <code>ClientResources.Builder</code> adding lettuce threadpool configs.</div>
 </div>
 </div>

@@ -319,7 +319,12 @@ You may see <code>io.lettuce.core.RedisCommandTimeoutException: Command timed ou
 ...
 RedisCommands&lt;String, String&gt; commands = connection.sync()
 commands.set("foo", "bar")
-commands.get("foo") == "bar"</code></pre>
+commands.get("foo") == "bar"
+final key = "foo".bytes
+final value = "bar".bytes
+RedisCommands&lt;byte[], byte[]&gt; commands = connection.sync()
+commands.set(key, value)
+commands.get(key) == value</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -333,6 +338,27 @@ The Lettuce driver&#8217;s <code>StatefulRedisConnection</code> interface is des
 </td>
 </tr>
 </table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_redis_codec_configuration">Redis codec configuration</h3>
+<div class="paragraph">
+<p>By default, a StringCodec is used for redis connections.
+This can be configured by supplying your own Factory that replaces the default one.</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring a custom RedisCodecFactory</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Factory
+class ByteArrayCodecReplacementFactory {
+
+    @Singleton
+    @Replaces(RedisCodec)
+    RedisCodec&lt;byte[], byte[]&gt; redisCodec() {
+        return ByteArrayCodec.INSTANCE
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 
@@ -387,6 +413,33 @@ The Lettuce driver&#8217;s <code>StatefulRedisConnection</code> interface is des
 </div>
 <div class="paragraph">
 <p>The above example will inject the connection named <code>foo</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_named_connection_codec_configuration">Named connection codec configuration</h3>
+<div class="paragraph">
+<p>When using named redis connections, you can change the codec for each connection by supplying a named RedisCodec bean.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Supply different codecs for named connections</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Factory
+class NamedCodecFactory {
+
+    @Singleton
+    @Named("foo")
+    RedisCodec&lt;byte[], byte[]&gt; fooCodec() {
+        return ByteArrayCodec.INSTANCE
+    }
+
+    @Singleton
+    @Named("bar")
+    RedisCodec&lt;String, String&gt; barCodec() {
+        return StringCodec.ASCII
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect1">

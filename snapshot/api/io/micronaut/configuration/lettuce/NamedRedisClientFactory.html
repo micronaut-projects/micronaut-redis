@@ -44,7 +44,7 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
@@ -68,18 +68,23 @@ loadScripts(document, 'script');</script>
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">io.micronaut.configuration.lettuce</a></div>
-<h1 title="Class NamedRedisClientFactory" class="title">Class NamedRedisClientFactory</h1>
+<h1 title="Class NamedRedisClientFactory" class="title">Class NamedRedisClientFactory&lt;K,<wbr>V&gt;</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance"><a href="AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">io.micronaut.configuration.lettuce.AbstractRedisClientFactory</a>
-<div class="inheritance">io.micronaut.configuration.lettuce.NamedRedisClientFactory</div>
+<div class="inheritance"><a href="AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">io.micronaut.configuration.lettuce.AbstractRedisClientFactory</a>&lt;K,<wbr>V&gt;
+<div class="inheritance">io.micronaut.configuration.lettuce.NamedRedisClientFactory&lt;K,<wbr>V&gt;</div>
 </div>
 </div>
 <section class="class-description" id="class-description">
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>K</code> - Key type</dd>
+<dd><code>V</code> - Value type</dd>
+</dl>
 <hr>
 <div class="type-signature"><span class="annotations">@Factory
-</span><span class="modifiers">public class </span><span class="element-name type-name-label">NamedRedisClientFactory</span>
-<span class="extends-implements">extends <a href="AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></span></div>
+</span><span class="modifiers">public class </span><span class="element-name type-name-label">NamedRedisClientFactory&lt;K,<wbr>V&gt;</span>
+<span class="extends-implements">extends <a href="AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a>&lt;K,<wbr>V&gt;</span></div>
 <div class="block">A factory bean for constructing <code>RedisClient</code> instances from <a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce"><code>NamedRedisServersConfiguration</code></a> instances.</div>
 <dl class="notes">
 <dt>Since:</dt>
@@ -90,6 +95,15 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="inherited-list">
+<h3 id="fields-inherited-from-class-io.micronaut.configuration.lettuce.AbstractRedisClientFactory">Fields inherited from class&nbsp;io.micronaut.configuration.lettuce.<a href="AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></h3>
+<code><a href="AbstractRedisClientFactory.html#defaultCodec">defaultCodec</a></code></div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -98,8 +112,9 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.context.BeanLocator,io.lettuce.core.resource.ClientResources)" class="member-name-link">NamedRedisClientFactory</a><wbr>(io.micronaut.context.BeanLocator&nbsp;beanLocator,
- io.lettuce.core.resource.ClientResources&nbsp;defaultClientResources)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.context.BeanLocator,io.lettuce.core.resource.ClientResources,io.lettuce.core.codec.RedisCodec)" class="member-name-link">NamedRedisClientFactory</a><wbr>(io.micronaut.context.BeanLocator&nbsp;beanLocator,
+ io.lettuce.core.resource.ClientResources&nbsp;defaultClientResources,
+ io.lettuce.core.codec.RedisCodec&lt;<a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">K</a>,<wbr><a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">V</a>&gt;&nbsp;codec)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -121,12 +136,12 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Creates the <code>RedisClient</code> from the configuration.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.api.StatefulRedisConnection&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.api.StatefulRedisConnection&lt;<a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">K</a>,<wbr><a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">V</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisConnection(io.micronaut.configuration.lettuce.NamedRedisServersConfiguration)" class="member-name-link">redisConnection</a><wbr>(<a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a>&nbsp;config)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.pubsub.StatefulRedisPubSubConnection&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.pubsub.StatefulRedisPubSubConnection&lt;<a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">K</a>,<wbr><a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">V</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisPubSubConnection(io.micronaut.configuration.lettuce.NamedRedisServersConfiguration)" class="member-name-link">redisPubSubConnection</a><wbr>(<a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Creates the <code>StatefulRedisPubSubConnection</code> from the <code>RedisClient</code>.</div>
@@ -136,7 +151,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.micronaut.configuration.lettuce.AbstractRedisClientFactory">Methods inherited from class&nbsp;io.micronaut.configuration.lettuce.<a href="AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></h3>
-<code><a href="AbstractRedisClientFactory.html#redisClient(io.micronaut.configuration.lettuce.AbstractRedisConfiguration)">redisClient</a>, <a href="AbstractRedisClientFactory.html#redisClient(io.micronaut.configuration.lettuce.AbstractRedisConfiguration,io.lettuce.core.resource.ClientResources,java.util.List)">redisClient</a>, <a href="AbstractRedisClientFactory.html#redisConnection(io.lettuce.core.RedisClient)">redisConnection</a>, <a href="AbstractRedisClientFactory.html#redisPubSubConnection(io.lettuce.core.RedisClient)">redisPubSubConnection</a></code></div>
+<code><a href="AbstractRedisClientFactory.html#redisClient(io.micronaut.configuration.lettuce.AbstractRedisConfiguration)">redisClient</a>, <a href="AbstractRedisClientFactory.html#redisClient(io.micronaut.configuration.lettuce.AbstractRedisConfiguration,io.lettuce.core.resource.ClientResources,java.util.List)">redisClient</a>, <a href="AbstractRedisClientFactory.html#redisConnection(io.lettuce.core.RedisClient,io.lettuce.core.codec.RedisCodec)">redisConnection</a>, <a href="AbstractRedisClientFactory.html#redisPubSubConnection(io.lettuce.core.RedisClient,io.lettuce.core.codec.RedisCodec)">redisPubSubConnection</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -152,15 +167,18 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(io.micronaut.context.BeanLocator,io.lettuce.core.resource.ClientResources)">
+<section class="detail" id="&lt;init&gt;(io.micronaut.context.BeanLocator,io.lettuce.core.resource.ClientResources,io.lettuce.core.codec.RedisCodec)">
 <h3>NamedRedisClientFactory</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">NamedRedisClientFactory</span><wbr><span class="parameters">(io.micronaut.context.BeanLocator&nbsp;beanLocator,
  @Primary @Nullable
- io.lettuce.core.resource.ClientResources&nbsp;defaultClientResources)</span></div>
+ io.lettuce.core.resource.ClientResources&nbsp;defaultClientResources,
+ @Primary
+ io.lettuce.core.codec.RedisCodec&lt;<a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">K</a>,<wbr><a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">V</a>&gt;&nbsp;codec)</span></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>beanLocator</code> - The BeanLocator</dd>
 <dd><code>defaultClientResources</code> - The ClientResources</dd>
+<dd><code>codec</code> - The RedisCodec</dd>
 </dl>
 </section>
 </li>
@@ -195,7 +213,7 @@ loadScripts(document, 'script');</script>
 <h3>redisConnection</h3>
 <div class="member-signature"><span class="annotations">@Bean(preDestroy="close")
 @EachBean(<a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration.class</a>)
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">io.lettuce.core.api.StatefulRedisConnection&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">redisConnection</span><wbr><span class="parameters">(<a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a>&nbsp;config)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">io.lettuce.core.api.StatefulRedisConnection&lt;<a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">K</a>,<wbr><a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">V</a>&gt;</span>&nbsp;<span class="element-name">redisConnection</span><wbr><span class="parameters">(<a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a>&nbsp;config)</span></div>
 <div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -210,7 +228,7 @@ loadScripts(document, 'script');</script>
 <h3>redisPubSubConnection</h3>
 <div class="member-signature"><span class="annotations">@Bean(preDestroy="close")
 @EachBean(<a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration.class</a>)
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">io.lettuce.core.pubsub.StatefulRedisPubSubConnection&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">redisPubSubConnection</span><wbr><span class="parameters">(<a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a>&nbsp;config)</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">io.lettuce.core.pubsub.StatefulRedisPubSubConnection&lt;<a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">K</a>,<wbr><a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">V</a>&gt;</span>&nbsp;<span class="element-name">redisPubSubConnection</span><wbr><span class="parameters">(<a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a>&nbsp;config)</span></div>
 <div class="block">Creates the <code>StatefulRedisPubSubConnection</code> from the <code>RedisClient</code>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>

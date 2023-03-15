@@ -11,7 +11,7 @@ micronaut-session = "1.0.0-SNAPSHOT"
 
 redis-embedded = "0.6"
 
-groovy = "4.0.6"
+groovy = "4.0.10"
 spock = "2.3-groovy-4.0"
 
 testcontainers = "1.17.5"

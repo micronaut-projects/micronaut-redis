@@ -6,8 +6,8 @@ micronaut = "4.0.0-M1"
 micronaut-test = "4.0.0-SNAPSHOT"
 micronaut-cache = "4.0.0-M1"
 micronaut-micrometer = "5.0.0-SNAPSHOT"
-micronaut-serde = "2.0.0-SNAPSHOT"
 micronaut-session = "1.0.0-SNAPSHOT"
+micronaut-serde = "2.0.0-M1"
 
 redis-embedded = "0.6"
 

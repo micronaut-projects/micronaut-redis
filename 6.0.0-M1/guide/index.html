@@ -1,0 +1,744 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>Micronaut Redis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+    <link rel="stylesheet" href="../css/custom.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+    <link rel="stylesheet" href="../css/highlight/agate.css">
+    <script src="../js/highlight.pack.js"></script>
+    <script src="../js/guide.js"></script>
+    <script src="../js/multi-language-sample.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="stylesheet" href="../css/multi-language-sample.css"/>
+    <script src="../js/docs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+        function addJsClass(el) {
+            var classes = document.body.className.split(" ");
+            classes.push("js");
+            document.body.className = classes.join(" ");
+        }
+    </script>
+
+</head>
+
+<body class="body" id="docs" onload="addJsClass();" onhashchange="highlightMenu()">
+
+<div id="table-of-content-nav-link" class="desktop">
+    <a id="theme-switcher" title="Switch to dark theme" href="javascript:switchTheme(true)"><i class="fa fa-moon-o"></i></a>
+    <a title="Collapse/Open Table of contents" title="Hide Table of Contents" href="javascript:hideTableOfContents();" class="button">[ + ]</a>
+</div>
+
+<div id="main">
+    <div id="navigation" class="no-print">
+        <div class="navTitle">
+            <span id="logo"><a href="http://micronaut.io" title="Go to Micronaut Website"><img src="../img/micronaut-logo-white.svg" alt="Micronaut"/></a></span>
+        </div>
+        <div class="navLinks">
+            <ul>
+                    <li><div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)" class="desktop">
+                            <a href="../guide/index.html" class="button">Table of contents</a>
+                            <div id="nav-summary-childs" style="display:none;">
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#releaseHistory"><strong>2</strong><span>Release History</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#setup"><strong>3</strong><span>Setting up the Redis Lettuce Driver</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#config"><strong>4</strong><span>Configuring the Redis Lettuce Driver</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#testing"><strong>5</strong><span>Redis and Testing</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#cache"><strong>6</strong><span>Redis for Caching</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#sessions"><strong>7</strong><span>Session State with Redis</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#graalvm"><strong>8</strong><span>GraalVM support</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#appendix"><strong>10</strong><span>Appendices</span></a></div>
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                <li id="table-of-content-nav-link-mobile" class="mobile">
+                    <a title="Scroll to Table of contents" href="javascript:scrollToTop();" class="button">Toc</a>
+                </li>
+                <li class="desktop">
+                    <a title="Go to API documentation" href="../api/index.html" class="button">API Reference</a>
+                </li>
+                <li class="mobile">
+                    <a title="Go to API documentation" href="../api/index.html" class="button">API</a>
+                </li>
+                <li class="desktop">
+                    <a title="Go to Configuration Reference documentation" href="../guide/configurationreference.html" class="button">Configuration Reference</a>
+                </li>
+                <li class="mobile">
+                    <a title="Go to Configuration Reference documentation" href="../guide/configurationreference.html" class="button">Conf</a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+    
+    <div id="table-of-content">
+        <div class="toc-content">
+
+        <h2>Table of Contents</h2>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-introduction"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-releaseHistory"><a href="#releaseHistory"><strong>2</strong><span>Release History</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-setup"><a href="#setup"><strong>3</strong><span>Setting up the Redis Lettuce Driver</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-config"><a href="#config"><strong>4</strong><span>Configuring the Redis Lettuce Driver</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-testing"><a href="#testing"><strong>5</strong><span>Redis and Testing</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-cache"><a href="#cache"><strong>6</strong><span>Redis for Caching</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-sessions"><a href="#sessions"><strong>7</strong><span>Session State with Redis</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-graalvm"><a href="#graalvm"><strong>8</strong><span>GraalVM support</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-appendix"><a href="#appendix"><strong>10</strong><span>Appendices</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-breaks"><a href="#breaks"><strong>10.1</strong><span>Breaking Changes</span></a></div>
+        
+        </div>
+    </div>
+    
+    <div class="docs-content">
+    <div class="project">
+        <h1>Micronaut Redis</h1>
+        <p></p>
+        <p>Integration between Micronaut and Redis</p>
+        <p><strong>Version:</strong> <select style='max-width: 200px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'><option value='https://micronaut-projects.github.io/micronaut-redis/snapshot/guide/index.html'>SNAPSHOT</option><option value='https://micronaut-projects.github.io/micronaut-redis/latest/guide/index.html'>LATEST</option><option selected='selected' value='https://micronaut-projects.github.io/micronaut-redis/6.0.0-M1/guide/index.html'>6.0.0-M1</option><option value='https://micronaut-projects.github.io/micronaut-redis/5.3.2/guide/index.html'>5.3.2</option><option value='https://micronaut-projects.github.io/micronaut-redis/5.3.1/guide/index.html'>5.3.1</option><option value='https://micronaut-projects.github.io/micronaut-redis/5.3.0/guide/index.html'>5.3.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/5.2.0/guide/index.html'>5.2.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/5.1.0/guide/index.html'>5.1.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/5.0.0/guide/index.html'>5.0.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/5.0.0-M1/guide/index.html'>5.0.0-M1</option><option value='https://micronaut-projects.github.io/micronaut-redis/4.0.3/guide/index.html'>4.0.3</option><option value='https://micronaut-projects.github.io/micronaut-redis/4.0.2/guide/index.html'>4.0.2</option><option value='https://micronaut-projects.github.io/micronaut-redis/4.0.1/guide/index.html'>4.0.1</option><option value='https://micronaut-projects.github.io/micronaut-redis/4.0.0/guide/index.html'>4.0.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/3.1.1/guide/index.html'>3.1.1</option><option value='https://micronaut-projects.github.io/micronaut-redis/3.1.0/guide/index.html'>3.1.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/3.0.1/guide/index.html'>3.0.1</option><option value='https://micronaut-projects.github.io/micronaut-redis/3.0.0/guide/index.html'>3.0.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/2.3.1/guide/index.html'>2.3.1</option><option value='https://micronaut-projects.github.io/micronaut-redis/2.3.0/guide/index.html'>2.3.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/2.2.0/guide/index.html'>2.2.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/2.1.0/guide/index.html'>2.1.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/2.0.0/guide/index.html'>2.0.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/1.2.0/guide/index.html'>1.2.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/1.1.1/guide/index.html'>1.1.1</option><option value='https://micronaut-projects.github.io/micronaut-redis/1.1.0/guide/index.html'>1.1.0</option><option value='https://micronaut-projects.github.io/micronaut-redis/1.1.0.RC1/guide/index.html'>1.1.0.RC1</option><option value='https://micronaut-projects.github.io/micronaut-redis/1.0.4/guide/index.html'>1.0.4</option><option value='https://micronaut-projects.github.io/micronaut-redis/1.0.3/guide/index.html'>1.0.3</option><option value='https://micronaut-projects.github.io/micronaut-redis/1.0.2/guide/index.html'>1.0.2</option><option value='https://micronaut-projects.github.io/micronaut-redis/1.0.1/guide/index.html'>1.0.1</option><option value='https://micronaut-projects.github.io/micronaut-redis/1.0.0/guide/index.html'>1.0.0</option></select> </p>
+    </div>
+    
+<h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/introduction.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut features automatic configuration of the <a href="https://lettuce.io">Lettuce</a> driver for <a href="https://redis.io">Redis</a> via the <code>redis-lettuce</code> module.</p>
+</div>
+
+<h1 id="releaseHistory"><a class="anchor" href="#releaseHistory"></a>2 Release History</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/releaseHistory.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>For this project, you can find a list of releases (with release notes) here:</p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/micronaut-projects/micronaut-redis/releases">https://github.com/micronaut-projects/micronaut-redis/releases</a></p>
+</div>
+
+<h1 id="setup"><a class="anchor" href="#setup"></a>3 Setting up the Redis Lettuce Driver</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/setup.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Using the CLI</div>
+<div class="paragraph">
+<p>If you are creating your project using the Micronaut CLI, supply the <code>redis-lettuce</code> feature to configure the Lettuce driver in your project:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ mn create-app my-app --features redis-lettuce</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To configure the Lettuce driver you should first add the <code>redis-lettuce</code> module to your classpath:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-redis-lettuce&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You should then configure the URI of the Redis server you wish to communicate with in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring <code>redis.uri</code></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+    uri: redis://localhost</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <code>redis.uri</code> setting should be in the format as described in the <a href="https://github.com/lettuce-io/lettuce-core/wiki/Redis-URI-and-connection-details">Connection URIs</a> section of the Lettuce wiki
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can also specify multiple Redis URIs using <code>redis.uris</code> in which case a <code>RedisClusterClient</code> is created instead.</p>
+</div>
+<div class="sect2">
+<h3 id="_configuring_lettuce_clientresources_and_threads">Configuring Lettuce ClientResources and threads</h3>
+<div class="paragraph">
+<p>You can provide a custom instance of <code>io.lettuce.core.resource.ClientResources</code> it will be used to create <code>io.lettuce.core.RedisClient</code>.</p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s possible to configure thread pool size without providing custom <code>io.lettuce.core.resource.ClientResources</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>redis:
+    uri: redis://localhost
+    io-thread-pool-size: 5
+    computation-thread-pool-size: 4</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lettuce_description_of_pool_size_properties">Lettuce description of pool size properties</h3>
+<div class="paragraph">
+<p><a href="https://github.com/lettuce-io/lettuce-core/wiki/Configuring-Client-resources" class="bare">https://github.com/lettuce-io/lettuce-core/wiki/Configuring-Client-resources</a></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>I/O Thread Pool Size</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number of processors</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">The number of threads in the I/O thread pools. The number defaults to the number of available processors that the runtime returns (which, as a well-known fact, sometimes does not represent the actual number of processors). Every thread represents an internal event loop where all I/O tasks are run. The number does not reflect the actual number of I/O threads because the client requires different thread pools for Network (NIO) and Unix Domain Socket (EPoll) connections. The minimum I/O threads are <code>3</code>. A pool with fewer threads can cause undefined behavior.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Computation Thread Pool Size</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number of processors</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">The number of threads in the computation thread pool. The number defaults to the number of available processors that the runtime returns (which, as a well-known fact, sometimes does not represent the actual number of processors). Every thread represents an internal event loop where all computation tasks are run. The minimum computation threads are <code>3</code>. A pool with fewer threads can cause undefined behavior.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+You may see <code>io.lettuce.core.RedisCommandTimeoutException: Command timed out after</code> if your code is blocking Lettuce&#8217;s asynchronous execution because of the default value of the thread pool size being small.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_available_lettuce_beans">Available Lettuce Beans</h3>
+<div class="paragraph">
+<p>Once you have the above configuration in place you can inject one of the following beans:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>io.lettuce.core.RedisClient</code> - The main client interface</p>
+</li>
+<li>
+<p><code>io.lettuce.core.api.StatefulRedisConnection</code> - A connection interface that features synchronous, reactive (based on Reactor) and async APIs that operate on <code>String</code> values</p>
+</li>
+<li>
+<p><code>io.lettuce.core.pubsub.StatefulRedisPubSubConnection</code> - A connection interface for dealing with Redis Pub/Sub</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following example demonstrates the use of the <code>StatefulRedisConnection</code> interface&#8217;s synchronous API:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using StatefulRedisConnection</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Inject StatefulRedisConnection&lt;String, String&gt; connection
+...
+RedisCommands&lt;String, String&gt; commands = connection.sync()
+commands.set("foo", "bar")
+commands.get("foo") == "bar"
+final key = "foo".bytes
+final value = "bar".bytes
+RedisCommands&lt;byte[], byte[]&gt; commands = connection.sync()
+commands.set(key, value)
+commands.get(key) == value</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The Lettuce driver&#8217;s <code>StatefulRedisConnection</code> interface is designed to be long-lived and there is no need to close the connection. It will be closed automatically when the application shuts down.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_redis_codec_configuration">Redis codec configuration</h3>
+<div class="paragraph">
+<p>By default, a StringCodec is used for redis connections.
+This can be configured by supplying your own Factory that replaces the default one.</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring a custom RedisCodecFactory</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Factory
+class ByteArrayCodecReplacementFactory {
+
+    @Singleton
+    @Replaces(RedisCodec)
+    RedisCodec&lt;byte[], byte[]&gt; redisCodec() {
+        return ByteArrayCodec.INSTANCE
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+
+<h1 id="config"><a class="anchor" href="#config"></a>4 Configuring the Redis Lettuce Driver</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/config.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect2">
+<h3 id="_customizing_the_redis_configuration">Customizing The Redis Configuration</h3>
+<div class="paragraph">
+<p>You can customize the Redis configuration using any properties exposed by the <a href="../api/io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html">DefaultRedisConfiguration</a> class. For example, in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Customizing Redis Configuration</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+    uri: redis://localhost
+    ssl: true
+    timeout: 30s</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_multiple_redis_connections">Multiple Redis Connections</h3>
+<div class="paragraph">
+<p>You can configure multiple Redis connections using the <code>redis.servers</code> setting. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Customizing Redis Configuration</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+    servers:
+        foo:
+            uri: redis://foo
+        bar:
+            uri: redis://bar</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In which case the same beans will be created for each entry under <code>redis.servers</code> but exposed as <code>@Named</code> beans.</p>
+</div>
+<div class="listingblock">
+<div class="title">Using StatefulRedisConnection</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Inject @Named("foo") StatefulRedisConnection&lt;String, String&gt; connection;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example will inject the connection named <code>foo</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_named_connection_codec_configuration">Named connection codec configuration</h3>
+<div class="paragraph">
+<p>When using named redis connections, you can change the codec for each connection by supplying a named RedisCodec bean.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Supply different codecs for named connections</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Factory
+class NamedCodecFactory {
+
+    @Singleton
+    @Named("foo")
+    RedisCodec&lt;byte[], byte[]&gt; fooCodec() {
+        return ByteArrayCodec.INSTANCE
+    }
+
+    @Singleton
+    @Named("bar")
+    RedisCodec&lt;String, String&gt; barCodec() {
+        return StringCodec.ASCII
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_redis_health_checks">Redis Health Checks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When the <code>redis-lettuce</code> module is activated a <a href="../api/io/micronaut/configuration/lettuce/health/RedisHealthIndicator.html">RedisHealthIndicator</a> is activated resulting in the <code>/health</code> endpoint and <a href="https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html">CurrentHealthStatus</a> interface resolving the health of the Redis connection or connections.</p>
+</div>
+<div class="paragraph">
+<p>See the section on the <a href="https://docs.micronaut.io/latest/guide/index.html#healthEndpoint">Health Endpoint</a> for more information.</p>
+</div>
+</div>
+</div>
+
+<h1 id="testing"><a class="anchor" href="#testing"></a>5 Redis and Testing</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/testing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>For testing purposes, we recommend running a real version of Redis inside a Docker container <a href="https://www.testcontainers.org/features/creating_container/#examples">via TestContainers</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">GenericContainer&lt;?&gt; redisContainer = new GenericContainer&lt;&gt;(DockerImageName.parse(REDIS_DOCKER_NAME))
+    .withExposedPorts(REDIS_PORT)
+    .waitingFor(
+            Wait.forLogMessage(".*Ready to accept connections.*\\n", 1)
+    );
+redisContainer.start();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The embedded redis container we used to recommend has been deprecated as of 5.3.0 and will be removed at a later date.</p>
+</div>
+
+<h1 id="cache"><a class="anchor" href="#cache"></a>6 Redis for Caching</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/cache.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you wish to use Redis to cache results then you need to have the Lettuce configuration dependency on your classpath.
+Lettuce is a non-blocking, reactive Redis client implementation and Micronaut provides an implementation that allows cached results to be read reactively.</p>
+</div>
+<div class="paragraph">
+<p>Within your application configuration configure the Redis URL and Redis caches:</p>
+</div>
+<div class="listingblock">
+<div class="title">Cache Configuration Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+    uri: redis://localhost
+    caches:
+        my-cache:
+            # expire one hour after write
+            expire-after-write: 1h</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Cache Configuration Example with a Dynamic Expiration policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+    uri: redis://localhost
+    caches:
+        my-cache:
+            # expire based on result from class implementing ExpirationAfterWritePolicy
+            expiration-after-write-policy: &lt;class path of class implementing ExpirationAfterWritePolicy&gt;</code></pre>
+</div>
+</div>
+<a id="io.micronaut.configuration.lettuce.cache.RedisCacheConfiguration" href="#io.micronaut.configuration.lettuce.cache.RedisCacheConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html">RedisCacheConfiguration</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.server</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.value-serializer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Class</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.key-serializer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Class</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The  to use for serializing keys. Defaults to .</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.expire-after-write</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.expire-after-access</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies that each entry should be automatically removed from the cache once a fixed duration
+ has elapsed after the entry&#8217;s creation, the most recent replacement of its value, or its last
+ read.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.expiration-after-write-policy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.charset</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.nio.charset.Charset</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+
+<h1 id="sessions"><a class="anchor" href="#sessions"></a>7 Session State with Redis</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/sessions.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Storing <a href="https://docs.micronaut.io/latest/api/io/micronaut/session/Session.html">Session</a> instances in Redis requires special considerations.</p>
+</div>
+<div class="paragraph">
+<p>You can configure how sessions are stored in Redis using <a href="../api/io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html">RedisHttpSessionConfiguration</a>.</p>
+</div>
+<div class="paragraph">
+<p>The following represents an example configuration in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Redis Sessions</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    session:
+        http:
+            redis:
+                enabled: true
+                # The Redis namespace to write sessions to
+                namespace: 'myapp:sessions'
+                # Write session changes in the background
+                write-mode: BACKGROUND
+                # Disable programmatic activation of keyspace events
+                enable-keyspace-events: false</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <a href="../api/io/micronaut/configuration/lettuce/session/RedisSessionStore.html">RedisSessionStore</a> implementation uses <a href="https://redis.io/topics/notifications">keyspace events</a> to cleanup active sessions and fire <a href="https://micronaut-projects.github.io/micronaut-core/latest/api/io/micronaut/session/event/SessionExpiredEvent.html">SessionExpiredEvent</a> and requires they are active.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>By default sessions values are serialized using Java serialization and stored in Redis hashes. You can configure serialization to instead use Jackson to serialize to JSON if desired:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using Jackson Serialization</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    session:
+        http:
+            redis:
+                enabled: true
+                valueSerializer: io.micronaut.jackson.serialize.JacksonObjectSerializer</code></pre>
+</div>
+</div>
+
+<h1 id="graalvm"><a class="anchor" href="#graalvm"></a>8 GraalVM support</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/graalvm.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>It is possible to create native images for Micronaut applications that use the <a href="https://lettuce.io/">Lettuce</a> driver.
+There are some limitations and configuration needed because of the driver itself so please make sure you read the
+<a href="https://github.com/lettuce-io/lettuce-core/wiki/Using-Lettuce-with-Native-Images">official driver documentation</a> about
+GraalVM.
+Micronaut provides the configuration for Netty so you don&#8217;t need to add that part to your own <code>reflect-config.json</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+See the section on <a href="https://docs.micronaut.io/latest/guide/index.html#graal">GraalVM</a> in the user guide for more
+information.
+</td>
+</tr>
+</table>
+</div>
+
+<h1 id="repository"><a class="anchor" href="#repository"></a>9 Repository</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/repository.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can find the source code of this project in this repository:</p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/micronaut-projects/micronaut-redis">https://github.com/micronaut-projects/micronaut-redis</a></p>
+</div>
+
+<h1 id="appendix"><a class="anchor" href="#appendix"></a>10 Appendices</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/appendix.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+<h2 id="breaks"><a class="anchor" href="#breaks"></a>10.1 Breaking Changes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/master/src/main/docs/guide/appendix/breaks.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>This section documents breaking changes between versions</p>
+</div>
+<div class="sect1">
+<h2 id="_5_3_0">5.3.0</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>The embedded Redis server that can be used for testing has been changed to only bind to localhost.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If you wish to revert to the previous behavior, you will need to use a configuration file specified in your test specific <code>application.yml</code> file.</p>
+</div>
+<div class="listingblock">
+<div class="title">embedded-redis.conf</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-plain hljs" data-lang="plain">maxmemory 256M</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">test-application.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+  embedded:
+    config-file: '/full/path/to/embedded-redis.conf'</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

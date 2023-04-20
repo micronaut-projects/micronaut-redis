@@ -3,11 +3,12 @@ managed-lettuce = "6.2.4.RELEASE"
 
 micronaut-docs = "2.0.0"
 micronaut = "4.0.0-M1"
-micronaut-test = "4.0.0-SNAPSHOT"
+micronaut-test = "4.0.0-M1"
 micronaut-cache = "4.0.0-M1"
-micronaut-micrometer = "5.0.0-SNAPSHOT"
+micronaut-micrometer = "5.0.0-M1"
 micronaut-serde = "2.0.0-M1"
 micronaut-session = "4.0.0-M1"
+micronaut-gradle-plugin = "4.0.0-M1"
 
 redis-embedded = "0.6"
 
@@ -28,3 +29,4 @@ redis-embedded = { module = "com.github.kstyrc:embedded-redis", version.ref = "r
 
 testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
 testcontainers-spock = { module = "org.testcontainers:spock" }
+gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }

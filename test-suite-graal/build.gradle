@@ -1,0 +1,29 @@
+plugins {
+    id "io.micronaut.application"
+    id "io.micronaut.build.internal.redis-native-tests"
+}
+
+mainClassName = "helloworld.Application"
+micronaut {
+    version "4.0.0-M1"
+    testRuntime "junit5"
+    enableNativeImage false
+    processing {
+        incremental(true)
+        annotations("helloworld.*")
+    }
+}
+
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        substitute module('io.micronaut.redis:micronaut-redis-lettuce') using project(':micronaut-redis-lettuce')
+    }
+}
+
+dependencies {
+    implementation mn.micronaut.context
+    implementation mn.micronaut.jackson.databind
+    implementation project(':micronaut-redis-lettuce')
+    implementation mn.snakeyaml
+    runtimeOnly mn.logback.classic
+}

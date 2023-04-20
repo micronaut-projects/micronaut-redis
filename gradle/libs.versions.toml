@@ -15,7 +15,7 @@ redis-embedded = "0.6"
 groovy = "4.0.10"
 spock = "2.3-groovy-4.0"
 
-testcontainers = "1.17.5"
+testcontainers = "1.18.0"
 
 [libraries]
 managed-lettuce = { module = "io.lettuce:lettuce-core", version.ref = "managed-lettuce" }

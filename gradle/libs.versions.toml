@@ -17,7 +17,9 @@ spock = "2.3-groovy-4.0"
 
 testcontainers = "1.18.1"
 
+micronaut-logging = "1.0.0-M2"
 [libraries]
+micronaut-logging = { module = "io.micronaut.logging:micronaut-logging-bom", version.ref = "micronaut-logging" }
 managed-lettuce = { module = "io.lettuce:lettuce-core", version.ref = "managed-lettuce" }
 
 micronaut-cache = { module = "io.micronaut.cache:micronaut-cache-bom", version.ref = "micronaut-cache" }

@@ -19,6 +19,9 @@ testcontainers = "1.18.1"
 
 micronaut-logging = "1.0.0-M2"
 [libraries]
+# Core
+micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
+
 micronaut-logging = { module = "io.micronaut.logging:micronaut-logging-bom", version.ref = "micronaut-logging" }
 managed-lettuce = { module = "io.lettuce:lettuce-core", version.ref = "managed-lettuce" }
 

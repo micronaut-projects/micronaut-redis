@@ -29,17 +29,23 @@ import io.micronaut.health.HealthStatus;
 import io.micronaut.management.health.aggregator.HealthAggregator;
 import io.micronaut.management.health.indicator.HealthIndicator;
 import io.micronaut.management.health.indicator.HealthResult;
+import io.micronaut.scheduling.TaskExecutors;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.SignalType;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
-import jakarta.inject.Singleton;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 /**
@@ -62,6 +68,7 @@ public class RedisHealthIndicator implements HealthIndicator {
     private static final int RETRY = 3;
 
     private final BeanContext beanContext;
+    private final Scheduler scheduler;
     private final HealthAggregator<?> healthAggregator;
 
     // Must include the connections otherwise the health check will be unknown until the first Redis command executed
@@ -72,13 +79,33 @@ public class RedisHealthIndicator implements HealthIndicator {
      * Constructor.
      *
      * @param beanContext         beanContext
+     * @param executorService     executor service
      * @param healthAggregator    healthAggregator
      * @param redisClients        redisClients
      * @param redisClusterClients redisClusterClients
      */
+    @Inject
+    public RedisHealthIndicator(BeanContext beanContext, @Named(TaskExecutors.IO) ExecutorService executorService, HealthAggregator<?> healthAggregator, RedisClient[] redisClients, RedisClusterClient[] redisClusterClients) {
+        this.beanContext = beanContext;
+        this.healthAggregator = healthAggregator;
+        this.scheduler = Schedulers.fromExecutorService(executorService);
+        this.redisClients = redisClients;
+        this.redisClusterClients = redisClusterClients;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param beanContext         beanContext
+     * @param healthAggregator    healthAggregator
+     * @param redisClients        redisClients
+     * @param redisClusterClients redisClusterClients
+     */
+    @Deprecated
     public RedisHealthIndicator(BeanContext beanContext, HealthAggregator<?> healthAggregator, RedisClient[] redisClients, RedisClusterClient[] redisClusterClients) {
         this.beanContext = beanContext;
         this.healthAggregator = healthAggregator;
+        this.scheduler = Schedulers.immediate();
         this.redisClients = redisClients;
         this.redisClusterClients = redisClusterClients;
     }
@@ -96,7 +123,7 @@ public class RedisHealthIndicator implements HealthIndicator {
     private <T, R extends StatefulConnection<K, V>, K, V> Flux<HealthResult> getResult(Class<T> type, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
         Collection<BeanRegistration<T>> registrations = beanContext.getActiveBeanRegistrations(type);
         Flux<BeanRegistration<T>> redisClients = Flux.fromIterable(registrations);
-        return redisClients.flatMap(client -> healthResultForClient(client, getConnection, getReactive));
+        return redisClients.flatMap(client -> healthResultForClient(client, getConnection, getReactive)).subscribeOn(scheduler);
     }
 
     private <T, R extends StatefulConnection<K, V>, K, V> Mono<HealthResult> healthResultForClient(BeanRegistration<T> client, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {

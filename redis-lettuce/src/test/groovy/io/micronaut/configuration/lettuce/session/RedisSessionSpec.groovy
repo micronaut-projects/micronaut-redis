@@ -76,7 +76,6 @@ class RedisSessionSpec extends RedisSpec {
         retrieved.remove("username")
         retrieved.put("more", "stuff")
         def now = Instant.now()
-        retrieved.setLastAccessedTime(now)
         retrieved.setMaxInactiveInterval(Duration.of(10, ChronoUnit.MINUTES))
         sessionStore.save(retrieved).get()
 
@@ -87,13 +86,18 @@ class RedisSessionSpec extends RedisSpec {
         !retrieved.isExpired()
         retrieved.maxInactiveInterval == Duration.of(10, ChronoUnit.MINUTES)
         retrieved.creationTime.getLong(ChronoField.MILLI_OF_SECOND) == saved.creationTime.getLong(ChronoField.MILLI_OF_SECOND)
-        retrieved.lastAccessedTime.getLong(ChronoField.MILLI_OF_SECOND) == now.getLong(ChronoField.MILLI_OF_SECOND)
         retrieved.id
         !retrieved.contains("username")
         retrieved.get("more", String).get() == "stuff"
         retrieved.get("foo", Foo).get().name == "Fred"
         retrieved.get("foo", Foo).get().age == 10
 
+        when:"A session is looked up"
+        def previousLastAccessedTime = retrieved.getLastAccessedTime()
+        retrieved = sessionStore.findSession(saved.id).get().get()
+
+        then:"lastAccessedTime is updated"
+        retrieved.getLastAccessedTime().isAfter(previousLastAccessedTime)
 
         when:"A session is deleted"
         boolean result = sessionStore.deleteSession(saved.id).get()

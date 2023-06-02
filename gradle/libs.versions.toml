@@ -2,13 +2,13 @@
 managed-lettuce = "6.2.4.RELEASE"
 
 micronaut-docs = "2.0.0"
-micronaut = "4.0.0-M2"
-micronaut-test = "4.0.0-M2"
-micronaut-cache = "4.0.0-M1"
-micronaut-micrometer = "5.0.0-M1"
-micronaut-serde = "2.0.0-M3"
-micronaut-session = "4.0.0-M1"
-micronaut-gradle-plugin = "4.0.0-M1"
+micronaut = "4.0.0-M6"
+micronaut-test = "4.0.0-M5"
+micronaut-cache = "4.0.0-M2"
+micronaut-micrometer = "5.0.0-M2"
+micronaut-serde = "2.0.0-M8"
+micronaut-session = "4.0.0-M2"
+micronaut-gradle-plugin = "4.0.0-M4"
 
 redis-embedded = "0.6"
 
@@ -17,7 +17,10 @@ spock = "2.3-groovy-4.0"
 
 testcontainers = "1.18.1"
 
+micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
+micronaut-logging = "1.0.0-M2"
 [libraries]
+micronaut-logging = { module = "io.micronaut.logging:micronaut-logging-bom", version.ref = "micronaut-logging" }
 managed-lettuce = { module = "io.lettuce:lettuce-core", version.ref = "managed-lettuce" }
 
 micronaut-cache = { module = "io.micronaut.cache:micronaut-cache-bom", version.ref = "micronaut-cache" }

@@ -16,7 +16,7 @@ include 'redis-lettuce'
 include 'test-suite-graal'
 
 micronautBuild {
-    addSnapshotRepository()
+    importMicronautCatalog("micronaut-logging")
     useStandardizedProjectNames = true
     importMicronautCatalog()
     importMicronautCatalog("micronaut-cache")

@@ -31,6 +31,6 @@ dependencies {
     testRuntimeOnly mn.micronaut.http.server.netty
     testImplementation mn.micronaut.http.client
     testImplementation libs.redis.embedded
-    testRuntimeOnly(mn.logback.classic)
+    testRuntimeOnly(mnLogging.logback.classic)
     testImplementation mn.snakeyaml
 }

@@ -9,7 +9,7 @@ micronaut-micrometer = "5.0.0-M2"
 micronaut-serde = "2.0.0-M8"
 micronaut-session = "4.0.0-M2"
 micronaut-gradle-plugin = "4.0.0-M4"
-
+micronaut-logging = "1.0.0-M2"
 redis-embedded = "0.6"
 
 groovy = "4.0.11"
@@ -17,9 +17,11 @@ spock = "2.3-groovy-4.0"
 
 testcontainers = "1.18.1"
 
-micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
+
 micronaut-logging = "1.0.0-M2"
 [libraries]
+# Core
+micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
 micronaut-logging = { module = "io.micronaut.logging:micronaut-logging-bom", version.ref = "micronaut-logging" }
 managed-lettuce = { module = "io.lettuce:lettuce-core", version.ref = "managed-lettuce" }
 

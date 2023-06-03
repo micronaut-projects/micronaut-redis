@@ -8,7 +8,7 @@ micronaut-cache = "4.0.0-M2"
 micronaut-micrometer = "5.0.0-M2"
 micronaut-serde = "2.0.0-M8"
 micronaut-logging = "1.0.0-M2"
-micronaut-session = "4.0.0-M2"
+micronaut-session = "4.0.0-M3"
 micronaut-gradle-plugin = "4.0.0-M4"
 redis-embedded = "0.6"
 

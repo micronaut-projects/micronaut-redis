@@ -114,7 +114,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.context.BeanLocator,io.lettuce.core.resource.ClientResources,io.lettuce.core.codec.RedisCodec)" class="member-name-link">NamedRedisClientFactory</a><wbr>(io.micronaut.context.BeanLocator&nbsp;beanLocator,
- io.lettuce.core.resource.ClientResources&nbsp;defaultClientResources,
+ @Nullable io.lettuce.core.resource.ClientResources&nbsp;defaultClientResources,
  io.lettuce.core.codec.RedisCodec&lt;<a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">K</a>,<wbr><a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">V</a>&gt;&nbsp;codec)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
@@ -133,7 +133,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.RedisClient</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisClient(io.micronaut.configuration.lettuce.NamedRedisServersConfiguration,java.util.List)" class="member-name-link">redisClient</a><wbr>(<a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a>&nbsp;config,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ClientResourcesMutator.html" title="interface in io.micronaut.configuration.lettuce">ClientResourcesMutator</a>&gt;&nbsp;mutators)</code></div>
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ClientResourcesMutator.html" title="interface in io.micronaut.configuration.lettuce">ClientResourcesMutator</a>&gt;&nbsp;mutators)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Creates the <code>RedisClient</code> from the configuration.</div>
 </div>
@@ -172,7 +172,7 @@ loadScripts(document, 'script');</script>
 <h3>NamedRedisClientFactory</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">NamedRedisClientFactory</span><wbr><span class="parameters">(io.micronaut.context.BeanLocator&nbsp;beanLocator,
  @Primary @Nullable
- io.lettuce.core.resource.ClientResources&nbsp;defaultClientResources,
+ @Nullable io.lettuce.core.resource.ClientResources&nbsp;defaultClientResources,
  @Primary
  io.lettuce.core.codec.RedisCodec&lt;<a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">K</a>,<wbr><a href="NamedRedisClientFactory.html" title="type parameter in NamedRedisClientFactory">V</a>&gt;&nbsp;codec)</span></div>
 <dl class="notes">
@@ -198,7 +198,7 @@ loadScripts(document, 'script');</script>
 @EachBean(<a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration.class</a>)
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">io.lettuce.core.RedisClient</span>&nbsp;<span class="element-name">redisClient</span><wbr><span class="parameters">(<a href="NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a>&nbsp;config,
  @Nullable
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ClientResourcesMutator.html" title="interface in io.micronaut.configuration.lettuce">ClientResourcesMutator</a>&gt;&nbsp;mutators)</span></div>
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ClientResourcesMutator.html" title="interface in io.micronaut.configuration.lettuce">ClientResourcesMutator</a>&gt;&nbsp;mutators)</span></div>
 <div class="block">Creates the <code>RedisClient</code> from the configuration.</div>
 <dl class="notes">
 <dt>Parameters:</dt>

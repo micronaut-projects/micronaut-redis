@@ -1,5 +1,5 @@
 [versions]
-managed-lettuce = "6.2.2.RELEASE"
+managed-lettuce = "6.2.5.RELEASE"
 
 redis-embedded = "0.6"
 

@@ -15,7 +15,7 @@ redis-embedded = "0.6"
 groovy = "4.0.13"
 spock = "2.3-groovy-4.0"
 
-testcontainers = "1.18.3"
+testcontainers = "1.19.0"
 
 [libraries]
 micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }

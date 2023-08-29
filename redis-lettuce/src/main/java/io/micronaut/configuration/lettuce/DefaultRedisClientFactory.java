@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2023 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.annotation.Bean;
@@ -32,13 +33,19 @@ import java.util.List;
  * Factory for the default {@link RedisClient}. Creates the injectable {@link Primary} bean.
  *
  * @author Graeme Rocher
+ * @param <K> Key type
+ * @param <V> Value type
  * @since 1.0
  */
 @Requires(beans = DefaultRedisConfiguration.class)
 @Singleton
 @Factory
 @Requires(missingProperty = RedisSetting.REDIS_URIS)
-public class DefaultRedisClientFactory extends AbstractRedisClientFactory {
+public class DefaultRedisClientFactory<K, V> extends AbstractRedisClientFactory<K, V> {
+
+    public DefaultRedisClientFactory(@Primary RedisCodec<K, V> codec) {
+        super(codec);
+    }
 
     @Bean(preDestroy = "shutdown")
     @Singleton
@@ -48,18 +55,28 @@ public class DefaultRedisClientFactory extends AbstractRedisClientFactory {
         return super.redisClient(config, defaultClientResources, mutators);
     }
 
-    @Override
+    /**
+     * Creates the {@link StatefulRedisConnection} from the {@link RedisClient}.
+     *
+     * @param redisClient The {@link RedisClient}
+     * @return The {@link StatefulRedisConnection}
+     */
     @Bean(preDestroy = "close")
     @Singleton
     @Primary
-    public StatefulRedisConnection<String, String> redisConnection(@Primary RedisClient redisClient) {
-        return super.redisConnection(redisClient);
+    public StatefulRedisConnection<K, V> redisConnection(@Primary RedisClient redisClient) {
+        return super.redisConnection(redisClient, defaultCodec);
     }
 
-    @Override
+    /**
+     * Creates the {@link StatefulRedisPubSubConnection} from the {@link RedisClient}.
+     *
+     * @param redisClient The {@link RedisClient}
+     * @return The {@link StatefulRedisPubSubConnection}
+     */
     @Bean(preDestroy = "close")
     @Singleton
-    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(@Primary RedisClient redisClient) {
-        return super.redisPubSubConnection(redisClient);
+    public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClient redisClient) {
+        return super.redisPubSubConnection(redisClient, defaultCodec);
     }
 }

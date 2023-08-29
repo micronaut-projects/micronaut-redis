@@ -78,3 +78,15 @@ include::{testsredis}/RedisClientFactorySpec.groovy[tags=commands, indent=0]
 ----
 
 NOTE: The Lettuce driver's `StatefulRedisConnection` interface is designed to be long-lived and there is no need to close the connection. It will be closed automatically when the application shuts down.
+
+=== Redis codec configuration
+
+By default, a StringCodec is used for redis connections.
+This can be configured by supplying your own Factory that replaces the default one.
+
+.Configuring a custom RedisCodecFactory
+[source,groovy]
+----
+include::{testsredis}/ByteArrayCodecReplacementFactory.groovy[tags=codecReplacement, indent=0]
+include::{testsredis}/ByteArrayCodecReplacementFactory.groovy[tags=codecReplacement2, indent=0]
+----

@@ -1,0 +1,21 @@
+This section documents breaking changes between versions
+
+== 5.3.0
+
+- The embedded Redis server that can be used for testing has been changed to only bind to localhost.
+
+If you wish to revert to the previous behavior, you will need to use a configuration file specified in your test specific `application.yml` file.
+
+[source,plain]
+.embedded-redis.conf
+----
+maxmemory 256M
+----
+
+[source,yaml]
+.test-application.yml
+----
+redis:
+  embedded:
+    config-file: '/full/path/to/embedded-redis.conf'
+----

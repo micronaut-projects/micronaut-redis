@@ -1,0 +1,33 @@
+[versions]
+managed-lettuce = "6.2.6.RELEASE"
+
+micronaut-docs = "2.0.0"
+micronaut = "4.1.2"
+micronaut-test = "4.0.0"
+micronaut-cache = "4.0.2"
+micronaut-micrometer = "5.0.1"
+micronaut-serde = "2.2.0"
+micronaut-logging = "1.0.0"
+micronaut-session = "4.0.0"
+micronaut-gradle-plugin = "4.0.2"
+redis-embedded = "0.7.3"
+
+groovy = "4.0.13"
+spock = "2.3-groovy-4.0"
+
+testcontainers = "1.19.0"
+
+[libraries]
+micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
+micronaut-logging = { module = "io.micronaut.logging:micronaut-logging-bom", version.ref = "micronaut-logging" }
+managed-lettuce = { module = "io.lettuce:lettuce-core", version.ref = "managed-lettuce" }
+micronaut-cache = { module = "io.micronaut.cache:micronaut-cache-bom", version.ref = "micronaut-cache" }
+micronaut-micrometer = { module = "io.micronaut.micrometer:micronaut-micrometer-bom", version.ref = "micronaut-micrometer" }
+micronaut-serde = { module = "io.micronaut.serde:micronaut-serde-bom", version.ref = "micronaut-serde" }
+micronaut-session = { module = "io.micronaut.session:micronaut-session-bom", version.ref = "micronaut-session" }
+
+redis-embedded = { module = "it.ozimov:embedded-redis", version.ref = "redis-embedded" }
+
+testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
+testcontainers-spock = { module = "org.testcontainers:spock" }
+gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }

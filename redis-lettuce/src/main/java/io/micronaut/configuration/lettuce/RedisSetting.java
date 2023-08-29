@@ -37,10 +37,7 @@ public interface RedisSetting {
      * The named redis servers.
      */
     String REDIS_SERVERS = PREFIX + ".servers";
-    /**
-     * Embedded Redis configuration.
-     */
-    String REDIS_EMBEDDED = PREFIX + ".embedded";
+
     /**
      * Default configuration for Redis caches.
      */
@@ -49,4 +46,8 @@ public interface RedisSetting {
      * Configured Redis caches.
      */
     String REDIS_CACHES = PREFIX + ".caches";
+    /**
+     * Default configuration for Redis caches pool.
+     */
+    String REDIS_POOL = PREFIX + ".pool";
 }

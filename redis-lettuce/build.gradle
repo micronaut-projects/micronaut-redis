@@ -1,35 +1,36 @@
+plugins {
+    id("io.micronaut.build.internal.redis-module")
+}
+
 dependencies {
-    annotationProcessor "io.micronaut:micronaut-inject-java"
-    // needed because otherwise IntelliJ integration broken
-    compileOnly "io.micronaut:micronaut-inject-java"
-    annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
-    annotationProcessor "io.micronaut:micronaut-graal"
+    annotationProcessor mn.micronaut.graal
 
-    api "io.lettuce:lettuce-core:$lettuceVersion"
-    api "io.micronaut.cache:micronaut-cache-core:$micronautCacheVersion"
+    api libs.managed.lettuce
+    api mnCache.micronaut.cache.core
 
-    compileOnly "io.micronaut:micronaut-session"
-    compileOnly "io.micronaut:micronaut-management"
-    compileOnly "io.micronaut.micrometer:micronaut-micrometer-core:$micronautMicrometerVersion"
-    compileOnly "it.ozimov:embedded-redis:0.7.3"
+    compileOnly mnSession.micronaut.session
+    compileOnly mn.micronaut.management
+    compileOnly mnMicrometer.micronaut.micrometer.core
+    compileOnly libs.redis.embedded
 
-    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
+    testAnnotationProcessor mn.micronaut.inject.java
 
-    testImplementation platform("org.testcontainers:testcontainers-bom:$testContainersVersion")
-    testImplementation "org.testcontainers:testcontainers"
-    testImplementation "org.testcontainers:spock"
+    testImplementation platform(libs.testcontainers.bom)
+    testImplementation libs.testcontainers.spock
 
-    testImplementation "io.projectreactor:reactor-core"
+    testImplementation mn.reactor
 
-    testImplementation "io.micronaut.cache:micronaut-cache-core:$micronautCacheVersion"
-    testImplementation "io.micronaut:micronaut-inject-java"
-    testImplementation "io.micronaut:micronaut-management"
-    testImplementation "io.micronaut.micrometer:micronaut-micrometer-core:$micronautMicrometerVersion"
-    testImplementation "io.micronaut:micronaut-inject-groovy"
-    testImplementation "io.micronaut:micronaut-function-web"
+    testImplementation mn.micronaut.inject.java
+    testImplementation mn.micronaut.management
+    testImplementation mnMicrometer.micronaut.micrometer.core
+    testImplementation mnSerde.micronaut.serde.jackson
+    testImplementation mn.micronaut.jackson.databind
+    testImplementation mn.micronaut.function.web
 
-    testImplementation "io.micronaut:micronaut-session"
-    testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
-    testImplementation "io.micronaut:micronaut-http-client"
-    testImplementation "it.ozimov:embedded-redis:0.7.3"
+    testImplementation mnSession.micronaut.session
+    testRuntimeOnly mn.micronaut.http.server.netty
+    testImplementation mn.micronaut.http.client
+    testImplementation libs.redis.embedded
+    testRuntimeOnly(mnLogging.logback.classic)
+    testImplementation mn.snakeyaml
 }

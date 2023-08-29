@@ -6,9 +6,21 @@ pluginManagement {
 }
 
 plugins {
-    id("io.micronaut.build.shared.settings") version "4.2.6"
+    id("io.micronaut.build.shared.settings") version "6.5.5"
 }
 
-rootProject.name = 'redis'
+rootProject.name = 'redis-parent'
 
+include 'redis-bom'
 include 'redis-lettuce'
+include 'test-suite-graal'
+
+micronautBuild {
+    importMicronautCatalog("micronaut-logging")
+    useStandardizedProjectNames = true
+    importMicronautCatalog()
+    importMicronautCatalog("micronaut-cache")
+    importMicronautCatalog("micronaut-micrometer")
+    importMicronautCatalog("micronaut-serde")
+    importMicronautCatalog("micronaut-session")
+}

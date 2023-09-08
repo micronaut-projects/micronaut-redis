@@ -315,7 +315,6 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
         });
     }
 
-
     @Override
     public CompletableFuture<Boolean> deleteSession(String id) {
         return findSessionInternal(id, true).thenCompose(session -> {

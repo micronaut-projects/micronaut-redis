@@ -19,8 +19,14 @@ import io.lettuce.core.Range;
 import io.lettuce.core.RedisFuture;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.async.*;
-import io.lettuce.core.api.sync.*;
+import io.lettuce.core.api.async.BaseRedisAsyncCommands;
+import io.lettuce.core.api.async.RedisAsyncCommands;
+import io.lettuce.core.api.async.RedisHashAsyncCommands;
+import io.lettuce.core.api.async.RedisKeyAsyncCommands;
+import io.lettuce.core.api.async.RedisSortedSetAsyncCommands;
+import io.lettuce.core.api.async.RedisStringAsyncCommands;
+import io.lettuce.core.api.sync.RedisCommands;
+import io.lettuce.core.api.sync.RedisServerCommands;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.async.RedisAdvancedClusterAsyncCommands;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
@@ -38,27 +44,39 @@ import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.convert.ArgumentConversionContext;
+import io.micronaut.core.convert.ConversionContext;
+import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.convert.value.MutableConvertibleValues;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.inject.qualifiers.Qualifiers;
 import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.session.*;
+import io.micronaut.session.InMemorySession;
+import io.micronaut.session.InMemorySessionStore;
+import io.micronaut.session.Session;
+import io.micronaut.session.SessionIdGenerator;
+import io.micronaut.session.SessionSettings;
+import io.micronaut.session.SessionStore;
 import io.micronaut.session.event.SessionCreatedEvent;
 import io.micronaut.session.event.SessionDeletedEvent;
 import io.micronaut.session.event.SessionExpiredEvent;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PreDestroy;
-import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -66,7 +84,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static io.micronaut.configuration.lettuce.session.RedisSessionStore.RedisSession.*;
+import static io.micronaut.configuration.lettuce.session.RedisSessionStore.RedisSession.ATTR_CREATION_TIME;
+import static io.micronaut.configuration.lettuce.session.RedisSessionStore.RedisSession.ATTR_LAST_ACCESSED;
+import static io.micronaut.configuration.lettuce.session.RedisSessionStore.RedisSession.ATTR_MAX_INACTIVE_INTERVAL;
 
 /**
  * <p>An implementation of the {@link SessionStore} interface for Redis. Partially inspired by Spring Session.</p>
@@ -103,6 +123,7 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
     private static final Logger LOG  = LoggerFactory.getLogger(RedisSessionStore.class);
     private final RedisHttpSessionConfiguration sessionConfiguration;
     private final SessionIdGenerator sessionIdGenerator;
+    private final ConversionService conversionService;
     private final ApplicationEventPublisher eventPublisher;
     private final ObjectSerializer valueSerializer;
     private final Charset charset;
@@ -124,18 +145,23 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
      * @param sessionConfiguration sessionConfiguration
      * @param beanLocator beanLocator
      * @param defaultSerializer The default value serializer
+     * @param conversionService The conversion service
      * @param scheduledExecutorService scheduledExecutorService
      * @param eventPublisher eventPublisher
+     *
+     * @since 6.0.0
      */
     public RedisSessionStore(
             SessionIdGenerator sessionIdGenerator,
             RedisHttpSessionConfiguration sessionConfiguration,
             BeanLocator beanLocator,
             ObjectSerializer defaultSerializer,
+            ConversionService conversionService,
             @Named(TaskExecutors.SCHEDULED) ExecutorService scheduledExecutorService,
             ApplicationEventPublisher eventPublisher) {
         this.writeMode = sessionConfiguration.getWriteMode();
         this.sessionIdGenerator = sessionIdGenerator;
+        this.conversionService = conversionService;
         this.valueSerializer = sessionConfiguration
                 .getValueSerializer()
                 .flatMap(beanLocator::findOrInstantiateBean)
@@ -281,7 +307,12 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
 
     @Override
     public CompletableFuture<Optional<RedisSession>> findSession(String id) {
-        return findSessionInternal(id, false);
+        return findSessionInternal(id, false).thenApply(session -> {
+            session.ifPresent(redisSession ->
+                    redisSession.setLastAccessedTime(Instant.now())
+            );
+            return session;
+        });
     }
 
     @Override
@@ -528,16 +559,12 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
 
         @Override
         public <T> Optional<T> get(CharSequence name, ArgumentConversionContext<T> conversionContext) {
-            Optional<T> result = super.get(name, conversionContext);
-            if (!result.isPresent() && attributeMap.containsKey(name)) {
-                Object val = attributeMap.get(name);
-                if (val instanceof byte[]) {
-                    Optional<T> deserialized = valueSerializer.deserialize((byte[]) val, conversionContext.getArgument());
-                    deserialized.ifPresent(t -> attributeMap.put(name, t));
-                    return deserialized;
+            return super.get(name, ConversionContext.of(Object.class)).flatMap(o -> {
+                if (o instanceof byte[] rawBytes) {
+                    return valueSerializer.deserialize(rawBytes, conversionContext.getArgument());
                 }
-            }
-            return result;
+                return conversionService.convert(o, conversionContext);
+            });
         }
 
         @Override

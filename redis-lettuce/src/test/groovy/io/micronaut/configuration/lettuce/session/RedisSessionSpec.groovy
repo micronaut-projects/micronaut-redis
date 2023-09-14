@@ -1,29 +1,16 @@
-/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.micronaut.configuration.lettuce.session
 
+import io.micronaut.configuration.lettuce.RedisSpec
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.event.ApplicationEventListener
 import io.micronaut.jackson.serialize.JacksonObjectSerializer
+import io.micronaut.redis.test.RedisContainerUtils
+import io.micronaut.serde.annotation.Serdeable
 import io.micronaut.session.Session
 import io.micronaut.session.event.AbstractSessionEvent
 import io.micronaut.session.event.SessionCreatedEvent
 import io.micronaut.session.event.SessionDeletedEvent
 import io.micronaut.session.event.SessionExpiredEvent
-import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
 import jakarta.inject.Singleton
@@ -36,14 +23,13 @@ import java.time.temporal.ChronoUnit
  * @author Graeme Rocher
  * @since 1.0
  */
-class RedisSessionSpec extends Specification {
-
+class RedisSessionSpec extends RedisSpec {
 
     void "test redis session create"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run(
-                'redis.type':'embedded',
-                'micronaut.session.http.redis.enabled':'true'
+                'micronaut.session.http.redis.enabled':'true',
+                'redis.port': RedisContainerUtils.getRedisPort()
         )
         RedisSessionStore sessionStore = applicationContext.getBean(RedisSessionStore)
         TestListener listener = applicationContext.getBean(TestListener)
@@ -90,7 +76,6 @@ class RedisSessionSpec extends Specification {
         retrieved.remove("username")
         retrieved.put("more", "stuff")
         def now = Instant.now()
-        retrieved.setLastAccessedTime(now)
         retrieved.setMaxInactiveInterval(Duration.of(10, ChronoUnit.MINUTES))
         sessionStore.save(retrieved).get()
 
@@ -101,13 +86,18 @@ class RedisSessionSpec extends Specification {
         !retrieved.isExpired()
         retrieved.maxInactiveInterval == Duration.of(10, ChronoUnit.MINUTES)
         retrieved.creationTime.getLong(ChronoField.MILLI_OF_SECOND) == saved.creationTime.getLong(ChronoField.MILLI_OF_SECOND)
-        retrieved.lastAccessedTime.getLong(ChronoField.MILLI_OF_SECOND) == now.getLong(ChronoField.MILLI_OF_SECOND)
         retrieved.id
         !retrieved.contains("username")
         retrieved.get("more", String).get() == "stuff"
         retrieved.get("foo", Foo).get().name == "Fred"
         retrieved.get("foo", Foo).get().age == 10
 
+        when:"A session is looked up"
+        def previousLastAccessedTime = retrieved.getLastAccessedTime()
+        retrieved = sessionStore.findSession(saved.id).get().get()
+
+        then:"lastAccessedTime is updated"
+        retrieved.getLastAccessedTime().isAfter(previousLastAccessedTime)
 
         when:"A session is deleted"
         boolean result = sessionStore.deleteSession(saved.id).get()
@@ -134,7 +124,7 @@ class RedisSessionSpec extends Specification {
     void "test redis session expiry"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run(
-                'redis.type':'embedded',
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'micronaut.session.http.redis.enabled':'true'
         )
         RedisSessionStore sessionStore = applicationContext.getBean(RedisSessionStore)
@@ -164,7 +154,7 @@ class RedisSessionSpec extends Specification {
     void "test redis session write behind"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run(
-                'redis.type':'embedded',
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'micronaut.session.http.redis.enabled':'true',
                 'micronaut.session.http.redis.writeMode':'background',
         )
@@ -184,8 +174,6 @@ class RedisSessionSpec extends Specification {
         session.put("username","bob")
         session.remove("foo")
 
-
-
         then:"The session was updated in the background"
         conditions.eventually {
             Session retrieved = sessionStore.findSession(session.id).get().get()
@@ -200,7 +188,7 @@ class RedisSessionSpec extends Specification {
     void "test redis JSON sessions"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run(
-                'redis.type':'embedded',
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'micronaut.session.http.redis.valueSerializer':JacksonObjectSerializer.name,
                 'micronaut.session.http.redis.enabled':'true'
         )
@@ -243,21 +231,28 @@ class RedisSessionSpec extends Specification {
         retrieved.get("username", String).get() == "fred"
         retrieved.get("foo", Foo).get().name == "Fred"
         retrieved.get("foo", Foo).get().age == 10
+
+        cleanup:
+        applicationContext.stop()
     }
 
     void "test super class properties can be configured"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run(
-                'redis.type': 'embedded',
+                'redis.port': RedisContainerUtils.getRedisPort(),
                 'micronaut.session.http.cookiePath':'/foo',
                 'micronaut.session.http.redis.enabled': true
         )
 
         expect:
         applicationContext.getBean(RedisHttpSessionConfiguration).getCookiePath().get() == "/foo"
+
+        cleanup:
+        applicationContext.stop()
     }
 
-    static class Foo implements Serializable{
+    @Serdeable
+    static class Foo implements Serializable {
         String name
         Integer age
     }

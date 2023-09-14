@@ -1,49 +1,25 @@
-/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.micronaut.configuration.lettuce
 
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.sync.RedisCommands
-import io.lettuce.core.metrics.MicrometerCommandLatencyRecorder
 import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
-import io.micronaut.core.io.socket.SocketUtils
 import io.micronaut.inject.qualifiers.Qualifiers
-import redis.embedded.RedisServer
-import spock.lang.Specification
+import io.micronaut.redis.test.RedisContainerUtils
 
 /**
  * @author Graeme Rocher
  * @since 1.0
  */
-class RedisClientFactorySpec extends Specification{
-
+class RedisClientFactorySpec extends RedisSpec {
 
     private static final String MAX_HEAP_SETTING = "maxmemory 256M"
 
     void "test redis server config by port"() {
-        given:
-        def port = SocketUtils.findAvailableTcpPort()
-        RedisServer redisServer = new RedisServer(port).builder().port(port).setting(MAX_HEAP_SETTING).build()
-        redisServer.start()
-
         when:
-        ApplicationContext applicationContext = ApplicationContext.run('redis.port':port)
+        ApplicationContext applicationContext = ApplicationContext.run('redis.port': RedisContainerUtils.getRedisPort())
         StatefulRedisConnection connection = applicationContext.getBean(StatefulRedisConnection)
 
         then:
@@ -54,18 +30,12 @@ class RedisClientFactorySpec extends Specification{
         // end::commands[]
 
         cleanup:
-        redisServer.stop()
         applicationContext.stop()
     }
 
     void "test redis server config by URI"() {
-        given:
-        int port = SocketUtils.findAvailableTcpPort()
-        RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
-        redisServer.start()
-
         when:
-        ApplicationContext applicationContext = ApplicationContext.run('redis.uri':"redis://localhost:$port")
+        ApplicationContext applicationContext = ApplicationContext.run('redis.uri': RedisContainerUtils.getRedisPort("redis://localhost"))
         StatefulRedisConnection client = applicationContext.getBean(StatefulRedisConnection)
         RedisCommands<?,?> command = client.sync()
         then:
@@ -73,28 +43,23 @@ class RedisClientFactorySpec extends Specification{
         command.get("foo") == "bar"
 
         cleanup:
-        redisServer.stop()
         applicationContext.stop()
     }
 
     void "test multi redis server config by URI"() {
         given:
-        int port = SocketUtils.findAvailableTcpPort()
-        RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
-        redisServer.start()
-
-        ApplicationContext applicationContext = ApplicationContext.run(['redis.servers.foo.uri':"redis://localhost:$port",
-                                                                        'redis.servers.foo.client-name':"foo-client-name",
-                                                                        'redis.servers.bar.uri':"redis://localhost:$port"])
+        ApplicationContext applicationContext = ApplicationContext.run(['redis.servers.foo.uri': RedisContainerUtils.getRedisPort("redis://localhost"),
+                                                                        'redis.servers.foo.client-name': "foo-client-name",
+                                                                        'redis.servers.bar.uri': RedisContainerUtils.getRedisPort("redis://localhost")])
         when:
         RedisClient clientFoo = applicationContext.getBean(RedisClient, Qualifiers.byName("foo"))
         RedisURI innerRedisURI = clientFoo.@redisURI
         RedisCommands<?,?> commandFoo = clientFoo.connect().sync()
 
         then:
-        innerRedisURI.port == port
+        innerRedisURI.port == RedisContainerUtils.getRedisPort()
         innerRedisURI.clientName == "foo-client-name"
-        commandFoo.info().contains("tcp_port:$port")
+        commandFoo.info().contains("tcp_port:$RedisContainerUtils.REDIS_PORT")
         commandFoo.set("foo", "bar")
         commandFoo.get("foo") == "bar"
 
@@ -103,22 +68,17 @@ class RedisClientFactorySpec extends Specification{
         RedisURI innerBarRedisURI = clientBar.@redisURI
         RedisCommands<?,?> commandBar = clientBar.connect().sync()
         then:
-        commandBar.info().contains("tcp_port:$port")
+        commandBar.info().contains("tcp_port:$RedisContainerUtils.REDIS_PORT")
         !innerBarRedisURI.clientName
 
         cleanup:
-        redisServer.stop()
         applicationContext.stop()
     }
 
     void "test redis thread pool settings"() {
         given:
-        def port = SocketUtils.findAvailableTcpPort()
-        RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
-        redisServer.start()
-
         ApplicationContext applicationContext = ApplicationContext.run([
-                'redis.uri':"redis://localhost:$port",
+                'redis.uri': RedisContainerUtils.getRedisPort("redis://localhost"),
                 'redis.io-thread-pool-size':10,
                 'redis.computation-thread-pool-size':20,
         ])
@@ -130,18 +90,13 @@ class RedisClientFactorySpec extends Specification{
         client.getResources().ioThreadPoolSize() == 10
 
         cleanup:
-        redisServer.stop()
         applicationContext.stop()
     }
 
     void "test redis client name settings"() {
         given:
-        int port = SocketUtils.findAvailableTcpPort()
-        RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
-        redisServer.start()
-
         ApplicationContext applicationContext = ApplicationContext.run([
-                'redis.uri':"redis://localhost:$port",
+                'redis.uri': RedisContainerUtils.getRedisPort("redis://localhost"),
                 'redis.client-name':"test-name"
         ])
         when:
@@ -152,19 +107,15 @@ class RedisClientFactorySpec extends Specification{
         innerRedisURI.clientName == "test-name"
 
         cleanup:
-        redisServer.stop()
         applicationContext.stop()
     }
 
     void "test redis metrics settings"() {
         given:
-        def port = SocketUtils.findAvailableTcpPort()
-        RedisServer redisServer = RedisServer.builder().port(port).setting(MAX_HEAP_SETTING).build()
-        redisServer.start()
-
         ApplicationContext applicationContext = ApplicationContext.run([
-                'redis.uri':"redis://localhost:$port",
+                'redis.uri': RedisContainerUtils.getRedisPort("redis://localhost"),
         ])
+
         when:
         StatefulRedisConnection client = applicationContext.getBean(StatefulRedisConnection)
         MeterRegistry meterRegistry = applicationContext.getBean(MeterRegistry)
@@ -175,7 +126,27 @@ class RedisClientFactorySpec extends Specification{
         meterRegistry.getMeters().findAll {it.getId().getName().startsWith("lettuce")}.size() > 0
 
         cleanup:
-        redisServer.stop()
+        applicationContext.stop()
+    }
+
+    void "test redis client uses defined codec"() {
+        when:
+        ApplicationContext applicationContext = ApplicationContext.run(
+                'spec.name': ByteArrayCodecReplacementFactory.SPEC_NAME,
+                'redis.port': RedisContainerUtils.getRedisPort()
+        )
+        StatefulRedisConnection connection = applicationContext.getBean(StatefulRedisConnection)
+
+        then:
+        // tag::commands[]
+        final key = "foo".bytes
+        final value = "bar".bytes
+        RedisCommands<byte[], byte[]> commands = connection.sync()
+        commands.set(key, value)
+        commands.get(key) == value
+        // end::commands[]
+
+        cleanup:
         applicationContext.stop()
     }
 }

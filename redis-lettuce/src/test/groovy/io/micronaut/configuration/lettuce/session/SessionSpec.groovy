@@ -1,6 +1,6 @@
 package io.micronaut.configuration.lettuce.session
 
-
+import io.micronaut.configuration.lettuce.RedisSpec
 import io.micronaut.context.annotation.Property
 import io.micronaut.context.annotation.Requires
 import io.micronaut.http.HttpHeaders
@@ -10,25 +10,17 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
+import io.micronaut.redis.test.RedisContainerUtils
 import io.micronaut.session.Session
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import io.micronaut.test.support.TestPropertyProvider
 import jakarta.inject.Inject
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.utility.DockerImageName
-import spock.lang.AutoCleanup
-import spock.lang.Shared
 import spock.lang.Specification
 
 @MicronautTest
 @Property(name = 'spec.name', value = 'SessionSpec')
 @Property(name = "micronaut.session.http.redis.enabled", value = "true")
-class SessionSpec extends Specification  implements TestPropertyProvider {
-
-    @Shared
-    @AutoCleanup
-    GenericContainer redis = new GenericContainer(DockerImageName.parse("redis:5.0.3-alpine"))
-            .withExposedPorts(6379)
+class SessionSpec extends RedisSpec  implements TestPropertyProvider {
 
     @Inject
     @Client("/")
@@ -57,9 +49,8 @@ class SessionSpec extends Specification  implements TestPropertyProvider {
 
     @Override
     Map<String, String> getProperties() {
-        redis.start()
         return [
-                'redis.uri': 'redis://' + redis.getContainerIpAddress() + ":" + redis.getMappedPort(6379)
+                'redis.uri': RedisContainerUtils.getRedisPort('redis://localhost')
         ]
     }
 

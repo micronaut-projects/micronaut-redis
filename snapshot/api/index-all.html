@@ -135,7 +135,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
-<div class="block">Allows connecting to a Redis cluster via the the <code>"redis.uris"</code> setting.</div>
+<div class="block">Allows connecting to a Redis cluster via the <code>"redis.uris"</code> setting.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#%3Cinit%3E()" class="member-name-link">DefaultRedisClusterClientFactory()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a></dt>
 <dd>&nbsp;</dd>
@@ -538,7 +538,9 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#redisClient(io.micronaut.configuration.lettuce.AbstractRedisConfiguration,io.lettuce.core.resource.ClientResources)" class="member-name-link">redisClient(AbstractRedisConfiguration, ClientResources)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a></dt>
 <dd>
-<div class="block">Create the client based on config URIs.</div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">use <a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#redisClient(io.micronaut.configuration.lettuce.AbstractRedisConfiguration,io.lettuce.core.resource.ClientResources,java.util.List)"><code>DefaultRedisClusterClientFactory.redisClient(AbstractRedisConfiguration, ClientResources, List)</code></a> instead</div>
+</div>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#redisClient(io.micronaut.configuration.lettuce.AbstractRedisConfiguration,io.lettuce.core.resource.ClientResources,java.util.List)" class="member-name-link">redisClient(AbstractRedisConfiguration, ClientResources, List&lt;ClientResourcesMutator&gt;)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
 <dd>
@@ -546,6 +548,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#redisClient(io.micronaut.configuration.lettuce.AbstractRedisConfiguration,io.lettuce.core.resource.ClientResources,java.util.List)" class="member-name-link">redisClient(AbstractRedisConfiguration, ClientResources, List&lt;ClientResourcesMutator&gt;)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#redisClient(io.micronaut.configuration.lettuce.AbstractRedisConfiguration,io.lettuce.core.resource.ClientResources,java.util.List)" class="member-name-link">redisClient(AbstractRedisConfiguration, ClientResources, List&lt;ClientResourcesMutator&gt;)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a></dt>
+<dd>
+<div class="block">Create the client based on config URIs and optional client resource mutators.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html#redisClient(io.micronaut.configuration.lettuce.NamedRedisServersConfiguration,java.util.List)" class="member-name-link">redisClient(NamedRedisServersConfiguration, List&lt;ClientResourcesMutator&gt;)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a></dt>
 <dd>
 <div class="block">Creates the <code>RedisClient</code> from the configuration.</div>

@@ -29,10 +29,12 @@ import io.micronaut.core.util.CollectionUtils;
 
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Allows connecting to a Redis cluster via the the {@code "redis.uris"} setting.
+ * Allows connecting to a Redis cluster via the {@code "redis.uris"} setting.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -46,17 +48,39 @@ public class DefaultRedisClusterClientFactory {
      * Create the client based on config URIs.
      * @param config config
      * @param defaultClientResources default {@link ClientResources}
+     * @deprecated use {@link #redisClient(AbstractRedisConfiguration, ClientResources, List)} instead
      * @return client
+     */
+    @Deprecated(since = "6.1.0", forRemoval = true)
+    public RedisClusterClient redisClient(AbstractRedisConfiguration config, @Nullable ClientResources defaultClientResources) {
+        return this.redisClient(config, defaultClientResources, Collections.emptyList());
+    }
+
+    /**
+     * Create the client based on config URIs and optional client resource mutators.
+     * @param config config
+     * @param defaultClientResources default {@link ClientResources}
+     * @param mutators The list of mutators
+     * @return client
+     * @since 6.1.0
      */
     @Bean(preDestroy = "shutdown")
     @Singleton
     @Primary
-    public RedisClusterClient redisClient(@Primary AbstractRedisConfiguration config, @Primary @Nullable ClientResources defaultClientResources) {
+    public RedisClusterClient redisClient(@Primary AbstractRedisConfiguration config,
+                                          @Primary @Nullable ClientResources defaultClientResources,
+                                          @Nullable List<ClientResourcesMutator> mutators) {
         List<RedisURI> uris = config.getUris();
         if (CollectionUtils.isEmpty(uris)) {
             throw new ConfigurationException("Redis URIs must be specified");
         }
-        return defaultClientResources == null ? RedisClusterClient.create(uris) : RedisClusterClient.create(defaultClientResources, uris);
+        final ClientResources.Builder builder = Optional.ofNullable(defaultClientResources)
+            .map(ClientResources::mutate)
+            .orElseGet(ClientResources::builder);
+        if (mutators != null) {
+            mutators.forEach(m -> m.mutate(builder, config));
+        }
+        return RedisClusterClient.create(builder.build(), uris);
     }
 
     /**

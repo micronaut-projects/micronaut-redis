@@ -15,8 +15,7 @@ dependencies {
 
     testAnnotationProcessor mn.micronaut.inject.java
 
-    testImplementation platform(libs.testcontainers.bom)
-    testImplementation libs.testcontainers.spock
+    testImplementation(mnTestResources.testcontainers.core)
 
     testImplementation mn.reactor
 

@@ -1,5 +1,14 @@
 This section documents breaking changes between versions
 
+== 7.0.0
+
+The following were deprecated in version 6.0.0 and have been removed.
+
+- Singleton constructor: `RedisHealthIndicator(BeanContext, HealthAggregator, RedisClient[], RedisClusterClient[])`.
+It is replaced with `RedisHealthIndicator(BeanContext, ExecutorService, HealthAggregator<?>, RedisClient[], RedisClusterClient[])`.
+- Factory method: `DefaultRedisClusterClientFactory.redisClient(AbstractRedisConfiguration, ClientResources)`.
+It is replaced with `redisClient(AbstractRedisConfiguration, ClientResources, List<ClientResourcesMutator>)`.
+
 == 5.3.0
 
 - The embedded Redis server that can be used for testing has been changed to only bind to localhost.

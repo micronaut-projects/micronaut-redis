@@ -25,11 +25,10 @@ import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.exceptions.ConfigurationException;
-import io.micronaut.core.util.CollectionUtils;
-
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Singleton;
-import java.util.Collections;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -43,18 +42,6 @@ import java.util.Optional;
 @Singleton
 @Factory
 public class DefaultRedisClusterClientFactory {
-
-    /**
-     * Create the client based on config URIs.
-     * @param config config
-     * @param defaultClientResources default {@link ClientResources}
-     * @deprecated use {@link #redisClient(AbstractRedisConfiguration, ClientResources, List)} instead
-     * @return client
-     */
-    @Deprecated(since = "6.1.0", forRemoval = true)
-    public RedisClusterClient redisClient(AbstractRedisConfiguration config, @Nullable ClientResources defaultClientResources) {
-        return this.redisClient(config, defaultClientResources, Collections.emptyList());
-    }
 
     /**
      * Create the client based on config URIs and optional client resource mutators.

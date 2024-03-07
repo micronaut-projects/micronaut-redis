@@ -75,7 +75,7 @@ class DefaultRedisClusterClientFactorySpec extends RedisClusterSpec {
         MeterRegistry meterRegistry = applicationContext.getBean(MeterRegistry)
         DefaultRedisClusterClientFactory factory = applicationContext.getBean(DefaultRedisClusterClientFactory)
         AbstractRedisConfiguration config = applicationContext.getBean(AbstractRedisConfiguration)
-        RedisClusterClient client = factory.redisClient(config, null)
+        RedisClusterClient client = factory.redisClient(config, null, null)
 
         when:
         client.refreshPartitions()
@@ -94,7 +94,7 @@ class DefaultRedisClusterClientFactorySpec extends RedisClusterSpec {
         AbstractRedisConfiguration config = new NamedRedisServersConfiguration("wrong config")
 
         when:
-        factory.redisClient(config, null)
+        factory.redisClient(config, null, null)
 
         then:
         thrown(ConfigurationException)

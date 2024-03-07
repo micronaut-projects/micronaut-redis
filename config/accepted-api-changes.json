@@ -188,5 +188,10 @@
     "type": "io.micronaut.configuration.lettuce.NamedRedisClientFactory",
     "member": "Constructor io.micronaut.configuration.lettuce.NamedRedisClientFactory(io.micronaut.context.BeanLocator,io.lettuce.core.resource.ClientResources)",
     "reason": "BeanDefinition changes in Micronaut 4.0.0"
+  },
+  {
+    "type": "io.micronaut.configuration.lettuce.health.RedisHealthIndicator",
+    "member": "Constructor io.micronaut.configuration.lettuce.health.RedisHealthIndicator(io.micronaut.context.BeanContext,io.micronaut.management.health.aggregator.HealthAggregator,io.lettuce.core.RedisClient[],io.lettuce.core.cluster.RedisClusterClient[])",
+    "reason": "Remove deprecated RedisHealthIndicator constructor for Micronaut Framework 5"
   }
 ]

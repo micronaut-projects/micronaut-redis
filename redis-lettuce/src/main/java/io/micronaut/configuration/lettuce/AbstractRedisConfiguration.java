@@ -18,6 +18,8 @@ package io.micronaut.configuration.lettuce;
 import io.lettuce.core.RedisURI;
 import io.micronaut.context.env.Environment;
 import io.micronaut.core.naming.Named;
+import io.micronaut.core.util.Toggleable;
+
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Abstract configuration for Lettuce.
  */
-public abstract class AbstractRedisConfiguration extends RedisURI implements Named {
+public abstract class AbstractRedisConfiguration extends RedisURI implements Named, Toggleable {
 
     private RedisURI uri;
     private List<RedisURI> uris = Collections.emptyList();

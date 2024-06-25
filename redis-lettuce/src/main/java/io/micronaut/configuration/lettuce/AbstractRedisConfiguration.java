@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce;
 
+import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisURI;
 import io.micronaut.context.env.Environment;
 import io.micronaut.core.naming.Named;
@@ -35,6 +36,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
     private Integer ioThreadPoolSize;
     private Integer computationThreadPoolSize;
     private String name;
+    private ReadFrom readFrom;
 
     /**
      * Constructor.
@@ -142,5 +144,21 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return Get the ReadFrom settings for the read replicas.
+     */
+    public ReadFrom getReadFrom() {
+        return readFrom;
+    }
+
+    /**
+     * Sets the read from property.
+     *
+     * @param readFrom The name of the bean
+     */
+    public void setReadFrom(String readFrom) {
+        this.readFrom = ReadFrom.valueOf(readFrom);
     }
 }

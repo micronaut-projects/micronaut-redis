@@ -19,11 +19,13 @@ import io.lettuce.core.AbstractRedisClient;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.cluster.RedisClusterClient;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.codec.ByteArrayCodec;
 import io.lettuce.core.support.AsyncConnectionPoolSupport;
 import io.lettuce.core.support.AsyncPool;
 import io.lettuce.core.support.BoundedAsyncPool;
 import io.lettuce.core.support.BoundedPoolConfig;
+import io.micronaut.configuration.lettuce.DefaultRedisConfiguration;
 import io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
 import io.micronaut.context.BeanLocator;
@@ -46,9 +48,10 @@ import java.util.concurrent.CompletionStage;
 public final class RedisAsyncConnectionPoolFactory {
 
     @Singleton
-    @Requires(beans = {DefaultRedisCacheConfiguration.class, DefaultRedisConnectionPoolConfiguration.class})
+    @Requires(beans = {DefaultRedisCacheConfiguration.class, DefaultRedisConnectionPoolConfiguration.class, DefaultRedisConfiguration.class})
     public AsyncPool<StatefulConnection<byte[], byte[]>> getAsyncPool(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
+            DefaultRedisConfiguration defaultRedisConfiguration,
             BeanLocator beanLocator,
             DefaultRedisConnectionPoolConfiguration defaultRedisConnectionPoolConfiguration
     ) {
@@ -57,7 +60,13 @@ public final class RedisAsyncConnectionPoolFactory {
         BoundedPoolConfig asyncConfig = defaultRedisConnectionPoolConfiguration.getBoundedPoolConfig();
         CompletionStage<BoundedAsyncPool<StatefulConnection<byte[], byte[]>>> stage =  AsyncConnectionPoolSupport.createBoundedObjectPoolAsync(() -> {
                     if (client instanceof RedisClusterClient) {
-                        return CompletableFuture.completedFuture(((RedisClusterClient) client).connect(new ByteArrayCodec()));
+                        StatefulRedisClusterConnection<byte[], byte[]> connection = ((RedisClusterClient) client).connect(new ByteArrayCodec());
+
+                        if (defaultRedisConfiguration.getReadFrom() != null) {
+                            connection.setReadFrom(defaultRedisConfiguration.getReadFrom());
+                        }
+
+                        return CompletableFuture.completedFuture(connection);
                     }
                     if (client instanceof RedisClient) {
                         return CompletableFuture.completedFuture(((RedisClient) client).connect(new ByteArrayCodec()));

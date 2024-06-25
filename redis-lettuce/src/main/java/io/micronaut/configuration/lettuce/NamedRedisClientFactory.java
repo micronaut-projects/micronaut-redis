@@ -17,6 +17,7 @@ package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
@@ -79,7 +80,13 @@ public class NamedRedisClientFactory<K, V> extends AbstractRedisClientFactory<K,
     @EachBean(NamedRedisServersConfiguration.class)
     public StatefulRedisConnection<K, V> redisConnection(NamedRedisServersConfiguration config) {
         RedisCodec<K, V> namedCodec = beanLocator.findBean(RedisCodec.class, Qualifiers.byName(config.getName())).orElse(defaultCodec);
-        return super.redisConnection(getRedisClient(config), namedCodec);
+        StatefulRedisConnection connection = super.redisConnection(getRedisClient(config), namedCodec);
+
+        if (connection instanceof StatefulRedisClusterConnection && config.getReadFrom() != null) {
+            ((StatefulRedisClusterConnection) connection).setReadFrom(config.getReadFrom());
+        }
+
+        return connection;
     }
 
     /**

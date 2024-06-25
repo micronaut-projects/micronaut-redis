@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
+import io.lettuce.core.ReadFrom;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.runtime.ApplicationConfiguration;
 

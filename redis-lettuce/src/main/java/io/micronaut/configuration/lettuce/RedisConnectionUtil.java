@@ -106,9 +106,15 @@ public class RedisConnectionUtil {
      * @throws ConfigurationException If the connection cannot be found
      */
     public static StatefulConnection<byte[], byte[]> openBytesRedisConnection(BeanLocator beanLocator, Optional<String> serverName, String errorMessage) {
+        Optional<DefaultRedisConfiguration> config = beanLocator.findBean(DefaultRedisConfiguration.class);
         Optional<RedisClusterClient> redisClusterClient = findRedisClusterClient(beanLocator, serverName);
+        findRedisConnection(beanLocator, serverName, "test");
         if (redisClusterClient.isPresent()) {
-            return redisClusterClient.get().connect(ByteArrayCodec.INSTANCE);
+            StatefulRedisClusterConnection<byte[], byte[]> conn = redisClusterClient.get().connect(ByteArrayCodec.INSTANCE);
+            if (config.isPresent() && config.get().getReadFrom() != null) {
+                conn.setReadFrom(config.get().getReadFrom());
+            }
+            return conn;
         }
         Optional<RedisClient> redisClient = findRedisClient(beanLocator, serverName);
         if (redisClient.isPresent()) {

@@ -50,4 +50,12 @@ public interface RedisSetting {
      * Default configuration for Redis caches pool.
      */
     String REDIS_POOL = PREFIX + ".pool";
+    /**
+     * The URIs to the redis read replicas.
+     */
+    String REDIS_REPLICA_URIS = PREFIX + ".replica-uris";
+    /**
+     * The Primary/Replica read-from preference.
+     */
+    String REDIS_READ_FROM = PREFIX + ".read-from";
 }

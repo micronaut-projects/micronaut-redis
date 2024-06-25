@@ -20,6 +20,7 @@ import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
+import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
@@ -43,6 +44,12 @@ import java.util.Optional;
 @Singleton
 @Factory
 public class DefaultRedisClusterClientFactory {
+
+    private final BeanLocator beanLocator;
+
+    public DefaultRedisClusterClientFactory(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
+    }
 
     /**
      * Create the client based on config URIs.
@@ -92,7 +99,13 @@ public class DefaultRedisClusterClientFactory {
     @Singleton
     @Primary
     public StatefulRedisClusterConnection<String, String> redisConnection(@Primary RedisClusterClient redisClient) {
-        return redisClient.connect();
+        Optional<AbstractRedisConfiguration> config = beanLocator.findBean(AbstractRedisConfiguration.class);
+
+        StatefulRedisClusterConnection connection = redisClient.connect();
+        if (config.isPresent() && config.get().getReadFrom() != null) {
+            connection.setReadFrom(config.get().getReadFrom());
+        }
+        return connection;
     }
 
     /**

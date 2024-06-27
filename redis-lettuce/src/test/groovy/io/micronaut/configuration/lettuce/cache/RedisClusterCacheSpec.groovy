@@ -2,28 +2,12 @@ package io.micronaut.configuration.lettuce.cache
 
 import io.lettuce.core.ReadFrom
 import io.lettuce.core.api.StatefulConnection
-import io.lettuce.core.api.StatefulRedisConnection
-import io.lettuce.core.api.async.RedisStringAsyncCommands
 import io.lettuce.core.cluster.RedisClusterClient
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection
-import io.lettuce.core.protocol.AsyncCommand
-import io.lettuce.core.protocol.RedisCommand
 import io.micronaut.configuration.lettuce.RedisClusterSpec
-import io.micronaut.configuration.lettuce.RedisSpec
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.BeanLocator
-import io.micronaut.context.exceptions.ConfigurationException
-import io.micronaut.core.convert.ConversionService
 import io.micronaut.core.type.Argument
 import io.micronaut.inject.qualifiers.Qualifiers
-import io.micronaut.redis.test.RedisContainerUtils
-import io.micronaut.runtime.ApplicationConfiguration
-import spock.lang.Requires
-
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
-import java.nio.charset.Charset
-import java.util.concurrent.ExecutionException
 
 /**
  * @author Graeme Rocher

@@ -33,6 +33,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
 
     private RedisURI uri;
     private List<RedisURI> uris = Collections.emptyList();
+    private List<RedisURI> replicaUris = Collections.emptyList();
     private Integer ioThreadPoolSize;
     private Integer computationThreadPoolSize;
     private String name;
@@ -80,6 +81,22 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      */
     public void setUris(URI... uris) {
         this.uris = Arrays.stream(uris).map(RedisURI::create).collect(Collectors.toList());
+    }
+
+    /**
+     * @return Get the Redis URIs for read replicas.
+     */
+    public List<RedisURI> getReplicaUris() {
+        return replicaUris;
+    }
+
+    /**
+     * Sets the Replica Redis URIs for read replica configuration.
+     *
+     * @param uris The URI
+     */
+    public void setReplicaUris(URI... uris) {
+        this.replicaUris = Arrays.stream(uris).map(RedisURI::create).collect(Collectors.toList());
     }
 
     /**
@@ -148,6 +165,9 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
 
     /**
      * @return Get the ReadFrom settings for the read replicas.
+     *
+     * {@link io.lettuce.core.ReadFrom}
+     *
      */
     public ReadFrom getReadFrom() {
         return readFrom;
@@ -156,7 +176,10 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
     /**
      * Sets the read from property.
      *
-     * @param readFrom The name of the bean
+     * @param readFrom The value of the ReadFrom setting to use.
+     *
+     * {@link io.lettuce.core.ReadFrom#valueOf(String)}
+     *
      */
     public void setReadFrom(String readFrom) {
         this.readFrom = ReadFrom.valueOf(readFrom);

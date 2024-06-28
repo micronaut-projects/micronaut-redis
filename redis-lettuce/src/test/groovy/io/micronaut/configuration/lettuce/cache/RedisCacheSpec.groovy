@@ -29,7 +29,8 @@ class RedisCacheSpec extends RedisSpec {
     ApplicationContext createApplicationContext() {
         ApplicationContext.run(
                 'redis.port': RedisContainerUtils.getRedisPort(),
-                'redis.caches.test.enabled': 'true'
+                'redis.caches.test.enabled': 'true',
+                'redis.caches.test.invalidate-scan-count': 2
         )
     }
 
@@ -172,6 +173,105 @@ class RedisCacheSpec extends RedisSpec {
 
         then:
         thrown ConfigurationException
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test invalidateAll with redis sync cache"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext()
+
+        when:
+        RedisCache redisCache = applicationContext.getBean(RedisCache, Qualifiers.byName("test"))
+        RedisCacheConfiguration config = applicationContext.getBean(RedisCacheConfiguration, Qualifiers.byName("test"))
+
+        then:
+        redisCache != null
+        redisCache.getNativeCache() instanceof StatefulRedisConnection
+        config.invalidateScanCount.get() == 2L
+
+        when:
+        for( var i = 0; i < 100; i++) {
+            redisCache.put(i.toString(), new Foo(name: "$i"))
+        }
+
+        then:
+        for( var i = 0; i < 100; i++) {
+            redisCache.get(i.toString(), Foo).isPresent()
+        }
+
+        when:
+        redisCache.invalidateAll()
+
+        then:
+        for( var i = 0; i < 100; i++) {
+            !redisCache.get(i.toString(), Foo).isPresent()
+        }
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test invalidateAll with redis async cache with single key"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext()
+
+        when:
+        RedisCache redisCache = applicationContext.getBean(RedisCache, Qualifiers.byName("test"))
+        RedisCacheConfiguration config = applicationContext.getBean(RedisCacheConfiguration, Qualifiers.byName("test"))
+
+        then:
+        redisCache != null
+        redisCache.async().getNativeCache() instanceof StatefulRedisConnection
+        config.invalidateScanCount.get() == 2L
+
+        when:
+        redisCache.put("first", new Foo(name: "first"))
+
+        then:
+        redisCache.get("first", Foo).isPresent()
+
+        when:
+        redisCache.async().invalidateAll().join()
+
+        then:
+        !redisCache.get("first", Foo).isPresent()
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test invalidateAll with redis async cache with many keys"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext()
+
+        when:
+        RedisCache redisCache = applicationContext.getBean(RedisCache, Qualifiers.byName("test"))
+        RedisCacheConfiguration config = applicationContext.getBean(RedisCacheConfiguration, Qualifiers.byName("test"))
+
+        then:
+        redisCache != null
+        redisCache.async().getNativeCache() instanceof StatefulRedisConnection
+        config.invalidateScanCount.get() == 2L
+
+        when:
+        for( var i = 0; i < 100; i++) {
+            redisCache.put(i.toString(), new Foo(name: "$i"))
+        }
+
+        then:
+        for( var i = 0; i < 100; i++) {
+            redisCache.get(i.toString(), Foo).isPresent()
+        }
+
+        when:
+        redisCache.async().invalidateAll().join()
+
+        then:
+        for( var i = 0; i < 100; i++) {
+            !redisCache.get(i.toString(), Foo).isPresent()
+        }
 
         cleanup:
         applicationContext.stop()

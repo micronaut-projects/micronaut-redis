@@ -36,6 +36,34 @@ In which case the same beans will be created for each entry under `redis.servers
 
 The above example will inject the connection named `foo`.
 
+=== MasterReplica Configuration
+You can configure a standalone redis instance with replicas by supplying the `redis.replica-uris` setting to list out the location of all replicas.
+
+.MasterReplica Redis Configuration
+[source,yaml]
+----
+redis:
+    uri: redis://localhost
+    replica-uris:
+      - redis://localhost:6578
+    ssl: true
+    timeout: 30s
+----
+
+=== ReadFrom Settings
+For MasterReplica and Cluster configurations the https://github.com/redis/lettuce/wiki/ReadFrom-Settings[ReadFrom Setting] can be configured using the `redis.read-from` setting.
+
+.ReadFrom Redis Configuration
+[source,yaml]
+----
+redis:
+    uris:
+      - redis://localhost
+    read-from: replicaPreferred
+----
+
+This setting accepts a string matching the values accepted in the https://github.com/redis/lettuce/blob/main/src/main/java/io/lettuce/core/ReadFrom.java#L190[ReadFrom.valueOf] method. These are currently `master`, `masterPreferred`, `upstream`, `upstreamPreferred`, `replica`, `replicaPreferred`, `lowestLatency` , `any`, and `anyReplica`.
+
 === Named connection codec configuration
 
 When using named redis connections, you can change the codec for each connection by supplying a named RedisCodec bean.

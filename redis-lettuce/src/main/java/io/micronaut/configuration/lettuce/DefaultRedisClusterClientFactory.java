@@ -86,11 +86,30 @@ public class DefaultRedisClusterClientFactory {
     /**
      * Establish redis connection.
      * @param redisClient client.
+     * @param config config.
      * @return connection
+     * @since 6.5.0
      */
     @Bean(preDestroy = "close")
     @Singleton
     @Primary
+    public StatefulRedisClusterConnection<String, String> redisConnection(@Primary RedisClusterClient redisClient, @Primary AbstractRedisConfiguration config) {
+        StatefulRedisClusterConnection<String, String> connection = redisClient.connect();
+        if (config.getReadFrom() != null) {
+            connection.setReadFrom(config.getReadFrom());
+        }
+        return connection;
+    }
+
+    /**
+     * Establish redis connection.
+     * @param redisClient client.
+     * @return connection
+     * @deprecated use {@link #redisConnection(RedisClusterClient, AbstractRedisConfiguration)} instead
+     */
+    @Bean(preDestroy = "close")
+    @Singleton
+    @Deprecated(since = "6.5.0", forRemoval = true)
     public StatefulRedisClusterConnection<String, String> redisConnection(@Primary RedisClusterClient redisClient) {
         return redisClient.connect();
     }

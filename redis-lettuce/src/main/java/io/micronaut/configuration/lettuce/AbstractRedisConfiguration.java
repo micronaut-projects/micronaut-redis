@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce;
 
+import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisURI;
 import io.micronaut.context.env.Environment;
 import io.micronaut.core.naming.Named;
@@ -32,9 +33,11 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
 
     private RedisURI uri;
     private List<RedisURI> uris = Collections.emptyList();
+    private List<RedisURI> replicaUris = Collections.emptyList();
     private Integer ioThreadPoolSize;
     private Integer computationThreadPoolSize;
     private String name;
+    private ReadFrom readFrom;
 
     /**
      * Constructor.
@@ -78,6 +81,22 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      */
     public void setUris(URI... uris) {
         this.uris = Arrays.stream(uris).map(RedisURI::create).collect(Collectors.toList());
+    }
+
+    /**
+     * @return Get the Redis URIs for read replicas.
+     */
+    public List<RedisURI> getReplicaUris() {
+        return replicaUris;
+    }
+
+    /**
+     * Sets the Replica Redis URIs for read replica configuration.
+     *
+     * @param uris The URI
+     */
+    public void setReplicaUris(URI... uris) {
+        this.replicaUris = Arrays.stream(uris).map(RedisURI::create).collect(Collectors.toList());
     }
 
     /**
@@ -142,5 +161,27 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return Get the ReadFrom settings for the read replicas.
+     *
+     * {@link io.lettuce.core.ReadFrom}
+     *
+     */
+    public ReadFrom getReadFrom() {
+        return readFrom;
+    }
+
+    /**
+     * Sets the read from property.
+     *
+     * @param readFrom The value of the ReadFrom setting to use.
+     *
+     * {@link io.lettuce.core.ReadFrom#valueOf(String)}
+     *
+     */
+    public void setReadFrom(String readFrom) {
+        this.readFrom = ReadFrom.valueOf(readFrom);
     }
 }

@@ -86,7 +86,7 @@ public class DefaultRedisClusterClientFactory {
     /**
      * Establish redis connection.
      * @param redisClient client.
-     * @param config config
+     * @param config config.
      * @return connection
      * @since 6.5.0
      */

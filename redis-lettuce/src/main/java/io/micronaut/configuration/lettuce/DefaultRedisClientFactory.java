@@ -64,6 +64,7 @@ public class DefaultRedisClientFactory<K, V> extends AbstractRedisClientFactory<
      * Creates the {@link StatefulRedisConnection} from the {@link RedisClient}.
      *
      * @param redisClient The {@link RedisClient}
+     * @param config The config.
      * @return The {@link StatefulRedisConnection}
      * @since 6.5.0
      */

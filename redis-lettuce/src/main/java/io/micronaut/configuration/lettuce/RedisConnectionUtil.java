@@ -115,15 +115,15 @@ public class RedisConnectionUtil {
         Optional<RedisClusterClient> redisClusterClient = findRedisClusterClient(beanLocator, serverName);
         if (redisClusterClient.isPresent()) {
             StatefulRedisClusterConnection<byte[], byte[]> conn = redisClusterClient.get().connect(ByteArrayCodec.INSTANCE);
-            if (config.isPresent() && config.get().getReadFrom() != null) {
-                conn.setReadFrom(config.get().getReadFrom());
+            if (config.isPresent() && config.get().getReadFrom().isPresent()) {
+                conn.setReadFrom(config.get().getReadFrom().get());
             }
             return conn;
         }
         Optional<RedisClient> redisClient = findRedisClient(beanLocator, serverName);
         if (redisClient.isPresent()) {
-            if (config.isPresent() && config.get().getReplicaUris().size() > 0) {
-                List<RedisURI> uris = new ArrayList(config.get().getReplicaUris());
+            if (config.isPresent() && config.get().getUri().isPresent() && !config.get().getReplicaUris().isEmpty()) {
+                List<RedisURI> uris = new ArrayList<>(config.get().getReplicaUris());
                 uris.add(config.get().getUri().get());
 
                 StatefulRedisMasterReplicaConnection<byte[], byte[]> connection = MasterReplica.connect(
@@ -131,8 +131,8 @@ public class RedisConnectionUtil {
                     ByteArrayCodec.INSTANCE,
                     uris
                 );
-                if (config.get().getReadFrom() != null) {
-                    connection.setReadFrom(config.get().getReadFrom());
+                if (config.get().getReadFrom().isPresent()) {
+                    connection.setReadFrom(config.get().getReadFrom().get());
                 }
 
                 return connection;

@@ -95,14 +95,14 @@ public class NamedRedisClientFactory<K, V> extends AbstractRedisClientFactory<K,
                 namedCodec,
                 uris
             );
-            if (config.getReadFrom() != null) {
-                ((StatefulRedisMasterReplicaConnection<K, V>) connection).setReadFrom(config.getReadFrom());
+            if (config.getReadFrom().isPresent()) {
+                ((StatefulRedisMasterReplicaConnection<K, V>) connection).setReadFrom(config.getReadFrom().get());
             }
         } else {
             connection = super.redisConnection(getRedisClient(config), namedCodec);
 
-            if (connection instanceof StatefulRedisClusterConnection && config.getReadFrom() != null) {
-                ((StatefulRedisClusterConnection<?, ?>) connection).setReadFrom(config.getReadFrom());
+            if (connection instanceof StatefulRedisClusterConnection<?, ?> conn && config.getReadFrom().isPresent()) {
+                conn.setReadFrom(config.getReadFrom().get());
             }
         }
 

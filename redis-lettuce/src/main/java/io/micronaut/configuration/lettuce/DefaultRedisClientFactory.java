@@ -72,7 +72,7 @@ public class DefaultRedisClientFactory<K, V> extends AbstractRedisClientFactory<
     @Singleton
     @Primary
     public StatefulRedisConnection<K, V> redisConnection(@Primary RedisClient redisClient, AbstractRedisConfiguration config) {
-        if (!config.getReplicaUris().isEmpty()) {
+        if (config.getUri().isPresent() && !config.getReplicaUris().isEmpty()) {
             List<RedisURI> uris = new ArrayList<>(config.getReplicaUris());
             uris.add(config.getUri().get());
 
@@ -81,8 +81,8 @@ public class DefaultRedisClientFactory<K, V> extends AbstractRedisClientFactory<
                 defaultCodec,
                 uris
             );
-            if (config.getReadFrom() != null) {
-                connection.setReadFrom(config.getReadFrom());
+            if (config.getReadFrom().isPresent()) {
+                connection.setReadFrom(config.getReadFrom().get());
             }
 
             return connection;
@@ -98,8 +98,6 @@ public class DefaultRedisClientFactory<K, V> extends AbstractRedisClientFactory<
      * @return The {@link StatefulRedisConnection}
      * @deprecated use {@link #redisConnection(RedisClient, AbstractRedisConfiguration)} instead
      */
-    @Bean(preDestroy = "close")
-    @Singleton
     @Deprecated(since = "6.5.0", forRemoval = true)
     public StatefulRedisConnection<K, V> redisConnection(@Primary RedisClient redisClient) {
         return super.redisConnection(redisClient, defaultCodec);

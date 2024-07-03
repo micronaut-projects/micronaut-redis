@@ -18,6 +18,7 @@ package io.micronaut.configuration.lettuce;
 import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisURI;
 import io.micronaut.context.env.Environment;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.naming.Named;
 import java.net.URI;
 import java.util.Arrays;
@@ -85,6 +86,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
 
     /**
      * @return Get the Redis URIs for read replicas.
+     * @since 6.5.0
      */
     public List<RedisURI> getReplicaUris() {
         return replicaUris;
@@ -94,8 +96,9 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      * Sets the Replica Redis URIs for read replica configuration.
      *
      * @param uris The URI
+     * @since 6.5.0
      */
-    public void setReplicaUris(URI... uris) {
+    public void setReplicaUris(@NonNull URI... uris) {
         this.replicaUris = Arrays.stream(uris).map(RedisURI::create).collect(Collectors.toList());
     }
 
@@ -164,24 +167,25 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
     }
 
     /**
+     *
+     * See {@link io.lettuce.core.ReadFrom}.
+     *
      * @return Get the ReadFrom settings for the read replicas.
-     *
-     * {@link io.lettuce.core.ReadFrom}
-     *
+     * @since 6.5.0
      */
-    public ReadFrom getReadFrom() {
-        return readFrom;
+    public Optional<ReadFrom> getReadFrom() {
+        return Optional.ofNullable(readFrom);
     }
 
     /**
-     * Sets the read from property.
+     * Sets the read from property by name.
+     *
+     * See {@link io.lettuce.core.ReadFrom#valueOf(String)}
      *
      * @param readFrom The value of the ReadFrom setting to use.
-     *
-     * {@link io.lettuce.core.ReadFrom#valueOf(String)}
-     *
+     * @since 6.5.0
      */
-    public void setReadFrom(String readFrom) {
+    public void setReadFrom(@NonNull String readFrom) {
         this.readFrom = ReadFrom.valueOf(readFrom);
     }
 }

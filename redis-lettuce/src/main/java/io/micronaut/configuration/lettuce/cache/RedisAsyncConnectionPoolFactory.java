@@ -67,14 +67,14 @@ public final class RedisAsyncConnectionPoolFactory {
                     if (client instanceof RedisClusterClient) {
                         StatefulRedisClusterConnection<byte[], byte[]> connection = ((RedisClusterClient) client).connect(new ByteArrayCodec());
 
-                        if (defaultRedisConfiguration.getReadFrom() != null) {
-                            connection.setReadFrom(defaultRedisConfiguration.getReadFrom());
+                        if (defaultRedisConfiguration.getReadFrom().isPresent()) {
+                            connection.setReadFrom(defaultRedisConfiguration.getReadFrom().get());
                         }
 
                         return CompletableFuture.completedFuture(connection);
                     }
                     if (client instanceof RedisClient) {
-                        if (!defaultRedisConfiguration.getReplicaUris().isEmpty()) {
+                        if (defaultRedisConfiguration.getUri().isPresent() && !defaultRedisConfiguration.getReplicaUris().isEmpty()) {
                             List<RedisURI> uris = new ArrayList<>(defaultRedisConfiguration.getReplicaUris());
                             uris.add(defaultRedisConfiguration.getUri().get());
 
@@ -83,8 +83,8 @@ public final class RedisAsyncConnectionPoolFactory {
                                 new ByteArrayCodec(),
                                 uris
                             );
-                            if (defaultRedisConfiguration.getReadFrom() != null) {
-                                connection.setReadFrom(defaultRedisConfiguration.getReadFrom());
+                            if (defaultRedisConfiguration.getReadFrom().isPresent()) {
+                                connection.setReadFrom(defaultRedisConfiguration.getReadFrom().get());
                             }
 
                             return CompletableFuture.completedFuture(connection);

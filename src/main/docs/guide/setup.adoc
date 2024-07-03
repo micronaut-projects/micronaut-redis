@@ -12,10 +12,10 @@ To configure the Lettuce driver you should first add the `redis-lettuce` module 
 
 dependency:micronaut-redis-lettuce[groupId="io.micronaut.redis"]
 
-You should then configure the URI of the Redis server you wish to communicate with in `application.yml`:
+You should then configure the URI of the Redis server you wish to communicate with in the application configuration file:
 
 .Configuring `redis.uri`
-[source,yaml]
+[configuration]
 ----
 redis:
     uri: redis://localhost

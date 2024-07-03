@@ -204,13 +204,53 @@
 </div></p>
 </div>
 <div class="paragraph">
-<p>You should then configure the URI of the Redis server you wish to communicate with in <code>application.yml</code>:</p>
+<p>You should then configure the URI of the Redis server you wish to communicate with in the application configuration file:</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">Configuring <code>redis.uri</code></div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">redis.uri=redis://localhost</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
     uri: redis://localhost</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+  uri="redis://localhost"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">redis {
+  uri = "redis://localhost"
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  redis {
+    uri = "redis://localhost"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "redis": {
+    "uri": "redis://localhost"
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -374,15 +414,65 @@ class ByteArrayCodecReplacementFactory {
 <div class="sect2">
 <h3 id="_customizing_the_redis_configuration">Customizing The Redis Configuration</h3>
 <div class="paragraph">
-<p>You can customize the Redis configuration using any properties exposed by the <a href="../api/io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html">DefaultRedisConfiguration</a> class. For example, in <code>application.yml</code>:</p>
+<p>You can customize the Redis configuration using any properties exposed by the <a href="../api/io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html">DefaultRedisConfiguration</a> class. For example, in the application configuration file:</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">Customizing Redis Configuration</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">redis.uri=redis://localhost
+redis.ssl=true
+redis.timeout=30s</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
     uri: redis://localhost
     ssl: true
     timeout: 30s</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+  uri="redis://localhost"
+  ssl=true
+  timeout="30s"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">redis {
+  uri = "redis://localhost"
+  ssl = true
+  timeout = "30s"
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  redis {
+    uri = "redis://localhost"
+    ssl = true
+    timeout = "30s"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "redis": {
+    "uri": "redis://localhost",
+    "ssl": true,
+    "timeout": "30s"
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -391,8 +481,16 @@ class ByteArrayCodecReplacementFactory {
 <div class="paragraph">
 <p>You can configure multiple Redis connections using the <code>redis.servers</code> setting. For example:</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">Customizing Redis Configuration</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">redis.servers.foo.uri=redis://foo
+redis.servers.bar.uri=redis://bar</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
     servers:
@@ -400,6 +498,64 @@ class ByteArrayCodecReplacementFactory {
             uri: redis://foo
         bar:
             uri: redis://bar</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+  [redis.servers]
+    [redis.servers.foo]
+      uri="redis://foo"
+    [redis.servers.bar]
+      uri="redis://bar"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">redis {
+  servers {
+    foo {
+      uri = "redis://foo"
+    }
+    bar {
+      uri = "redis://bar"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  redis {
+    servers {
+      foo {
+        uri = "redis://foo"
+      }
+      bar {
+        uri = "redis://bar"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "redis": {
+    "servers": {
+      "foo": {
+        "uri": "redis://foo"
+      },
+      "bar": {
+        "uri": "redis://bar"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -453,6 +609,61 @@ class NamedCodecFactory {
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_disabling_redis">Disabling Redis</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can disable the creation of Redis connections using the <code>redis.enabled</code> setting, through configuration:</p>
+</div>
+<div class="openblock">
+<div class="title">Disabling Redis</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">redis.enabled=false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+    enabled: false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+  enabled=false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">redis {
+  enabled = false
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  redis {
+    enabled = false
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "redis": {
+    "enabled": false
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 
 <h1 id="testing"><a class="anchor" href="#testing"></a>5 Redis and Testing</h1>
 
@@ -496,27 +707,150 @@ Lettuce is a non-blocking, reactive Redis client implementation and Micronaut pr
 <div class="paragraph">
 <p>Within your application configuration configure the Redis URL and Redis caches:</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">Cache Configuration Example</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">redis.uri=redis://localhost
+redis.caches.my-cache.expire-after-write=1h</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
     uri: redis://localhost
     caches:
         my-cache:
-            # expire one hour after write
             expire-after-write: 1h</code></pre>
 </div>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+  uri="redis://localhost"
+  [redis.caches]
+    [redis.caches.my-cache]
+      expire-after-write="1h"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">redis {
+  uri = "redis://localhost"
+  caches {
+    myCache {
+      expireAfterWrite = "1h"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  redis {
+    uri = "redis://localhost"
+    caches {
+      my-cache {
+        expire-after-write = "1h"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "redis": {
+    "uri": "redis://localhost",
+    "caches": {
+      "my-cache": {
+        "expire-after-write": "1h"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="openblock">
 <div class="title">Cache Configuration Example with a Dynamic Expiration policy</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">redis.uri=redis://localhost
+redis.caches.my-cache.expiration-after-write-policy=&lt;class path of class implementing ExpirationAfterWritePolicy&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
     uri: redis://localhost
     caches:
         my-cache:
-            # expire based on result from class implementing ExpirationAfterWritePolicy
             expiration-after-write-policy: &lt;class path of class implementing ExpirationAfterWritePolicy&gt;</code></pre>
 </div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+  uri="redis://localhost"
+  [redis.caches]
+    [redis.caches.my-cache]
+      expiration-after-write-policy="&lt;class path of class implementing ExpirationAfterWritePolicy&gt;"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">redis {
+  uri = "redis://localhost"
+  caches {
+    myCache {
+      expirationAfterWritePolicy = "&lt;class path of class implementing ExpirationAfterWritePolicy&gt;"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  redis {
+    uri = "redis://localhost"
+    caches {
+      my-cache {
+        expiration-after-write-policy = "&lt;class path of class implementing ExpirationAfterWritePolicy&gt;"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "redis": {
+    "uri": "redis://localhost",
+    "caches": {
+      "my-cache": {
+        "expiration-after-write-policy": "&lt;class path of class implementing ExpirationAfterWritePolicy&gt;"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Expiration is based on result from an implementation of <a href="../api/io/micronaut/configuration/lettuce/cache/expiration/ExpirationAfterWritePolicy.html">ExpirationAfterWritePolicy</a></p>
+</li>
+</ul>
 </div>
 <a id="io.micronaut.configuration.lettuce.cache.RedisCacheConfiguration" href="#io.micronaut.configuration.lettuce.cache.RedisCacheConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
@@ -590,23 +924,109 @@ Lettuce is a non-blocking, reactive Redis client implementation and Micronaut pr
 <p>You can configure how sessions are stored in Redis using <a href="../api/io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html">RedisHttpSessionConfiguration</a>.</p>
 </div>
 <div class="paragraph">
-<p>The following represents an example configuration in <code>application.yml</code>:</p>
+<p>The following represents an example configuration in the application configuration file:</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">Configuring Redis Sessions</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.session.http.redis.enabled=true
+micronaut.session.http.redis.namespace=myapp:sessions
+micronaut.session.http.redis.write-mode=BACKGROUND
+micronaut.session.http.redis.enable-keyspace-events=false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
     session:
         http:
             redis:
                 enabled: true
-                # The Redis namespace to write sessions to
                 namespace: 'myapp:sessions'
-                # Write session changes in the background
                 write-mode: BACKGROUND
-                # Disable programmatic activation of keyspace events
                 enable-keyspace-events: false</code></pre>
 </div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.session]
+    [micronaut.session.http]
+      [micronaut.session.http.redis]
+        enabled=true
+        namespace="myapp:sessions"
+        write-mode="BACKGROUND"
+        enable-keyspace-events=false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  session {
+    http {
+      redis {
+        enabled = true
+        namespace = "myapp:sessions"
+        writeMode = "BACKGROUND"
+        enableKeyspaceEvents = false
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    session {
+      http {
+        redis {
+          enabled = true
+          namespace = "myapp:sessions"
+          write-mode = "BACKGROUND"
+          enable-keyspace-events = false
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "session": {
+      "http": {
+        "redis": {
+          "enabled": true,
+          "namespace": "myapp:sessions",
+          "write-mode": "BACKGROUND",
+          "enable-keyspace-events": false
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The Redis <code>namespace</code> spcifies where to write sessions.</p>
+</li>
+<li>
+<p>Using <code>BACKGROUND</code> write sessions changes in the background</p>
+</li>
+<li>
+<p><code>enable-keyspace-events</code> enables/disables programmatic activation of keyspace events</p>
+</li>
+</ul>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -623,8 +1043,16 @@ The <a href="../api/io/micronaut/configuration/lettuce/session/RedisSessionStore
 <div class="paragraph">
 <p>By default sessions values are serialized using Java serialization and stored in Redis hashes. You can configure serialization to instead use Jackson to serialize to JSON if desired:</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">Using Jackson Serialization</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.session.http.redis.enabled=true
+micronaut.session.http.redis.valueSerializer=io.micronaut.jackson.serialize.JacksonObjectSerializer</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
     session:
@@ -632,6 +1060,64 @@ The <a href="../api/io/micronaut/configuration/lettuce/session/RedisSessionStore
             redis:
                 enabled: true
                 valueSerializer: io.micronaut.jackson.serialize.JacksonObjectSerializer</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.session]
+    [micronaut.session.http]
+      [micronaut.session.http.redis]
+        enabled=true
+        valueSerializer="io.micronaut.jackson.serialize.JacksonObjectSerializer"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  session {
+    http {
+      redis {
+        enabled = true
+        valueSerializer = "io.micronaut.jackson.serialize.JacksonObjectSerializer"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    session {
+      http {
+        redis {
+          enabled = true
+          valueSerializer = "io.micronaut.jackson.serialize.JacksonObjectSerializer"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "session": {
+      "http": {
+        "redis": {
+          "enabled": true,
+          "valueSerializer": "io.micronaut.jackson.serialize.JacksonObjectSerializer"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 
@@ -715,7 +1201,7 @@ information.
 </ul>
 </div>
 <div class="paragraph">
-<p>If you wish to revert to the previous behavior, you will need to use a configuration file specified in your test specific <code>application.yml</code> file.</p>
+<p>If you wish to revert to the previous behavior, you will need to use a configuration file specified in your test specific application configuration file.</p>
 </div>
 <div class="listingblock">
 <div class="title">embedded-redis.conf</div>
@@ -723,12 +1209,58 @@ information.
 <pre class="highlightjs highlight"><code class="language-plain hljs" data-lang="plain">maxmemory 256M</code></pre>
 </div>
 </div>
-<div class="listingblock">
-<div class="title">test-application.yml</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">redis.embedded.config-file=/full/path/to/embedded-redis.conf</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
   embedded:
     config-file: '/full/path/to/embedded-redis.conf'</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+  [redis.embedded]
+    config-file="/full/path/to/embedded-redis.conf"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">redis {
+  embedded {
+    configFile = "/full/path/to/embedded-redis.conf"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  redis {
+    embedded {
+      config-file = "/full/path/to/embedded-redis.conf"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "redis": {
+    "embedded": {
+      "config-file": "/full/path/to/embedded-redis.conf"
+    }
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>

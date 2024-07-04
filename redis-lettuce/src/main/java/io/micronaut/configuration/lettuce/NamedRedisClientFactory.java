@@ -16,8 +16,12 @@
 package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.codec.RedisCodec;
+import io.lettuce.core.masterreplica.MasterReplica;
+import io.lettuce.core.masterreplica.StatefulRedisMasterReplicaConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.BeanLocator;
@@ -29,6 +33,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.inject.qualifiers.Qualifiers;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -79,7 +84,29 @@ public class NamedRedisClientFactory<K, V> extends AbstractRedisClientFactory<K,
     @EachBean(NamedRedisServersConfiguration.class)
     public StatefulRedisConnection<K, V> redisConnection(NamedRedisServersConfiguration config) {
         RedisCodec<K, V> namedCodec = beanLocator.findBean(RedisCodec.class, Qualifiers.byName(config.getName())).orElse(defaultCodec);
-        return super.redisConnection(getRedisClient(config), namedCodec);
+
+        StatefulRedisConnection<K, V> connection;
+        if (config.getUri().isPresent() && !config.getReplicaUris().isEmpty()) {
+            List<RedisURI> uris = new ArrayList<>(config.getReplicaUris());
+            uris.add(config.getUri().get());
+
+            connection = MasterReplica.connect(
+                getRedisClient(config),
+                namedCodec,
+                uris
+            );
+            if (config.getReadFrom().isPresent()) {
+                ((StatefulRedisMasterReplicaConnection<K, V>) connection).setReadFrom(config.getReadFrom().get());
+            }
+        } else {
+            connection = super.redisConnection(getRedisClient(config), namedCodec);
+
+            if (connection instanceof StatefulRedisClusterConnection<?, ?> conn && config.getReadFrom().isPresent()) {
+                conn.setReadFrom(config.getReadFrom().get());
+            }
+        }
+
+        return connection;
     }
 
     /**

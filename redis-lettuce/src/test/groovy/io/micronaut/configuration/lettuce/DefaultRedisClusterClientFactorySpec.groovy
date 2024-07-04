@@ -1,5 +1,6 @@
 package io.micronaut.configuration.lettuce
 
+import io.lettuce.core.ReadFrom
 import io.lettuce.core.cluster.RedisClusterClient
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection
@@ -24,6 +25,28 @@ class DefaultRedisClusterClientFactorySpec extends RedisClusterSpec {
 
         then:
         command.get("foo") == "bar"
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test redis cluster connection read-from"() {
+        given:
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.uris': redisClusterUris,
+                'redis.read-from': "replicaPreferred"
+        ])
+        RedisClusterClient client = applicationContext.getBean(RedisClusterClient)
+
+        when:
+        fixPartitions(client)
+        StatefulRedisClusterConnection<String, String> connection = applicationContext.getBean(StatefulRedisClusterConnection<String, String>)
+        def command = connection.sync()
+        command.set("foo-readFrom", "bar-readFrom")
+
+        then:
+        command.get("foo-readFrom") == "bar-readFrom"
+        connection.getReadFrom() == ReadFrom.REPLICA_PREFERRED
 
         cleanup:
         applicationContext.stop()

@@ -16,8 +16,11 @@
 package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.codec.RedisCodec;
+import io.lettuce.core.masterreplica.MasterReplica;
+import io.lettuce.core.masterreplica.StatefulRedisMasterReplicaConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.annotation.Bean;
@@ -27,6 +30,8 @@ import io.micronaut.context.annotation.Requires;
 
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,11 +64,41 @@ public class DefaultRedisClientFactory<K, V> extends AbstractRedisClientFactory<
      * Creates the {@link StatefulRedisConnection} from the {@link RedisClient}.
      *
      * @param redisClient The {@link RedisClient}
+     * @param config The config.
      * @return The {@link StatefulRedisConnection}
+     * @since 6.5.0
      */
     @Bean(preDestroy = "close")
     @Singleton
     @Primary
+    public StatefulRedisConnection<K, V> redisConnection(@Primary RedisClient redisClient, AbstractRedisConfiguration config) {
+        if (config.getUri().isPresent() && !config.getReplicaUris().isEmpty()) {
+            List<RedisURI> uris = new ArrayList<>(config.getReplicaUris());
+            uris.add(config.getUri().get());
+
+            StatefulRedisMasterReplicaConnection<K, V> connection = MasterReplica.connect(
+                redisClient,
+                defaultCodec,
+                uris
+            );
+            if (config.getReadFrom().isPresent()) {
+                connection.setReadFrom(config.getReadFrom().get());
+            }
+
+            return connection;
+        } else {
+            return super.redisConnection(redisClient, defaultCodec);
+        }
+    }
+
+    /**
+     * Creates the {@link StatefulRedisConnection} from the {@link RedisClient}.
+     *
+     * @param redisClient The {@link RedisClient}
+     * @return The {@link StatefulRedisConnection}
+     * @deprecated use {@link #redisConnection(RedisClient, AbstractRedisConfiguration)} instead
+     */
+    @Deprecated(since = "6.5.0", forRemoval = true)
     public StatefulRedisConnection<K, V> redisConnection(@Primary RedisClient redisClient) {
         return super.redisConnection(redisClient, defaultCodec);
     }

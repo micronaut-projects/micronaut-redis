@@ -125,7 +125,7 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button><button id="method-summary-table-tab6" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab6', 3)" class="table-tab">Deprecated Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel">
 <div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
 <div class="table-header col-first">Modifier and Type</div>
@@ -138,14 +138,22 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Creates the <code>RedisClient</code> from the configuration.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.api.StatefulRedisConnection&lt;<a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">K</a>,<wbr><a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">V</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisConnection(io.lettuce.core.RedisClient)" class="member-name-link">redisConnection</a><wbr>(io.lettuce.core.RedisClient&nbsp;redisClient)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>io.lettuce.core.api.StatefulRedisConnection&lt;<a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">K</a>,<wbr><a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">V</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#redisConnection(io.lettuce.core.RedisClient)" class="member-name-link">redisConnection</a><wbr>(io.lettuce.core.RedisClient&nbsp;redisClient)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">use <a href="#redisConnection(io.lettuce.core.RedisClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)"><code>redisConnection(RedisClient, AbstractRedisConfiguration)</code></a> instead</div>
+</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.api.StatefulRedisConnection&lt;<a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">K</a>,<wbr><a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">V</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisConnection(io.lettuce.core.RedisClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)" class="member-name-link">redisConnection</a><wbr>(io.lettuce.core.RedisClient&nbsp;redisClient,
+ <a href="AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a>&nbsp;config)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.pubsub.StatefulRedisPubSubConnection&lt;<a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">K</a>,<wbr><a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">V</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisPubSubConnection(io.lettuce.core.RedisClient)" class="member-name-link">redisPubSubConnection</a><wbr>(io.lettuce.core.RedisClient&nbsp;redisClient)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.pubsub.StatefulRedisPubSubConnection&lt;<a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">K</a>,<wbr><a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">V</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisPubSubConnection(io.lettuce.core.RedisClient)" class="member-name-link">redisPubSubConnection</a><wbr>(io.lettuce.core.RedisClient&nbsp;redisClient)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Creates the <code>StatefulRedisPubSubConnection</code> from the <code>RedisClient</code>.</div>
 </div>
 </div>
@@ -210,13 +218,36 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="redisConnection(io.lettuce.core.RedisClient)">
+<section class="detail" id="redisConnection(io.lettuce.core.RedisClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)">
 <h3>redisConnection</h3>
 <div class="member-signature"><span class="annotations">@Bean(preDestroy="close")
 @Singleton
 @Primary
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">io.lettuce.core.api.StatefulRedisConnection&lt;<a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">K</a>,<wbr><a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">V</a>&gt;</span>&nbsp;<span class="element-name">redisConnection</span><wbr><span class="parameters">(@Primary
+ io.lettuce.core.RedisClient&nbsp;redisClient,
+ <a href="AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a>&nbsp;config)</span></div>
+<div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>redisClient</code> - The <code>RedisClient</code></dd>
+<dd><code>config</code> - The config.</dd>
+<dt>Returns:</dt>
+<dd>The <code>StatefulRedisConnection</code></dd>
+<dt>Since:</dt>
+<dd>6.5.0</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="redisConnection(io.lettuce.core.RedisClient)">
+<h3>redisConnection</h3>
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html#since()" title="class or interface in java.lang" class="external-link">since</a>="6.5.0",
+            <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html#forRemoval()" title="class or interface in java.lang" class="external-link">forRemoval</a>=true)
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">io.lettuce.core.api.StatefulRedisConnection&lt;<a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">K</a>,<wbr><a href="DefaultRedisClientFactory.html" title="type parameter in DefaultRedisClientFactory">V</a>&gt;</span>&nbsp;<span class="element-name">redisConnection</span><wbr><span class="parameters">(@Primary
  io.lettuce.core.RedisClient&nbsp;redisClient)</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">use <a href="#redisConnection(io.lettuce.core.RedisClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)"><code>redisConnection(RedisClient, AbstractRedisConfiguration)</code></a> instead</div>
+</div>
 <div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>

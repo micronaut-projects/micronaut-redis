@@ -114,7 +114,8 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],<wbr>byte[]&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAsyncPool(io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration,io.micronaut.context.BeanLocator,io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration)" class="member-name-link">getAsyncPool</a><wbr>(<a href="DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a>&nbsp;defaultRedisCacheConfiguration,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAsyncPool(io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration,io.micronaut.configuration.lettuce.DefaultRedisConfiguration,io.micronaut.context.BeanLocator,io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration)" class="member-name-link">getAsyncPool</a><wbr>(<a href="DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a>&nbsp;defaultRedisCacheConfiguration,
+ <a href="../DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration</a>&nbsp;defaultRedisConfiguration,
  io.micronaut.context.BeanLocator&nbsp;beanLocator,
  <a href="../DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration</a>&nbsp;defaultRedisConnectionPoolConfiguration)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -150,11 +151,12 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="getAsyncPool(io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration,io.micronaut.context.BeanLocator,io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration)">
+<section class="detail" id="getAsyncPool(io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration,io.micronaut.configuration.lettuce.DefaultRedisConfiguration,io.micronaut.context.BeanLocator,io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration)">
 <h3>getAsyncPool</h3>
 <div class="member-signature"><span class="annotations">@Singleton
-@Requires(beans={<a href="DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration.class</a>,<a href="../DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration.class</a>})
+@Requires(beans={<a href="DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration.class</a>,<a href="../DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration.class</a>,<a href="../DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration.class</a>})
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],<wbr>byte[]&gt;&gt;</span>&nbsp;<span class="element-name">getAsyncPool</span><wbr><span class="parameters">(<a href="DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a>&nbsp;defaultRedisCacheConfiguration,
+ <a href="../DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration</a>&nbsp;defaultRedisConfiguration,
  io.micronaut.context.BeanLocator&nbsp;beanLocator,
  <a href="../DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration</a>&nbsp;defaultRedisConnectionPoolConfiguration)</span></div>
 </section>

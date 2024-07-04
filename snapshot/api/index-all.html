@@ -216,7 +216,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#getActiveSessionsKey()" class="member-name-link">getActiveSessionsKey()</a> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="io/micronaut/configuration/lettuce/cache/RedisAsyncConnectionPoolFactory.html#getAsyncPool(io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration,io.micronaut.context.BeanLocator,io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration)" class="member-name-link">getAsyncPool(DefaultRedisCacheConfiguration, BeanLocator, DefaultRedisConnectionPoolConfiguration)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisAsyncConnectionPoolFactory.html" title="class in io.micronaut.configuration.lettuce.cache">RedisAsyncConnectionPoolFactory</a></dt>
+<dt><a href="io/micronaut/configuration/lettuce/cache/RedisAsyncConnectionPoolFactory.html#getAsyncPool(io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration,io.micronaut.configuration.lettuce.DefaultRedisConfiguration,io.micronaut.context.BeanLocator,io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration)" class="member-name-link">getAsyncPool(DefaultRedisCacheConfiguration, DefaultRedisConfiguration, BeanLocator, DefaultRedisConnectionPoolConfiguration)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisAsyncConnectionPoolFactory.html" title="class in io.micronaut.configuration.lettuce.cache">RedisAsyncConnectionPoolFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisConnectionPoolConfiguration.html#getBoundedPoolConfig()" class="member-name-link">getBoundedPoolConfig()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration</a></dt>
 <dd>&nbsp;</dd>
@@ -286,6 +286,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/RedisConnectionPoolCache.RedisAsyncCache.html#getNativeCache()" class="member-name-link">getNativeCache()</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisConnectionPoolCache.RedisAsyncCache.html" title="class in io.micronaut.configuration.lettuce.cache">RedisConnectionPoolCache.RedisAsyncCache</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#getReadFrom()" class="member-name-link">getReadFrom()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
+<dd>
+<div class="block">See <code>ReadFrom</code>.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisKeyAsyncCommands(io.lettuce.core.api.StatefulConnection)" class="member-name-link">getRedisKeyAsyncCommands(StatefulConnection&lt;byte[], byte[]&gt;)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisKeyCommands(io.lettuce.core.api.StatefulConnection)" class="member-name-link">getRedisKeyCommands(StatefulConnection&lt;byte[], byte[]&gt;)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
@@ -293,6 +297,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisStringAsyncCommands(io.lettuce.core.api.StatefulConnection)" class="member-name-link">getRedisStringAsyncCommands(StatefulConnection&lt;byte[], byte[]&gt;)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisStringCommands(io.lettuce.core.api.StatefulConnection)" class="member-name-link">getRedisStringCommands(StatefulConnection&lt;byte[], byte[]&gt;)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#getReplicaUris()" class="member-name-link">getReplicaUris()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/health/RedisHealthIndicator.html#getResult()" class="member-name-link">getResult()</a> - Method in class io.micronaut.configuration.lettuce.health.<a href="io/micronaut/configuration/lettuce/health/RedisHealthIndicator.html" title="class in io.micronaut.configuration.lettuce.health">RedisHealthIndicator</a></dt>
 <dd>&nbsp;</dd>
@@ -486,6 +492,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Default configuration for Redis caches pool.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/RedisSetting.html#REDIS_READ_FROM" class="member-name-link">REDIS_READ_FROM</a> - Static variable in interface io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/RedisSetting.html" title="interface in io.micronaut.configuration.lettuce">RedisSetting</a></dt>
+<dd>
+<div class="block">The Primary/Replica read-from preference.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/RedisSetting.html#REDIS_REPLICA_URIS" class="member-name-link">REDIS_REPLICA_URIS</a> - Static variable in interface io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/RedisSetting.html" title="interface in io.micronaut.configuration.lettuce">RedisSetting</a></dt>
+<dd>
+<div class="block">The URIs to the redis read replicas.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/RedisSetting.html#REDIS_SERVERS" class="member-name-link">REDIS_SERVERS</a> - Static variable in interface io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/RedisSetting.html" title="interface in io.micronaut.configuration.lettuce">RedisSetting</a></dt>
 <dd>
 <div class="block">The named redis servers.</div>
@@ -558,13 +572,25 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#redisConnection(io.lettuce.core.cluster.RedisClusterClient)" class="member-name-link">redisConnection(RedisClusterClient)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a></dt>
 <dd>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">use <a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#redisConnection(io.lettuce.core.cluster.RedisClusterClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)"><code>DefaultRedisClusterClientFactory.redisConnection(RedisClusterClient, AbstractRedisConfiguration)</code></a> instead</div>
+</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#redisConnection(io.lettuce.core.cluster.RedisClusterClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)" class="member-name-link">redisConnection(RedisClusterClient, AbstractRedisConfiguration)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a></dt>
+<dd>
 <div class="block">Establish redis connection.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#redisConnection(io.lettuce.core.RedisClient)" class="member-name-link">redisConnection(RedisClient)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></dt>
 <dd>
-<div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">use <a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#redisConnection(io.lettuce.core.RedisClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)"><code>DefaultRedisClientFactory.redisConnection(RedisClient, AbstractRedisConfiguration)</code></a> instead</div>
+</div>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html#redisConnection(io.lettuce.core.RedisClient,io.lettuce.core.codec.RedisCodec)" class="member-name-link">redisConnection(RedisClient, RedisCodec&lt;K, V&gt;)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisClientFactory</a></dt>
+<dd>
+<div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html#redisConnection(io.lettuce.core.RedisClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)" class="member-name-link">redisConnection(RedisClient, AbstractRedisConfiguration)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClientFactory</a></dt>
 <dd>
 <div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
 </dd>
@@ -687,6 +713,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#setNamespace(java.lang.String)" class="member-name-link">setNamespace(String)</a> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>
 <div class="block">Sets the namespace to use.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#setReadFrom(java.lang.String)" class="member-name-link">setReadFrom(String)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
+<dd>
+<div class="block">Sets the read from property by name.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#setReplicaUris(java.net.URI...)" class="member-name-link">setReplicaUris(URI...)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
+<dd>
+<div class="block">Sets the Replica Redis URIs for read replica configuration.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#setServerName(java.lang.String)" class="member-name-link">setServerName(String)</a> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>

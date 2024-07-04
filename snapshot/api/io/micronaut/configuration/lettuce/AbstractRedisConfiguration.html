@@ -160,6 +160,14 @@ implements io.micronaut.core.naming.Named, io.micronaut.core.util.Toggleable</sp
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;io.lettuce.core.ReadFrom&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getReadFrom()" class="member-name-link">getReadFrom</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">See <code>ReadFrom</code>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;io.lettuce.core.RedisURI&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getReplicaUris()" class="member-name-link">getReplicaUris</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;io.lettuce.core.RedisURI&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getUri()" class="member-name-link">getUri</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -181,6 +189,16 @@ implements io.micronaut.core.naming.Named, io.micronaut.core.util.Toggleable</sp
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setName(java.lang.String)" class="member-name-link">setName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the name of the bean.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setReadFrom(java.lang.String)" class="member-name-link">setReadFrom</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;readFrom)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the read from property by name.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setReplicaUris(java.net.URI...)" class="member-name-link">setReplicaUris</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>...&nbsp;uris)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the Replica Redis URIs for read replica configuration.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setUri(java.net.URI)" class="member-name-link">setUri</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&nbsp;uri)</code></div>
@@ -273,6 +291,32 @@ implements io.micronaut.core.naming.Named, io.micronaut.core.util.Toggleable</sp
 </section>
 </li>
 <li>
+<section class="detail" id="getReplicaUris()">
+<h3>getReplicaUris</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;io.lettuce.core.RedisURI&gt;</span>&nbsp;<span class="element-name">getReplicaUris</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Get the Redis URIs for read replicas.</dd>
+<dt>Since:</dt>
+<dd>6.5.0</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setReplicaUris(java.net.URI...)">
+<h3>setReplicaUris</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setReplicaUris</span><wbr><span class="parameters">(@NonNull
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>...&nbsp;uris)</span></div>
+<div class="block">Sets the Replica Redis URIs for read replica configuration.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>uris</code> - The URI</dd>
+<dt>Since:</dt>
+<dd>6.5.0</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="getIoThreadPoolSize()">
 <h3>getIoThreadPoolSize</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></span>&nbsp;<span class="element-name">getIoThreadPoolSize</span>()</div>
@@ -347,6 +391,35 @@ implements io.micronaut.core.naming.Named, io.micronaut.core.util.Toggleable</sp
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>name</code> - The name of the bean</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getReadFrom()">
+<h3>getReadFrom</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;io.lettuce.core.ReadFrom&gt;</span>&nbsp;<span class="element-name">getReadFrom</span>()</div>
+<div class="block">See <code>ReadFrom</code>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Get the ReadFrom settings for the read replicas.</dd>
+<dt>Since:</dt>
+<dd>6.5.0</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setReadFrom(java.lang.String)">
+<h3>setReadFrom</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setReadFrom</span><wbr><span class="parameters">(@NonNull
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;readFrom)</span></div>
+<div class="block">Sets the read from property by name.
+
+ See <code>ReadFrom.valueOf(String)</code></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>readFrom</code> - The value of the ReadFrom setting to use.</dd>
+<dt>Since:</dt>
+<dd>6.5.0</dd>
 </dl>
 </section>
 </li>

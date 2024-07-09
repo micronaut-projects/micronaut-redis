@@ -45,6 +45,12 @@ public final class RedisReplicaContainerUtils {
                 .withExposedPorts(REDIS_PORT)
                 .withNetwork(SHARED)
                 .withNetworkAliases(PRIMARY_NODE_NAME)
+                .withCommand(
+                    "redis-server",
+                    "--rename-command",
+                    "KEYS",
+                    ""
+                )
                 .waitingFor(Wait.forListeningPort());
             primaryContainer.start();
         }
@@ -58,7 +64,10 @@ public final class RedisReplicaContainerUtils {
                     "redis-server",
                     "--slaveof",
                     PRIMARY_NODE_NAME,
-                    String.valueOf(REDIS_PORT)
+                    String.valueOf(REDIS_PORT),
+                    "--rename-command",
+                    "KEYS",
+                    ""
                 )
                 .waitingFor(Wait.forListeningPort());
             replicaContainer.start();

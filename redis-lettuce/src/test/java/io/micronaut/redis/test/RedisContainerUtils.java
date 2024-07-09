@@ -27,6 +27,12 @@ public final class RedisContainerUtils {
                 .withExposedPorts(REDIS_PORT)
                 .waitingFor(
                     Wait.forLogMessage(".*Ready to accept connections.*\\n", 1)
+                )
+                .withCommand(
+                    "redis-server",
+                    "--rename-command",
+                    "KEYS",
+                    ""
                 );
             redisContainer.start();
         }

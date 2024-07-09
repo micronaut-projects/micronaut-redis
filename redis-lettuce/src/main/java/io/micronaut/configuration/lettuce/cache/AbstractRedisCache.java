@@ -53,6 +53,7 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
     protected final RedisCacheConfiguration redisCacheConfiguration;
     protected final ExpirationAfterWritePolicy expireAfterWritePolicy;
     protected final Long expireAfterAccess;
+    protected final Long invalidateScanCount;
 
     protected AbstractRedisCache(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
@@ -92,6 +93,8 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
                 .getExpireAfterAccess()
                 .map(Duration::toMillis)
                 .orElse(defaultRedisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null));
+
+        this.invalidateScanCount = redisCacheConfiguration.getInvalidateScanCount().orElse(100L);
     }
 
     @Override

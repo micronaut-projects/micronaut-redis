@@ -12,7 +12,8 @@ class RedisJsonDeserializerCacheSpec extends RedisCacheSpec {
         ApplicationContext.run(
                 'redis.port': RedisContainerUtils.getRedisPort(),
                 'redis.caches.test.enabled': 'true',
-                'redis.caches.test.valueSerializer': 'io.micronaut.jackson.serialize.JacksonObjectSerializer'
+                'redis.caches.test.valueSerializer': 'io.micronaut.jackson.serialize.JacksonObjectSerializer',
+                'redis.caches.test.invalidate-scan-count' : 2
         )
     }
 }

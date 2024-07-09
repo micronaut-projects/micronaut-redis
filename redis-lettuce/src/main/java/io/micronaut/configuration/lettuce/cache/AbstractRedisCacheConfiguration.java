@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.runtime.ApplicationConfiguration;
 
@@ -37,6 +38,7 @@ public abstract class AbstractRedisCacheConfiguration {
     protected Duration expireAfterWrite;
     protected Duration expireAfterAccess;
     protected String expirationAfterWritePolicy;
+    protected Long invalidateScanCount = 100L;
 
     /**
      * Constructor.
@@ -133,5 +135,27 @@ public abstract class AbstractRedisCacheConfiguration {
      */
     public void setExpirationAfterWritePolicy(String expirationAfterWritePolicy) {
         this.expirationAfterWritePolicy = expirationAfterWritePolicy;
+    }
+
+    /**
+     * Returns the count used for the scan command in {@link io.micronaut.configuration.lettuce.cache.RedisCache#invalidateAll()}.
+     * See {@link io.lettuce.core.ScanArgs#limit(long)}. Defaults to 100L.
+     *
+     * @return the count setting used in the redis scan in {@link io.micronaut.configuration.lettuce.cache.RedisCache#invalidateAll()}.
+     * @since 6.5.0
+     */
+    public Optional<Long> getInvalidateScanCount() {
+        return Optional.ofNullable(invalidateScanCount);
+    }
+
+    /**
+     * Sets the count used for the scan command in {@link io.micronaut.configuration.lettuce.cache.RedisCache#invalidateAll()}.
+     * See {@link io.lettuce.core.ScanArgs#limit(long)}. Defaults to 100L.
+     *
+     * @param invalidateScanCount the count setting to use with the redis scan in {@link io.micronaut.configuration.lettuce.cache.RedisCache#invalidateAll()}.
+     * @since 6.5.0
+     */
+    public void setInvalidateScanCount(@NonNull Long invalidateScanCount) {
+        this.invalidateScanCount = invalidateScanCount;
     }
 }

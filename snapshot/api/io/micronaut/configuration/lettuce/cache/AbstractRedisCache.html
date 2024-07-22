@@ -119,15 +119,18 @@ implements io.micronaut.cache.SyncCache&lt;C&gt;, <a href="https://docs.oracle.c
 <div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color"><code><a href="#INVALID_REDIS_CONNECTION_MESSAGE" class="member-name-link">INVALID_REDIS_CONNECTION_MESSAGE</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected final io.micronaut.core.serialize.ObjectSerializer</code></div>
-<div class="col-second odd-row-color"><code><a href="#keySerializer" class="member-name-link">keySerializer</a></code></div>
+<div class="col-first odd-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#invalidateScanCount" class="member-name-link">invalidateScanCount</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected final <a href="RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></code></div>
-<div class="col-second even-row-color"><code><a href="#redisCacheConfiguration" class="member-name-link">redisCacheConfiguration</a></code></div>
+<div class="col-first even-row-color"><code>protected final io.micronaut.core.serialize.ObjectSerializer</code></div>
+<div class="col-second even-row-color"><code><a href="#keySerializer" class="member-name-link">keySerializer</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected final io.micronaut.core.serialize.ObjectSerializer</code></div>
-<div class="col-second odd-row-color"><code><a href="#valueSerializer" class="member-name-link">valueSerializer</a></code></div>
+<div class="col-first odd-row-color"><code>protected final <a href="RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#redisCacheConfiguration" class="member-name-link">redisCacheConfiguration</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected final io.micronaut.core.serialize.ObjectSerializer</code></div>
+<div class="col-second even-row-color"><code><a href="#valueSerializer" class="member-name-link">valueSerializer</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -282,6 +285,12 @@ implements io.micronaut.cache.SyncCache&lt;C&gt;, <a href="https://docs.oracle.c
 <section class="detail" id="expireAfterAccess">
 <h3>expireAfterAccess</h3>
 <div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a></span>&nbsp;<span class="element-name">expireAfterAccess</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="invalidateScanCount">
+<h3>invalidateScanCount</h3>
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a></span>&nbsp;<span class="element-name">invalidateScanCount</span></div>
 </section>
 </li>
 </ul>

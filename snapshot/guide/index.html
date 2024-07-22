@@ -940,6 +940,12 @@ redis.caches.my-cache.expiration-after-write-policy=&lt;class path of class impl
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.nio.charset.Charset</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.invalidate-scan-count</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Long</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Returns the count used for the scan command in <a href="../api/io/micronaut/configuration/lettuce/cache/.html#RedisCache#invalidateAll--">cache.RedisCache#invalidateAll()</a>.
+ See {@link io.lettuce.core.ScanArgs#limit(long)}. Defaults to 100L.</p></td>
+</tr>
 </tbody>
 </table>
 

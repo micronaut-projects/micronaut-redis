@@ -1,5 +1,5 @@
 [versions]
-managed-lettuce = "6.3.2.RELEASE"
+managed-lettuce = "6.4.0.RELEASE"
 
 micronaut-docs = "2.0.0"
 micronaut = "4.5.3"

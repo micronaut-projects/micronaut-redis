@@ -16,12 +16,14 @@ dependencies {
     testAnnotationProcessor(mn.micronaut.inject.java)
 
     testImplementation(mnTestResources.testcontainers.core)
-
     testImplementation(mn.reactor)
     testImplementation(libs.jupiter.api)
     testImplementation(mnTest.micronaut.test.junit5)
+    testImplementation(platform(mnTestResources.boms.testcontainers))
+    testImplementation(libs.testcontainers.junit.jupiter)
     testRuntimeOnly(libs.junit.jupiter.engine)
     testImplementation(mn.micronaut.inject.java)
+
     testImplementation(mn.micronaut.management)
     testImplementation(mnMicrometer.micronaut.micrometer.core)
     testImplementation(mnSerde.micronaut.serde.jackson)

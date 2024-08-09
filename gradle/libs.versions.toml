@@ -28,5 +28,7 @@ micronaut-test-resources = { module = "io.micronaut.testresources:micronaut-test
 redis-embedded = { module = "it.ozimov:embedded-redis", version.ref = "redis-embedded" }
 jupiter-api = { module = 'org.junit.jupiter:junit-jupiter-api' }
 junit-jupiter-engine = { module = 'org.junit.jupiter:junit-jupiter-engine' }
+testcontainers = { module = "org.testcontainers:testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter" }
 
 gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }

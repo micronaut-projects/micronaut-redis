@@ -9,6 +9,7 @@ import io.micronaut.configuration.lettuce.cache.RedisConnectionPoolCache;
 import io.micronaut.context.BeanContext;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.test.support.TestPropertyProvider;
 import jakarta.inject.Inject;
@@ -29,11 +30,12 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest(startApplication = false)
+@Property(name = "redis.pool.enabled", value = StringUtils.TRUE)
 @Property(name = "redis.caches.default.expire-after-write", value = "1s")
 @Property(name = "redis.caches.default.expire-after-access", value = "2s")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers(disabledWithoutDocker = true)
-class RedisCacheConfigurationExpirationTest implements TestPropertyProvider {
+class RedisPoolCacheConfigurationExpirationTest implements TestPropertyProvider {
     @Container
     static GenericContainer redis = new GenericContainer<>(DockerImageName.parse("redis:latest"))
             .withExposedPorts(6379);
@@ -46,8 +48,8 @@ class RedisCacheConfigurationExpirationTest implements TestPropertyProvider {
 
     @Test
     void expiredItemIsNotRetrievedFromCache() throws ExecutionException, InterruptedException {
-        assertFalse(beanContext.containsBean(RedisConnectionPoolCache.class));
-        assertTrue(beanContext.containsBean(RedisCache.class));
+        assertTrue(beanContext.containsBean(RedisConnectionPoolCache.class));
+        assertFalse(beanContext.containsBean(RedisCache.class));
         Collection<RedisCacheConfiguration> redisCacheConfigurations = beanContext.getBeansOfType(RedisCacheConfiguration.class);
         assertNotNull(redisCacheConfigurations);
         assertFalse(redisCacheConfigurations.isEmpty());

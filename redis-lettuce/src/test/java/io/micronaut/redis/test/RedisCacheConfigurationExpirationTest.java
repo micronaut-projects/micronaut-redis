@@ -1,5 +1,6 @@
 package io.micronaut.redis.test;
 
+import io.micronaut.cache.AsyncCache;
 import io.micronaut.cache.CacheManager;
 import io.micronaut.cache.SyncCache;
 import io.micronaut.configuration.lettuce.cache.DefaultRedisCacheConfiguration;
@@ -24,6 +25,8 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,7 +47,7 @@ class RedisCacheConfigurationExpirationTest implements TestPropertyProvider {
     CacheManager<?> cacheManager;
 
     @Test
-    void expiredItemIsNotRetrievedFromCache() {
+    void expiredItemIsNotRetrievedFromCache() throws ExecutionException, InterruptedException {
         assertTrue(beanContext.containsBean(RedisCache.class));
         Collection<RedisCacheConfiguration> redisCacheConfigurations = beanContext.getBeansOfType(RedisCacheConfiguration.class);
         assertNotNull(redisCacheConfigurations);
@@ -73,6 +76,25 @@ class RedisCacheConfigurationExpirationTest implements TestPropertyProvider {
         Optional<String> expiredValue = cache.get("Value1", String.class);
 
         assertEquals(Optional.empty(), expiredValue);
+
+        AsyncCache asyncCache = cache.async();
+
+        asyncCache.put("Value1", "key");
+        CompletableFuture<Optional<String>> completableFuture = asyncCache.get("Value1", String.class);
+
+        assertEquals("key", completableFuture.get().get());
+
+        // sleep for more time than expire-after-write and expire-after-access
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        completableFuture = asyncCache.get("Value1", String.class);
+
+        assertTrue(completableFuture.get().isEmpty());
+
     }
 
     @Override

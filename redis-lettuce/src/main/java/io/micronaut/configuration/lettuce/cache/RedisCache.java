@@ -223,7 +223,8 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
                     Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
                     boolean hasValue = deserialized.isPresent();
                     if (expireAfterAccess != null && hasValue) {
-                        return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccess).thenApply(ignore -> deserialized.get());
+                        final long expireAfterAccessInSeconds = expireAfterAccess / 1000;
+                        return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccessInSeconds).thenApply(ignore -> deserialized.get());
                     } else if (hasValue) {
                         return CompletableFuture.completedFuture(deserialized.get());
                     }
@@ -288,7 +289,8 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
         private <T> CompletionStage<Optional<T>> getWithExpire(Argument<T> requiredType, byte[] serializedKey, byte[] data) {
             Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
             if (expireAfterAccess != null && deserialized.isPresent()) {
-                return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccess)
+                final long expireAfterAccessInSeconds = expireAfterAccess / 1000;
+                return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccessInSeconds)
                         .thenApply(ignore -> deserialized);
             }
             return CompletableFuture.completedFuture(deserialized);

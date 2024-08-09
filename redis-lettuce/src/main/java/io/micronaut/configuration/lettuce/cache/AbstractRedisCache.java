@@ -52,6 +52,9 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
     protected final ObjectSerializer valueSerializer;
     protected final RedisCacheConfiguration redisCacheConfiguration;
     protected final ExpirationAfterWritePolicy expireAfterWritePolicy;
+    /**
+     * In milliseconds.
+     */
     protected final Long expireAfterAccess;
 
     protected AbstractRedisCache(

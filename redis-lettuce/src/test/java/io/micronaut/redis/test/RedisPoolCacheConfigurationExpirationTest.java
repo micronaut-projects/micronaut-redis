@@ -68,12 +68,8 @@ class RedisPoolCacheConfigurationExpirationTest implements TestPropertyProvider 
         assertEquals("key", cachedValue.orElse(null));
 
         // sleep for more time than expire-after-write and expire-after-access
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        Thread.sleep(3000);
+        
         Optional<String> expiredValue = cache.get("Value1", String.class);
 
         assertEquals(Optional.empty(), expiredValue);

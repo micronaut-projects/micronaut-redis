@@ -18,6 +18,7 @@ package io.micronaut.configuration.lettuce;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.annotation.Bean;
@@ -42,7 +43,12 @@ import java.util.Optional;
 @Requires(property = RedisSetting.REDIS_URIS)
 @Singleton
 @Factory
-public class DefaultRedisClusterClientFactory {
+public class DefaultRedisClusterClientFactory<K, V> {
+    private final RedisCodec<K, V> defaultCodec;
+
+    public DefaultRedisClusterClientFactory(@Primary RedisCodec<K, V> codec) {
+        this.defaultCodec = codec;
+    }
 
     /**
      * Create the client based on config URIs.
@@ -93,8 +99,11 @@ public class DefaultRedisClusterClientFactory {
     @Bean(preDestroy = "close")
     @Singleton
     @Primary
-    public StatefulRedisClusterConnection<String, String> redisConnection(@Primary RedisClusterClient redisClient, @Primary AbstractRedisConfiguration config) {
-        StatefulRedisClusterConnection<String, String> connection = redisClient.connect();
+    public StatefulRedisClusterConnection<K, V> redisConnection(
+        @Primary RedisClusterClient redisClient,
+        @Primary AbstractRedisConfiguration config
+    ) {
+        StatefulRedisClusterConnection<K, V> connection = redisClient.connect(defaultCodec);
         if (config.getReadFrom().isPresent()) {
             connection.setReadFrom(config.getReadFrom().get());
         }
@@ -108,8 +117,8 @@ public class DefaultRedisClusterClientFactory {
      * @deprecated use {@link #redisConnection(RedisClusterClient, AbstractRedisConfiguration)} instead
      */
     @Deprecated(since = "6.5.0", forRemoval = true)
-    public StatefulRedisClusterConnection<String, String> redisConnection(@Primary RedisClusterClient redisClient) {
-        return redisClient.connect();
+    public StatefulRedisClusterConnection<K, V> redisConnection(@Primary RedisClusterClient redisClient) {
+        return redisClient.connect(defaultCodec);
     }
 
     /**
@@ -119,7 +128,7 @@ public class DefaultRedisClusterClientFactory {
      */
     @Bean(preDestroy = "close")
     @Singleton
-    public StatefulRedisPubSubConnection<String, String> redisPubSubConnection(@Primary RedisClusterClient redisClient) {
-        return redisClient.connectPubSub();
+    public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClusterClient redisClient) {
+        return redisClient.connectPubSub(defaultCodec);
     }
 }

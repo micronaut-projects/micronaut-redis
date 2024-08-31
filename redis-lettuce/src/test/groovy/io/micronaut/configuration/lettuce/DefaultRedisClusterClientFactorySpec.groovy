@@ -3,10 +3,13 @@ package io.micronaut.configuration.lettuce
 import io.lettuce.core.ReadFrom
 import io.lettuce.core.cluster.RedisClusterClient
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection
+import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection
 import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.exceptions.ConfigurationException
+import io.micronaut.context.exceptions.NoSuchBeanException
+import io.micronaut.core.type.Argument
 
 class DefaultRedisClusterClientFactorySpec extends RedisClusterSpec {
 
@@ -121,5 +124,42 @@ class DefaultRedisClusterClientFactorySpec extends RedisClusterSpec {
 
         then:
         thrown(ConfigurationException)
+    }
+
+    void "test redis client uses defined codec"() {
+        when:
+        ApplicationContext applicationContext = ApplicationContext.run(
+                'redis.uris': redisClusterUris,
+                'spec.name': ByteArrayCodecReplacementFactory.SPEC_NAME,
+        )
+        StatefulRedisClusterConnection connection = applicationContext.getBean(StatefulRedisClusterConnection)
+
+        then:
+        // tag::commands[]
+        final key = "foo".bytes
+        final value = "bar".bytes
+        RedisAdvancedClusterCommands<byte[], byte[]> commands = connection.sync()
+        commands.set(key, value)
+        commands.get(key) == value
+        // end::commands[]
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "throw error for no codec provided"() {
+        when:
+        ApplicationContext applicationContext = ApplicationContext.run(
+                'redis.uris': redisClusterUris,
+        )
+        applicationContext.getBean(Argument.of(StatefulRedisClusterConnection, byte.class, byte.class))
+
+        then:
+        // tag::commands[]
+        thrown(NoSuchBeanException)
+        // end::commands[]
+
+        cleanup:
+        applicationContext.stop()
     }
 }

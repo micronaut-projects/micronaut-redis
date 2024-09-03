@@ -38,6 +38,8 @@ import java.util.Optional;
  * Allows connecting to a Redis cluster via the {@code "redis.uris"} setting.
  *
  * @author Graeme Rocher
+ * @param <K> Key type
+ * @param <V> Value type
  * @since 1.0
  */
 @Requires(property = RedisSetting.REDIS_URIS)

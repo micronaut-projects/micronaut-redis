@@ -203,7 +203,6 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
      * Redis Async cache implementation.
      */
     protected class RedisAsyncCache implements AsyncCache<StatefulConnection<byte[], byte[]>> {
-
         @Override
         public <T> CompletableFuture<Optional<T>> get(Object key, Argument<T> requiredType) {
             byte[] serializedKey = serializeKey(key);
@@ -223,8 +222,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
                     Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
                     boolean hasValue = deserialized.isPresent();
                     if (expireAfterAccess != null && hasValue) {
-                        final long expireAfterAccessInSeconds = expireAfterAccess / 1000;
-                        return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccessInSeconds).thenApply(ignore -> deserialized.get());
+                       return redisKeyAsyncCommands.pexpire(serializedKey, expireAfterAccess).thenApply(ignore -> deserialized.get());
                     } else if (hasValue) {
                         return CompletableFuture.completedFuture(deserialized.get());
                     }
@@ -289,8 +287,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
         private <T> CompletionStage<Optional<T>> getWithExpire(Argument<T> requiredType, byte[] serializedKey, byte[] data) {
             Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
             if (expireAfterAccess != null && deserialized.isPresent()) {
-                final long expireAfterAccessInSeconds = expireAfterAccess / 1000;
-                return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccessInSeconds)
+                return redisKeyAsyncCommands.pexpire(serializedKey, expireAfterAccess)
                         .thenApply(ignore -> deserialized);
             }
             return CompletableFuture.completedFuture(deserialized);

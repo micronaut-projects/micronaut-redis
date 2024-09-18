@@ -264,7 +264,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                         Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
                         boolean hasValue = deserialized.isPresent();
                         if (expireAfterAccess != null && hasValue) {
-                            return keyCommands.expire(serializedKey, expireAfterAccess).thenApply(ignore -> deserialized.get());
+                            return keyCommands.pexpire(serializedKey, expireAfterAccess).thenApply(ignore -> deserialized.get());
                         } else if (hasValue) {
                             return CompletableFuture.completedFuture(deserialized.get());
                         }
@@ -384,7 +384,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
             if (expireAfterAccess != null && deserialized.isPresent()) {
                 return asyncPool.acquire().thenCompose(connection -> {
                     RedisKeyAsyncCommands<byte[], byte[]> commands = getRedisKeyAsyncCommands(connection);
-                    return commands.expire(serializedKey, expireAfterAccess)
+                    return commands.pexpire(serializedKey, expireAfterAccess)
                             .thenApply(ignore -> deserialized)
                             .whenComplete((result, ex) -> {
                                 asyncPool.release(connection);

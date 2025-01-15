@@ -131,7 +131,7 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
      * @param requiredType
      * @param supplier
      * @param commands
-     * @param <T>
+     * @param <T> concrete type
      * @return value from the cache
      */
     protected <T> T get(byte[] key, Argument<T> requiredType, Supplier<T> supplier, RedisStringCommands<byte[], byte[]> commands) {
@@ -215,15 +215,15 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
     /**
      * @param requiredType
      * @param serializedKey
-     * @param <T>
-     * @return Optional<T>
+     * @param <T> concrete type
+     * @return An Optional Value
      */
     protected abstract <T> Optional<T> getValue(Argument<T> requiredType, byte[] serializedKey);
 
     /**
      * @param serializedKey
      * @param value
-     * @param <T>
+     * @param <T> concrete type
      */
     protected abstract <T> void putValue(byte[] serializedKey, T value);
 
@@ -234,7 +234,7 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
      * @param redisStringCommands
      * @param redisKeyCommands
      * @param value
-     * @param <T>
+     * @param <T> concrete type
      */
     protected <T> void putValue(byte[] serializedKey, Optional<byte[]> serialized, ExpirationAfterWritePolicy policy, RedisStringCommands<byte[], byte[]> redisStringCommands, RedisKeyCommands<byte[], byte[]> redisKeyCommands, T value) {
         if (serialized.isPresent()) {

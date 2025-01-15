@@ -13,7 +13,7 @@ micronaut-gradle-plugin = "4.4.3"
 micronaut = "4.7.11"
 redis-embedded = "0.7.3"
 
-groovy = "4.0.13"
+groovy = "4.0.23"
 spock = "2.3-groovy-4.0"
 sonatype-scan = "3.0.0"
 

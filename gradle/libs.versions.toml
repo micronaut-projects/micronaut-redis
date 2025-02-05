@@ -2,7 +2,7 @@
 managed-lettuce = "6.4.2.RELEASE"
 
 micronaut-docs = "2.0.0"
-micronaut = "4.7.12"
+micronaut = "4.7.13"
 micronaut-test = "4.6.2"
 micronaut-cache = "5.1.0"
 micronaut-micrometer = "5.9.3"

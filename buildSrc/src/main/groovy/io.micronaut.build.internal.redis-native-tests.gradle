@@ -19,3 +19,6 @@ graalvmNative {
         }
     }
 }
+micronaut {
+    runtime("netty")
+}

@@ -26,6 +26,7 @@ dependencies {
 
     testImplementation mnSession.micronaut.session
     testRuntimeOnly mn.micronaut.http.server.netty
+    testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation mn.micronaut.http.client
     testRuntimeOnly(mnLogging.logback.classic)
     testImplementation mn.snakeyaml

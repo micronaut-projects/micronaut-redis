@@ -3,7 +3,7 @@ managed-lettuce = "6.8.1.RELEASE"
 
 micronaut-docs = "2.0.0"
 micronaut = "4.9.4"
-micronaut-test = "4.7.0"
+micronaut-test = "4.8.1"
 micronaut-cache = "5.3.0"
 micronaut-micrometer = "5.12.0"
 micronaut-serde = "2.15.1"
@@ -27,6 +27,6 @@ micronaut-session = { module = "io.micronaut.session:micronaut-session-bom", ver
 micronaut-test-resources = { module = "io.micronaut.testresources:micronaut-test-resources-bom", version.ref = "micronaut-test-resources" }
 
 redis-embedded = { module = "it.ozimov:embedded-redis", version.ref = "redis-embedded" }
-
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }
 sonatype-scan = { module = "org.sonatype.gradle.plugins:scan-gradle-plugin", version.ref = "sonatype-scan" }

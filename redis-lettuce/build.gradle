@@ -28,6 +28,7 @@ dependencies {
 
     testImplementation mnSession.micronaut.session
     testRuntimeOnly mn.micronaut.http.server.netty
+    testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation mn.micronaut.http.client
     testImplementation libs.redis.embedded
     testRuntimeOnly(mnLogging.logback.classic)

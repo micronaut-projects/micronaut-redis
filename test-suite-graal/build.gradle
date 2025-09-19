@@ -25,4 +25,5 @@ dependencies {
     implementation project(':micronaut-redis-lettuce')
     implementation mn.snakeyaml
     runtimeOnly mnLogging.logback.classic
+    testRuntimeOnly(libs.junit.platform.launcher)
 }

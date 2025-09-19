@@ -272,8 +272,12 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
         public CompletableFuture<Boolean> invalidateAll() {
             ScanArgs args = ScanArgs.Builder.limit(invalidateScanCount).match(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
 
-            return allKeys(ScanCursor.INITIAL, args).thenCompose(keysToDelete ->
-                deleteByKeys(keysToDelete.toArray(new byte[keysToDelete.size()][]))
+            return allKeys(ScanCursor.INITIAL, args).thenCompose(keysToDelete -> {
+                    if (keysToDelete.isEmpty()) {
+                        return CompletableFuture.completedFuture(false);
+                    }
+                    return deleteByKeys(keysToDelete.toArray(new byte[keysToDelete.size()][]));
+                }
             );
         }
 

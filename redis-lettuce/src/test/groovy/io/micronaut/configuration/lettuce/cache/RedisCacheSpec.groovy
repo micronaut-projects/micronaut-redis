@@ -178,6 +178,21 @@ class RedisCacheSpec extends RedisSpec {
         applicationContext.stop()
     }
 
+    void "test invalidateAll with redis sync cache that is already empty"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext()
+
+        when:
+        RedisCache redisCache = applicationContext.getBean(RedisCache, Qualifiers.byName("test"))
+        redisCache.invalidateAll()
+
+        then:
+        noExceptionThrown()
+
+        cleanup:
+        applicationContext.stop()
+    }
+
     void "test invalidateAll with redis sync cache"() {
         setup:
         ApplicationContext applicationContext = createApplicationContext()
@@ -208,6 +223,21 @@ class RedisCacheSpec extends RedisSpec {
         for( var i = 0; i < 100; i++) {
             !redisCache.get(i.toString(), Foo).isPresent()
         }
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test invalidateAll with redis async cache that is already empty"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext()
+
+        when:
+        RedisCache redisCache = applicationContext.getBean(RedisCache, Qualifiers.byName("test"))
+        redisCache.async().invalidateAll().join()
+
+        then:
+        noExceptionThrown()
 
         cleanup:
         applicationContext.stop()

@@ -11,10 +11,8 @@ dependencies {
     compileOnly mnSession.micronaut.session
     compileOnly mn.micronaut.management
     compileOnly mnMicrometer.micronaut.micrometer.core
-    compileOnly libs.redis.embedded
-
+    
     testAnnotationProcessor mn.micronaut.inject.java
-
     testImplementation(mnTestResources.testcontainers.core)
 
     testImplementation mn.reactor
@@ -30,7 +28,6 @@ dependencies {
     testRuntimeOnly mn.micronaut.http.server.netty
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation mn.micronaut.http.client
-    testImplementation libs.redis.embedded
     testRuntimeOnly(mnLogging.logback.classic)
     testImplementation mn.snakeyaml
 }

@@ -10,10 +10,6 @@ if (sonatypePluginConfigured) {
     ossIndexAudit {
         username = ossIndexUsername
         password = ossIndexPassword
-        excludeCoordinates = [
-                'com.google.guava:guava:21.0',
-                'commons-io:commons-io:2.5',
-        ]
     }
 }
 

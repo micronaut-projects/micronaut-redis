@@ -42,6 +42,8 @@ The root project MUST NOT contain any code: it is a parent project which coordin
 You SHOULD prefer modern Java idioms: records, pattern matching, sealed interfaces/classes, `var` for local variables.
 You MUST NOT use fully qualified class names unless there is a conflict between 2 class names in different packages.
 You MUST annotate the code with nullability annotations (`io.micronaut.core.annotation.Nullable`, `io.micronaut.core.annotation.NonNull`).
+You MUST NOT use reflection: Micronaut is a reflection-free framework tailored for integration with GraalVM.
+You MUST use `jakarta.inject` for dependency injection, NOT `javax.inject`.
 
 ## Binary compatibility
 
@@ -174,3 +176,4 @@ You MUST confirm all of the following BEFORE using `attempt_completion`:
 - Working tree is clean (no unrelated diffs)
 
 If ANY item is “no”, you MUST NOT use `attempt_completion`.
+While you SHOULD add new files using `git add`, you MUST NOT commit (`git commit`) files yourself.

@@ -14,7 +14,6 @@ micronaut-gradle-plugin = "4.5.4"
 
 groovy = "4.0.23"
 spock = "2.3-groovy-4.0"
-sonatype-scan = "3.1.4"
 
 [libraries]
 micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
@@ -27,4 +26,3 @@ micronaut-test-resources = { module = "io.micronaut.testresources:micronaut-test
 
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }
-sonatype-scan = { module = "org.sonatype.gradle.plugins:scan-gradle-plugin", version.ref = "sonatype-scan" }

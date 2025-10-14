@@ -18,9 +18,10 @@ package io.micronaut.configuration.lettuce;
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;
 
 /**
- * In the case where the <tt>redis.uri</tt> is not specified use the default configuration.
+ * In the case where the {@code redis.uri} is not specified use the default configuration.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -28,5 +29,6 @@ import io.micronaut.context.annotation.Requires;
 @ConfigurationProperties(RedisSetting.PREFIX)
 @Primary
 @Requires(property = RedisSetting.PREFIX)
+@Requires(property = RedisSetting.PREFIX + ".enabled", notEquals = StringUtils.FALSE)
 public class DefaultRedisConfiguration extends AbstractRedisConfiguration {
 }

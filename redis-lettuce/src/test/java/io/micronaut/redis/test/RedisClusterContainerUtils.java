@@ -69,7 +69,8 @@ public final class RedisClusterContainerUtils {
                 .withEnv("ALLOW_EMPTY_PASSWORD", "yes")
                 .withEnv("REDIS_CLUSTER_CREATOR", "yes")
                 .withEnv("REDIS_NODES", range(0, TOTAL_NODES - 1).mapToObj(RedisClusterContainerUtils::getRegularNodeName).collect(joining(",")))
-                .waitingFor(Wait.forLogMessage(".*Cluster correctly created.*\\n", 1));
+                .withEnv("REDIS_DISABLE_COMMANDS", "KEYS")
+                .waitingFor(Wait.forLogMessage(".*Cluster correctly created*\\n", 1));
         }
         return new GenericContainer<>(REDIS_CLUSTER_DOCKER_NAME)
             .withExposedPorts(REDIS_PORT)
@@ -78,6 +79,7 @@ public final class RedisClusterContainerUtils {
             .withEnv("ALLOW_EMPTY_PASSWORD", "yes")
             .withEnv("REDIS_CLUSTER_CREATOR", "no")
             .withEnv("REDIS_NODES", CREATOR_NODE_NAME)
+            .withEnv("REDIS_DISABLE_COMMANDS", "KEYS")
             .waitingFor(Wait.forLogMessage(".*Setting Redis config file.*\\n", 1));
     }
 

@@ -10,12 +10,7 @@ tasks.named("test") {
 
 graalvmNative {
     toolchainDetection = false
-    metadataRepository {
-        enabled = true
-    }
-    binaries {
-        all {
-            resources.autodetect()
-        }
-    }
+}
+micronaut {
+    runtime("netty")
 }

@@ -15,6 +15,9 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
+import io.lettuce.core.ScanArgs;
+import io.lettuce.core.ScanCursor;
+import io.lettuce.core.ScanIterator;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.async.RedisKeyAsyncCommands;
 import io.lettuce.core.api.async.RedisStringAsyncCommands;
@@ -36,12 +39,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * An implementation of {@link SyncCache} for Lettuce / Redis using connection pooling.
@@ -134,7 +139,10 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
     }
 
     private List<byte[]> allKeys(RedisKeyCommands<byte[], byte[]> commands, byte[] pattern) {
-        return commands.keys(pattern);
+        ScanArgs args = ScanArgs.Builder.limit(invalidateScanCount).match(pattern);
+        ScanIterator<byte[]> scanIterator = ScanIterator.scan(commands, args);
+
+        return scanIterator.stream().collect(Collectors.toList());
     }
 
     @Override
@@ -313,14 +321,32 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
         public CompletableFuture<Boolean> invalidateAll() {
             return asyncPool.acquire().thenCompose(connection -> {
                 RedisKeyAsyncCommands<byte[], byte[]> commands = getRedisKeyAsyncCommands(connection);
-                return commands.keys(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()))
-                        .thenCompose(keys -> deleteByKeys(keys.toArray(new byte[keys.size()][])))
-                        .whenComplete((data, ex) -> {
+
+                ScanArgs args = ScanArgs.Builder.limit(invalidateScanCount).match(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
+                return allKeys(commands, ScanCursor.INITIAL, args)
+                    .thenCompose(keysToDelete ->
+                        deleteByKeys(keysToDelete.toArray(new byte[keysToDelete.size()][]))
+                    )
+                    .whenComplete((data, ex) -> {
                             asyncPool.release(connection);
                             if (ex != null) {
                                 LOG.error(ex.getMessage(), ex);
                             }
                         });
+            });
+        }
+
+        private CompletableFuture<List<byte[]>> allKeys(RedisKeyAsyncCommands<byte[], byte[]> commands, ScanCursor initialCursor, ScanArgs args) {
+            if (initialCursor.isFinished()) {
+                return CompletableFuture.completedFuture(new LinkedList<>());
+            }
+            return (CompletableFuture<List<byte[]>>) commands.scan(initialCursor, args).thenCompose(newCursor -> {
+                List<byte[]> keysToDelete = newCursor.getKeys();
+
+                return allKeys(commands, newCursor, args).thenCompose(it -> {
+                    it.addAll(keysToDelete);
+                    return CompletableFuture.completedFuture(it);
+                });
             });
         }
 

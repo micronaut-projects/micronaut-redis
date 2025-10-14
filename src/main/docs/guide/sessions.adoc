@@ -2,30 +2,32 @@ Storing https://docs.micronaut.io/latest/api/io/micronaut/session/Session.html[S
 
 You can configure how sessions are stored in Redis using api:configuration.lettuce.session.RedisHttpSessionConfiguration[].
 
-The following represents an example configuration in `application.yml`:
+The following represents an example configuration in the application configuration file:
 
 .Configuring Redis Sessions
-[source,yaml]
+[configuration]
 ----
 micronaut:
     session:
         http:
             redis:
                 enabled: true
-                # The Redis namespace to write sessions to
                 namespace: 'myapp:sessions'
-                # Write session changes in the background
                 write-mode: BACKGROUND
-                # Disable programmatic activation of keyspace events
                 enable-keyspace-events: false
 ----
+
+- The Redis `namespace` spcifies where to write sessions.
+- Using `BACKGROUND` write sessions changes in the background
+- `enable-keyspace-events` enables/disables programmatic activation of keyspace events
+
 
 NOTE: The api:configuration.lettuce.session.RedisSessionStore[] implementation uses https://redis.io/topics/notifications[keyspace events] to cleanup active sessions and fire https://micronaut-projects.github.io/micronaut-core/latest/api/io/micronaut/session/event/SessionExpiredEvent.html[SessionExpiredEvent] and requires they are active.
 
 By default sessions values are serialized using Java serialization and stored in Redis hashes. You can configure serialization to instead use Jackson to serialize to JSON if desired:
 
 .Using Jackson Serialization
-[source,yaml]
+[configuration]
 ----
 micronaut:
     session:

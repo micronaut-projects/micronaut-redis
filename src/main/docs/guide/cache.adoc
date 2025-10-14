@@ -5,25 +5,25 @@ Within your application configuration configure the Redis URL and Redis caches:
 
 //TODO: Move YAML snippet to test
 .Cache Configuration Example
-[source,yaml]
+[configuration]
 ----
 redis:
     uri: redis://localhost
     caches:
         my-cache:
-            # expire one hour after write
             expire-after-write: 1h
 ----
 
 .Cache Configuration Example with a Dynamic Expiration policy
-[source,yaml]
+[configuration]
 ----
 redis:
     uri: redis://localhost
     caches:
         my-cache:
-            # expire based on result from class implementing ExpirationAfterWritePolicy
             expiration-after-write-policy: <class path of class implementing ExpirationAfterWritePolicy>
 ----
+
+- Expiration is based on result from an implementation of api:configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy[]
 
 include::{includedir}configurationProperties/io.micronaut.configuration.lettuce.cache.RedisCacheConfiguration.adoc[]

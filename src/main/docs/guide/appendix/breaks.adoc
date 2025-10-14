@@ -13,7 +13,7 @@ It is replaced with `redisClient(AbstractRedisConfiguration, ClientResources, Li
 
 - The embedded Redis server that can be used for testing has been changed to only bind to localhost.
 
-If you wish to revert to the previous behavior, you will need to use a configuration file specified in your test specific `application.yml` file.
+If you wish to revert to the previous behavior, you will need to use a configuration file specified in your test specific application configuration file.
 
 [source,plain]
 .embedded-redis.conf
@@ -21,8 +21,7 @@ If you wish to revert to the previous behavior, you will need to use a configura
 maxmemory 256M
 ----
 
-[source,yaml]
-.test-application.yml
+[configuration]
 ----
 redis:
   embedded:

@@ -2,7 +2,6 @@ plugins {
     id "io.micronaut.build.internal.redis-native-tests"
 }
 
-mainClassName = "helloworld.Application"
 micronaut {
     version "4.9.3"
     testRuntime "junit5"

@@ -118,7 +118,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
         ScanIterator<byte[]> scanIterator = ScanIterator.scan(redisKeyCommands, args);
 
         List<byte[]> keys = scanIterator.stream().collect(Collectors.toList());
-        if(!keys.isEmpty()) {
+        if (!keys.isEmpty()) {
             redisKeyCommands.del(keys.toArray(new byte[keys.size()][]));
         }
     }

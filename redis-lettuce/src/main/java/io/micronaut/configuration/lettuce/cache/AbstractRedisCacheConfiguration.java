@@ -15,7 +15,7 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
-import io.micronaut.core.annotation.NonNull;
+import org.jspecify.annotations.NonNull;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.runtime.ApplicationConfiguration;
 

@@ -18,7 +18,7 @@ package io.micronaut.configuration.lettuce;
 import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisURI;
 import io.micronaut.context.env.Environment;
-import io.micronaut.core.annotation.NonNull;
+import org.jspecify.annotations.NonNull;
 import io.micronaut.core.naming.Named;
 import io.micronaut.core.util.Toggleable;
 

@@ -22,7 +22,7 @@ import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 
-import io.micronaut.core.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 

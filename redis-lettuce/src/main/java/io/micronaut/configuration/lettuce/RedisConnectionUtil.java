@@ -28,7 +28,7 @@ import io.lettuce.core.masterreplica.StatefulRedisMasterReplicaConnection;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.annotation.Internal;
-import io.micronaut.core.annotation.NonNull;
+import org.jspecify.annotations.NonNull;
 import io.micronaut.inject.qualifiers.Qualifiers;
 
 import java.util.ArrayList;

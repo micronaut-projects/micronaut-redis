@@ -29,7 +29,7 @@ import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
-import io.micronaut.core.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import io.micronaut.inject.qualifiers.Qualifiers;
 
 

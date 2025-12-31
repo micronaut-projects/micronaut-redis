@@ -1,7 +1,6 @@
 plugins {
     id "io.micronaut.build.internal.redis-base"
     id "io.micronaut.application"
-    id "io.micronaut.test-resources"
 }
 
 tasks.named("test") {

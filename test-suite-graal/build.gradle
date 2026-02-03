@@ -25,4 +25,6 @@ dependencies {
     implementation mn.snakeyaml
     runtimeOnly mnLogging.logback.classic
     testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(platform(mnTest.boms.testcontainers))
+    testImplementation(libs.testcontainers)
 }

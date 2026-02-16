@@ -7,7 +7,7 @@ micronaut-micrometer = "5.13.2"
 micronaut-serde = "3.0.0-M1"
 micronaut-logging = "1.7.1"
 micronaut-session = "5.0.0-M1"
-micronaut-gradle-plugin = "4.6.1"
+micronaut-gradle-plugin = "4.6.2"
 testcontainers-redis = "1.6.4"
 
 [libraries]

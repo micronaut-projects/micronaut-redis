@@ -1,6 +1,7 @@
 package io.micronaut.redis.testcontainers;
 
 import com.redis.testcontainers.RedisContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.Map;
@@ -12,7 +13,8 @@ public class Redis {
 
     public static RedisContainer getContainer() {
         if (container == null) {
-            container = new RedisContainer(DockerImageName.parse(IMAGE_NAME));
+            container = new RedisContainer(DockerImageName.parse(IMAGE_NAME))
+                .waitingFor(Wait.forListeningPort());;
             container.start();
             do {
                 try {

@@ -19,7 +19,7 @@ public final class RedisClusterContainerUtils {
 
     public static final int REDIS_PORT = 6379;
     public static final int TOTAL_NODES = 7;
-    private static final DockerImageName REDIS_CLUSTER_DOCKER_NAME = DockerImageName.parse("bitnami/redis-cluster");
+    private static final DockerImageName REDIS_CLUSTER_DOCKER_NAME = DockerImageName.parse("bitnamilegacy/redis-cluster");
     private static final String CREATOR_NODE_NAME = "redis-cluster-creator";
     private static final String REGULAR_NODE_NAME = "redis-cluster-node-%02d";
     private static final Map<String, Integer> redisClusterPortMappings = new HashMap<>();
@@ -70,7 +70,7 @@ public final class RedisClusterContainerUtils {
                 .withEnv("REDIS_CLUSTER_CREATOR", "yes")
                 .withEnv("REDIS_NODES", range(0, TOTAL_NODES - 1).mapToObj(RedisClusterContainerUtils::getRegularNodeName).collect(joining(",")))
                 .withEnv("REDIS_DISABLE_COMMANDS", "KEYS")
-                .waitingFor(Wait.forLogMessage(".*Cluster correctly created*\\n", 1));
+                .waitingFor(Wait.forLogMessage(".*Cluster correctly created.*\\n", 1));
         }
         return new GenericContainer<>(REDIS_CLUSTER_DOCKER_NAME)
             .withExposedPorts(REDIS_PORT)

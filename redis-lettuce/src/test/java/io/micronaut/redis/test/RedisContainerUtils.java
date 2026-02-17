@@ -25,9 +25,7 @@ public final class RedisContainerUtils {
         if (redisContainer == null) {
             redisContainer = new GenericContainer<>(DockerImageName.parse(REDIS_DOCKER_NAME))
                 .withExposedPorts(REDIS_PORT)
-                .waitingFor(
-                    Wait.forLogMessage(".*Ready to accept connections.*\\n", 1)
-                )
+                .waitingFor(Wait.forListeningPort())
                 .withCommand(
                     "redis-server",
                     "--rename-command",

@@ -30,3 +30,11 @@ dependencies {
     testImplementation(platform(mnTest.boms.testcontainers))
     testImplementation(libs.testcontainers)
 }
+
+graalvmNative {
+    binaries {
+        test {
+            buildArgs.add("-H:+SharedArenaSupport")
+        }
+    }
+}

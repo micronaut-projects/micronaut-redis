@@ -3,10 +3,11 @@ package example;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.micronaut.core.annotation.NonNull;
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import io.micronaut.redis.testcontainers.Redis;
 import io.micronaut.test.support.TestPropertyProvider;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
+
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.junit.jupiter.api.TestInstance;
 
 import java.util.Map;
@@ -14,11 +15,6 @@ import java.util.Map;
 @MicronautTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RedisTest implements TestPropertyProvider {
-
-    @AfterAll
-    static void stopRedis() {
-        RedisCluster.stop();
-    }
 
     @Test
     void testRedis(RedisController controller) {
@@ -30,6 +26,6 @@ class RedisTest implements TestPropertyProvider {
 
     @Override
     public @NonNull Map<String, String> getProperties() {
-        return RedisCluster.getProperties();
+        return Redis.getProperties();
     }
 }

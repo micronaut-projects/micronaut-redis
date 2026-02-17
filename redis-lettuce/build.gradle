@@ -11,9 +11,9 @@ dependencies {
     compileOnly mnSession.micronaut.session
     compileOnly mn.micronaut.management
     compileOnly mnMicrometer.micronaut.micrometer.core
-    
+    testImplementation(platform(mnTest.boms.testcontainers))
+    testImplementation(libs.testcontainers)
     testAnnotationProcessor mn.micronaut.inject.java
-    testImplementation(mnTestResources.testcontainers.core)
 
     testImplementation mn.reactor
 
@@ -30,4 +30,10 @@ dependencies {
     testImplementation mn.micronaut.http.client
     testRuntimeOnly(mnLogging.logback.classic)
     testImplementation mn.snakeyaml
+}
+
+micronautBuild {
+    descriptor {
+        parentModuleId = "io.micronaut.redis:micronaut-redis-lettuce"
+    }
 }

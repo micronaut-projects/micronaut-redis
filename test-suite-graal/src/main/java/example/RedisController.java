@@ -1,5 +1,6 @@
 package example;
 
+import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.dynamic.RedisCommandFactory;
 import io.micronaut.http.annotation.Controller;
@@ -11,8 +12,9 @@ public class RedisController {
     private final StatefulRedisConnection<String, String> connection;
     private final KeyCommands keyCommands;
 
-    public RedisController(StatefulRedisConnection<String, String> connection) {
-        this.connection = connection;
+    public RedisController(RedisClient redisClient) {
+        this.connection = redisClient.connect();
+
         RedisCommandFactory factory = new RedisCommandFactory(connection);
         this.keyCommands = factory.getCommands(KeyCommands.class);
     }

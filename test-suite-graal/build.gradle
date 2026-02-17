@@ -21,8 +21,20 @@ configurations.all {
 dependencies {
     implementation mn.micronaut.context
     implementation mn.micronaut.jackson.databind
+    implementation platform(libs.micronaut.test)
     implementation project(':micronaut-redis-lettuce')
+    testImplementation(project(':test-suite-utils'))
     implementation mn.snakeyaml
     runtimeOnly mnLogging.logback.classic
     testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(platform(mnTest.boms.testcontainers))
+    testImplementation(libs.testcontainers)
+}
+
+graalvmNative {
+    binaries {
+        test {
+            buildArgs.add("-H:+SharedArenaSupport")
+        }
+    }
 }

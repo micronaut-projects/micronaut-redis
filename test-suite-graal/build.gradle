@@ -21,6 +21,7 @@ configurations.all {
 dependencies {
     implementation mn.micronaut.context
     implementation mn.micronaut.jackson.databind
+    implementation platform(libs.micronaut.test)
     implementation project(':micronaut-redis-lettuce')
     testImplementation(project(':test-suite-utils'))
     implementation mn.snakeyaml

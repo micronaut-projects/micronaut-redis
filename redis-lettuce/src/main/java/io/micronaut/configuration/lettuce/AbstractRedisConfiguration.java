@@ -17,12 +17,14 @@ package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.SslVerifyMode;
 import io.micronaut.context.env.Environment;
 import org.jspecify.annotations.NonNull;
 import io.micronaut.core.naming.Named;
 import io.micronaut.core.util.Toggleable;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +43,11 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
     private Integer computationThreadPoolSize;
     private String name;
     private ReadFrom readFrom;
+    private Duration configuredTimeout;
+    private Integer configuredDatabase;
+    private Boolean configuredSsl;
+    private Boolean configuredStartTls;
+    private SslVerifyMode configuredVerifyMode;
 
     /**
      * Constructor.
@@ -55,10 +62,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      * @return Get the Redis URI for configuration.
      */
     public Optional<RedisURI> getUri() {
-        if (uri != null) {
-            uri.setClientName(getClientName());
-        }
-        return Optional.ofNullable(uri);
+        return Optional.ofNullable(uri).map(this::applyConfiguredRedisUriSettings);
     }
 
     /**
@@ -74,7 +78,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      * @return Get the Redis URIs for cluster configuration.
      */
     public List<RedisURI> getUris() {
-        return uris;
+        return uris.stream().map(this::applyConfiguredRedisUriSettings).collect(Collectors.toList());
     }
 
     /**
@@ -91,7 +95,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      * @since 6.5.0
      */
     public List<RedisURI> getReplicaUris() {
-        return replicaUris;
+        return replicaUris.stream().map(this::applyConfiguredRedisUriSettings).collect(Collectors.toList());
     }
 
     /**
@@ -168,6 +172,42 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
         this.name = name;
     }
 
+    @Override
+    public void setTimeout(Duration timeout) {
+        super.setTimeout(timeout);
+        this.configuredTimeout = timeout;
+    }
+
+    @Override
+    public void setDatabase(int database) {
+        super.setDatabase(database);
+        this.configuredDatabase = database;
+    }
+
+    @Override
+    public void setSsl(boolean ssl) {
+        super.setSsl(ssl);
+        this.configuredSsl = ssl;
+    }
+
+    @Override
+    public void setStartTls(boolean startTls) {
+        super.setStartTls(startTls);
+        this.configuredStartTls = startTls;
+    }
+
+    @Override
+    public void setVerifyPeer(boolean verifyPeer) {
+        super.setVerifyPeer(verifyPeer);
+        this.configuredVerifyMode = getVerifyMode();
+    }
+
+    @Override
+    public void setVerifyPeer(SslVerifyMode verifyMode) {
+        super.setVerifyPeer(verifyMode);
+        this.configuredVerifyMode = verifyMode;
+    }
+
     /**
      *
      * See {@link io.lettuce.core.ReadFrom}.
@@ -189,5 +229,28 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      */
     public void setReadFrom(@NonNull String readFrom) {
         this.readFrom = ReadFrom.valueOf(readFrom);
+    }
+
+    private RedisURI applyConfiguredRedisUriSettings(RedisURI redisURI) {
+        RedisURI.Builder builder = RedisURI.builder(redisURI);
+        if (configuredTimeout != null) {
+            builder.withTimeout(configuredTimeout);
+        }
+        if (configuredDatabase != null) {
+            builder.withDatabase(configuredDatabase);
+        }
+        if (getClientName() != null) {
+            builder.withClientName(getClientName());
+        }
+        if (configuredSsl != null) {
+            builder.withSsl(configuredSsl);
+        }
+        if (configuredStartTls != null) {
+            builder.withStartTls(configuredStartTls);
+        }
+        if (configuredVerifyMode != null) {
+            builder.withVerifyPeer(configuredVerifyMode);
+        }
+        return builder.build();
     }
 }

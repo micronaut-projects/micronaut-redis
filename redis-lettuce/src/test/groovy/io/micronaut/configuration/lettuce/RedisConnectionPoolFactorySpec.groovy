@@ -23,6 +23,7 @@ import spock.lang.Specification
 import java.net.URI
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 
 class RedisConnectionPoolFactorySpec extends Specification {
     private static final String SPEC_NAME = "redis-connection-pool-factory"
@@ -45,8 +46,8 @@ class RedisConnectionPoolFactorySpec extends Specification {
 
         when:
         AsyncPool<StatefulRedisConnection<String, String>> pool = factory.redisConnectionPool(redisClient, configuration, poolConfiguration)
-        StatefulRedisConnection<String, String> acquiredFirst = pool.acquire().get()
-        StatefulRedisConnection<String, String> acquiredSecond = pool.acquire().get()
+        StatefulRedisConnection<String, String> acquiredFirst = pool.acquire().get(5, TimeUnit.SECONDS)
+        StatefulRedisConnection<String, String> acquiredSecond = pool.acquire().get(5, TimeUnit.SECONDS)
 
         then:
         acquiredFirst.is(first)
@@ -57,10 +58,10 @@ class RedisConnectionPoolFactorySpec extends Specification {
         cleanup:
         if (pool != null) {
             if (acquiredFirst != null) {
-                pool.release(acquiredFirst).get()
+                pool.release(acquiredFirst).get(5, TimeUnit.SECONDS)
             }
             if (acquiredSecond != null) {
-                pool.release(acquiredSecond).get()
+                pool.release(acquiredSecond).get(5, TimeUnit.SECONDS)
             }
             pool.close()
         }
@@ -79,8 +80,8 @@ class RedisConnectionPoolFactorySpec extends Specification {
         StatefulRedisConnection<String, String> acquiredSecond = null
 
         when:
-        acquiredFirst = pool.acquire().get()
-        acquiredSecond = pool.acquire().get()
+        acquiredFirst = pool.acquire().get(5, TimeUnit.SECONDS)
+        acquiredSecond = pool.acquire().get(5, TimeUnit.SECONDS)
 
         then:
         acquiredFirst instanceof TestStatefulRedisConnection
@@ -90,10 +91,10 @@ class RedisConnectionPoolFactorySpec extends Specification {
         cleanup:
         if (pool != null) {
             if (acquiredFirst != null) {
-                pool.release(acquiredFirst).get()
+                pool.release(acquiredFirst).get(5, TimeUnit.SECONDS)
             }
             if (acquiredSecond != null) {
-                pool.release(acquiredSecond).get()
+                pool.release(acquiredSecond).get(5, TimeUnit.SECONDS)
             }
             pool.close()
         }
@@ -111,6 +112,10 @@ class RedisConnectionPoolFactorySpec extends Specification {
     }
 
     private static final class TestRedisClient extends RedisClient {
+        TestRedisClient() {
+            super()
+        }
+
         @Override
         <K, V> StatefulRedisConnection<K, V> connect(RedisCodec<K, V> codec) {
             return new TestStatefulRedisConnection<>()

@@ -10,6 +10,8 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.redis.test.RedisContainerUtils
 
+import java.util.concurrent.TimeUnit
+
 /**
  * @author Graeme Rocher
  * @since 1.0
@@ -107,8 +109,8 @@ class RedisClientFactorySpec extends RedisSpec {
         StatefulRedisConnection<String, String> second = null
 
         when:
-        first = pool.acquire().get()
-        second = pool.acquire().get()
+        first = pool.acquire().get(5, TimeUnit.SECONDS)
+        second = pool.acquire().get(5, TimeUnit.SECONDS)
 
         then:
         first != null
@@ -129,10 +131,10 @@ class RedisClientFactorySpec extends RedisSpec {
 
         cleanup:
         if (first != null) {
-            pool.release(first).get()
+            pool.release(first).get(5, TimeUnit.SECONDS)
         }
         if (second != null) {
-            pool.release(second).get()
+            pool.release(second).get(5, TimeUnit.SECONDS)
         }
         applicationContext.stop()
     }

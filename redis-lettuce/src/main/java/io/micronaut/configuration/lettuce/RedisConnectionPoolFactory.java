@@ -78,9 +78,10 @@ public final class RedisConnectionPoolFactory<K, V> {
         DefaultRedisConnectionPoolConfiguration poolConfiguration
     ) {
         BoundedPoolConfig boundedPoolConfig = poolConfiguration.getBoundedPoolConfig();
+        // wrapConnections=false: callers must explicitly release connections via pool.release()
         CompletionStage<BoundedAsyncPool<StatefulRedisConnection<K, V>>> stage =
             AsyncConnectionPoolSupport.createBoundedObjectPoolAsync(
-                () -> CompletableFuture.completedFuture(createConnection(redisClient, config)),
+                () -> CompletableFuture.supplyAsync(() -> createConnection(redisClient, config)),
                 boundedPoolConfig,
                 false
             );
@@ -106,9 +107,10 @@ public final class RedisConnectionPoolFactory<K, V> {
         DefaultRedisConnectionPoolConfiguration poolConfiguration
     ) {
         BoundedPoolConfig boundedPoolConfig = poolConfiguration.getBoundedPoolConfig();
+        // wrapConnections=false: callers must explicitly release connections via pool.release()
         CompletionStage<BoundedAsyncPool<StatefulRedisClusterConnection<K, V>>> stage =
             AsyncConnectionPoolSupport.createBoundedObjectPoolAsync(
-                () -> CompletableFuture.completedFuture(createClusterConnection(redisClient, config)),
+                () -> CompletableFuture.supplyAsync(() -> createClusterConnection(redisClient, config)),
                 boundedPoolConfig,
                 false
             );

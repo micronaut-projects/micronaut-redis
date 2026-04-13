@@ -90,7 +90,7 @@ Once you have the above configuration in place you can inject one of the followi
 
 * `io.lettuce.core.RedisClient` - The main client interface
 * `io.lettuce.core.api.StatefulRedisConnection` - A connection interface that features synchronous, reactive (based on Reactor) and async APIs that operate on `String` values
-* `io.lettuce.core.support.AsyncPool<io.lettuce.core.api.StatefulRedisConnection>` - An optional pool for borrowing multiple connections when you need parallel Redis work
+* `io.lettuce.core.support.AsyncPool<io.lettuce.core.api.StatefulRedisConnection<K, V>>` - An optional pool for borrowing multiple connections when you need parallel Redis work
 * `io.lettuce.core.pubsub.StatefulRedisPubSubConnection` - A connection interface for dealing with Redis Pub/Sub
 
 The following example demonstrates the use of the `StatefulRedisConnection` interface's synchronous API:

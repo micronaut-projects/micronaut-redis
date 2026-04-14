@@ -20,6 +20,7 @@ import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection;
 import io.lettuce.core.codec.RedisCodec;
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
@@ -117,7 +118,20 @@ public class DefaultRedisClusterClientFactory<K, V> {
      */
     @Bean(preDestroy = "close")
     @Singleton
-    public StatefulRedisClusterPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClusterClient redisClient) {
+    public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClusterClient redisClient) {
         return redisClient.connectPubSub(defaultCodec);
+    }
+
+    /**
+     * Exposes the pub/sub connection as the cluster-specific type.
+     *
+     * @param pubSubConnection the pub/sub connection
+     * @return cluster pub/sub connection
+     */
+    @Bean(typed = {StatefulRedisClusterPubSubConnection.class})
+    @Singleton
+    @SuppressWarnings("unchecked")
+    public StatefulRedisClusterPubSubConnection<K, V> redisClusterPubSubConnection(StatefulRedisPubSubConnection<K, V> pubSubConnection) {
+        return (StatefulRedisClusterPubSubConnection<K, V>) pubSubConnection;
     }
 }

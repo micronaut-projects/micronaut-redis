@@ -80,9 +80,10 @@ class DefaultRedisClusterClientFactorySpec extends RedisClusterSpec {
     void "test redis cluster-specific pubsub connection bean"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run([
-                'redis.uris': 'redis://localhost:6379',
-                'spec.name': ClusterPubSubBeanReplacementFactory.SPEC_NAME,
+                'redis.uris': redisClusterUris,
         ])
+        RedisClusterClient client = applicationContext.getBean(RedisClusterClient)
+        fixPartitions(client)
 
         when:
         StatefulRedisClusterPubSubConnection<String, String> connection = applicationContext.getBean(StatefulRedisClusterPubSubConnection<String, String>)

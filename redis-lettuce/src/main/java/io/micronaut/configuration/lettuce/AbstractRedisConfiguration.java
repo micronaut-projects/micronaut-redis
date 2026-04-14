@@ -15,14 +15,17 @@
  */
 package io.micronaut.configuration.lettuce;
 
+import io.lettuce.core.metrics.MicrometerOptions;
 import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisURI;
 import io.micronaut.context.env.Environment;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import io.micronaut.core.naming.Named;
 import io.micronaut.core.util.Toggleable;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -190,4 +193,124 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
     public void setReadFrom(@NonNull String readFrom) {
         this.readFrom = ReadFrom.valueOf(readFrom);
     }
+
+    /**
+     * Lettuce command latency recorder settings.
+     *
+     * @since 6.7.0
+     */
+    public abstract static class RedisCommandLatencyRecorderConfiguration {
+        private Boolean enabled;
+        private Boolean histogram;
+        private Boolean localDistinction;
+        private Duration minLatency;
+        private Duration maxLatency;
+        private List<Double> targetPercentiles;
+
+        /**
+         * @return Whether the recorder is enabled.
+         */
+        public boolean isEnabled() {
+            return enabled == null ? MicrometerOptions.DEFAULT_ENABLED : enabled;
+        }
+
+        /**
+         * @param enabled Whether the recorder is enabled
+         */
+        public void setEnabled(@Nullable Boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        /**
+         * @return Whether histograms are enabled.
+         */
+        public boolean isHistogram() {
+            return histogram == null ? true : histogram;
+        }
+
+        /**
+         * @param histogram Whether histograms are enabled
+         */
+        public void setHistogram(@Nullable Boolean histogram) {
+            this.histogram = histogram;
+        }
+
+        /**
+         * @return Whether metrics are tracked per connection.
+         */
+        public boolean isLocalDistinction() {
+            return localDistinction == null ? MicrometerOptions.DEFAULT_LOCAL_DISTINCTION : localDistinction;
+        }
+
+        /**
+         * @param localDistinction Whether metrics are tracked per connection
+         */
+        public void setLocalDistinction(@Nullable Boolean localDistinction) {
+            this.localDistinction = localDistinction;
+        }
+
+        /**
+         * @return The minimum expected latency.
+         */
+        public Duration getMinLatency() {
+            return minLatency == null ? MicrometerOptions.DEFAULT_MIN_LATENCY : minLatency;
+        }
+
+        /**
+         * @param minLatency The minimum expected latency
+         */
+        public void setMinLatency(@Nullable Duration minLatency) {
+            this.minLatency = minLatency;
+        }
+
+        /**
+         * @return The maximum expected latency.
+         */
+        public Duration getMaxLatency() {
+            return maxLatency == null ? MicrometerOptions.DEFAULT_MAX_LATENCY : maxLatency;
+        }
+
+        /**
+         * @param maxLatency The maximum expected latency
+         */
+        public void setMaxLatency(@Nullable Duration maxLatency) {
+            this.maxLatency = maxLatency;
+        }
+
+        /**
+         * @return The target percentiles.
+         */
+        public double[] getTargetPercentiles() {
+            if (targetPercentiles == null) {
+                return MicrometerOptions.DEFAULT_TARGET_PERCENTILES;
+            }
+            return targetPercentiles.stream()
+                    .mapToDouble(Double::doubleValue)
+                    .toArray();
+        }
+
+        /**
+         * @param targetPercentiles The target percentiles.
+         */
+        public void setTargetPercentiles(@Nullable List<Double> targetPercentiles) {
+            this.targetPercentiles = targetPercentiles;
+        }
+
+        /**
+         * @return The Micrometer options represented by this configuration.
+         */
+        public MicrometerOptions toMicrometerOptions() {
+            MicrometerOptions.Builder builder = MicrometerOptions.builder()
+                    .histogram(isHistogram())
+                    .localDistinction(isLocalDistinction())
+                    .minLatency(getMinLatency())
+                    .maxLatency(getMaxLatency())
+                    .targetPercentiles(getTargetPercentiles());
+            if (!isEnabled()) {
+                builder.disable();
+            }
+            return builder.build();
+        }
+    }
+
 }

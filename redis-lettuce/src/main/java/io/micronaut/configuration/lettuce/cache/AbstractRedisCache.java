@@ -30,7 +30,6 @@ import io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWriteP
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.convert.ConversionService;
-import io.micronaut.core.convert.exceptions.ConversionErrorException;
 import io.micronaut.core.serialize.JdkSerializer;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.type.Argument;
@@ -292,12 +291,14 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
             K key = orderedKeys.get(i);
             KeyValue<byte[], byte[]> value = values.get(i);
             if (value != null && value.hasValue()) {
-                T deserialized = valueSerializer.deserialize(value.getValue(), requiredType)
-                    .orElseThrow(() -> new ConversionErrorException(requiredType,
-                        new IllegalArgumentException("Cannot convert cached value for [" + key + "] to target type: " + requiredType.getType())));
-                resolved.put(key, deserialized);
-                if (expireAfterAccess != null) {
-                    redisKeyCommands.pexpire(serializedKeys[i], expireAfterAccess);
+                Optional<T> deserialized = valueSerializer.deserialize(value.getValue(), requiredType);
+                if (deserialized.isPresent()) {
+                    resolved.put(key, deserialized.get());
+                    if (expireAfterAccess != null) {
+                        redisKeyCommands.pexpire(serializedKeys[i], expireAfterAccess);
+                    }
+                } else {
+                    resolved.put(key, null);
                 }
             } else {
                 resolved.put(key, null);
@@ -344,9 +345,10 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
         });
 
         if (!toSave.isEmpty()) {
-            redisStringCommands.mset(toSave);
             if (toExpire != null) {
-                toExpire.forEach(redisKeyCommands::pexpire);
+                toSave.forEach((k, v) -> redisStringCommands.psetex(k, toExpire.get(k), v));
+            } else {
+                redisStringCommands.mset(toSave);
             }
         }
         if (!toDelete.isEmpty()) {

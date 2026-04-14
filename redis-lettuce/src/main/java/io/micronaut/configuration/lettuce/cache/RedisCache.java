@@ -116,8 +116,8 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
      * @return An ordered map containing all requested keys
      */
     @NonNull
-    public <K> Map<K, Object> get(@NonNull Collection<K> keys) {
-        return get(keys, Argument.OBJECT_ARGUMENT);
+    public <K> Map<K, Object> getAll(@NonNull Collection<K> keys) {
+        return getAll(keys, Argument.OBJECT_ARGUMENT);
     }
 
     /**
@@ -130,7 +130,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
      * @return An ordered map containing all requested keys
      */
     @NonNull
-    public <K, T> Map<K, T> get(@NonNull Collection<K> keys, @NonNull Argument<T> requiredType) {
+    public <K, T> Map<K, T> getAll(@NonNull Collection<K> keys, @NonNull Argument<T> requiredType) {
         return getValues(keys, requiredType, redisStringCommands, redisKeyCommands);
     }
 
@@ -139,7 +139,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
      *
      * @param values The values to cache
      */
-    public void put(@NonNull Map<?, ?> values) {
+    public void putAll(@NonNull Map<?, ?> values) {
         putValues(values, redisStringCommands, redisKeyCommands);
     }
 
@@ -154,7 +154,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
      *
      * @param keys The keys to invalidate
      */
-    public void invalidate(@NonNull Collection<?> keys) {
+    public void invalidateAllKeys(@NonNull Collection<?> keys) {
         invalidateValues(keys, redisKeyCommands);
     }
 

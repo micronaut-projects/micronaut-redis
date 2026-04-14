@@ -201,7 +201,7 @@ class RedisPoolCacheSpec extends RedisSpec {
         when:
         RedisConnectionPoolCache redisCache = applicationContext.getBean(RedisConnectionPoolCache, Qualifiers.byName("test"))
         redisCache.put("deleteme", "should get deleted")
-        redisCache.put([
+        redisCache.putAll([
                 "three": 3,
                 "test" : new Foo(name: "test"),
                 "four" : "four",
@@ -209,7 +209,7 @@ class RedisPoolCacheSpec extends RedisSpec {
                 "test-list": [new Foo(name: "abc")] as List<Foo>,
                 "deleteme": null,
         ])
-        Map<String, Object> result = redisCache.get(["four", "two", "test", "missing", "test-list", "three", "deleteme"])
+        Map<String, Object> result = redisCache.getAll(["four", "two", "test", "missing", "test-list", "three", "deleteme"])
 
         then:
         result.keySet().toList() == ["four", "two", "test", "missing", "test-list", "three", "deleteme"]
@@ -223,7 +223,7 @@ class RedisPoolCacheSpec extends RedisSpec {
         !redisCache.get("deleteme", Object).isPresent()
 
         when:
-        Map<String, Foo> typed = redisCache.get(["two", "test"], Argument.of(Foo))
+        Map<String, Foo> typed = redisCache.getAll(["two", "test"], Argument.of(Foo))
 
         then:
         typed.keySet().toList() == ["two", "test"]
@@ -231,7 +231,7 @@ class RedisPoolCacheSpec extends RedisSpec {
         typed.get("test") == new Foo(name: "test")
 
         when:
-        redisCache.invalidate(["test", "two", "three", "four"])
+        redisCache.invalidateAllKeys(["test", "two", "three", "four"])
 
         then:
         !redisCache.get("test", Foo).isPresent()

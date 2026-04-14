@@ -116,8 +116,8 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
      * @return An ordered map containing all requested keys
      */
     @NonNull
-    public <K> Map<K, Object> get(@NonNull Collection<K> keys) {
-        return get(keys, Argument.OBJECT_ARGUMENT);
+    public <K> Map<K, Object> getAll(@NonNull Collection<K> keys) {
+        return getAll(keys, Argument.OBJECT_ARGUMENT);
     }
 
     /**
@@ -130,7 +130,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
      * @return An ordered map containing all requested keys
      */
     @NonNull
-    public <K, T> Map<K, T> get(@NonNull Collection<K> keys, @NonNull Argument<T> requiredType) {
+    public <K, T> Map<K, T> getAll(@NonNull Collection<K> keys, @NonNull Argument<T> requiredType) {
         return asyncPool.acquire().thenCompose(connection -> {
             try {
                 RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
@@ -147,7 +147,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
      *
      * @param values The values to cache
      */
-    public void put(@NonNull Map<?, ?> values) {
+    public void putAll(@NonNull Map<?, ?> values) {
         asyncPool.acquire().thenAccept(connection -> {
             try {
                 RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
@@ -177,7 +177,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
      *
      * @param keys The keys to invalidate
      */
-    public void invalidate(@NonNull Collection<?> keys) {
+    public void invalidateAllKeys(@NonNull Collection<?> keys) {
         asyncPool.acquire().thenAccept(connection -> {
             try {
                 RedisKeyCommands<byte[], byte[]> commands = getRedisKeyCommands(connection);

@@ -38,9 +38,9 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
     private RedisURI rawUri;
     private List<RedisURI> rawUris = Collections.emptyList();
     private List<RedisURI> rawReplicaUris = Collections.emptyList();
-    private RedisURI mergedUri;
-    private List<RedisURI> mergedUris = Collections.emptyList();
-    private List<RedisURI> mergedReplicaUris = Collections.emptyList();
+    private volatile RedisURI mergedUri;
+    private volatile List<RedisURI> mergedUris = Collections.emptyList();
+    private volatile List<RedisURI> mergedReplicaUris = Collections.emptyList();
     private Integer ioThreadPoolSize;
     private Integer computationThreadPoolSize;
     private String name;

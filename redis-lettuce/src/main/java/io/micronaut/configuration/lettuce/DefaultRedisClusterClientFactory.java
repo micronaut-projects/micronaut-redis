@@ -18,6 +18,7 @@ package io.micronaut.configuration.lettuce;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
@@ -117,7 +118,7 @@ public class DefaultRedisClusterClientFactory<K, V> {
      */
     @Bean(preDestroy = "close")
     @Singleton
-    public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClusterClient redisClient) {
+    public StatefulRedisClusterPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClusterClient redisClient) {
         return redisClient.connectPubSub(defaultCodec);
     }
 }

@@ -3,6 +3,7 @@ package io.micronaut.configuration.lettuce
 import io.lettuce.core.ReadFrom
 import io.lettuce.core.cluster.RedisClusterClient
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection
+import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection
 import io.micrometer.core.instrument.MeterRegistry
@@ -71,6 +72,24 @@ class DefaultRedisClusterClientFactorySpec extends RedisClusterSpec {
 
         then:
         command.get("lorem") == "ipsum"
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test redis cluster-specific pubsub connection bean"() {
+        given:
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.uris': 'redis://localhost:6379',
+                'spec.name': ClusterPubSubBeanReplacementFactory.SPEC_NAME,
+        ])
+
+        when:
+        StatefulRedisClusterPubSubConnection<String, String> connection = applicationContext.getBean(StatefulRedisClusterPubSubConnection<String, String>)
+        StatefulRedisPubSubConnection<String, String> genericConnection = applicationContext.getBean(StatefulRedisPubSubConnection<String, String>)
+
+        then:
+        connection.is(genericConnection)
 
         cleanup:
         applicationContext.stop()

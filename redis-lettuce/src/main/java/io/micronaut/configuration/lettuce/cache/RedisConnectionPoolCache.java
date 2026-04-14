@@ -96,14 +96,24 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
     @Override
     public <T> T get(@NonNull Object key, @NonNull Argument<T> requiredType, @NonNull Supplier<T> supplier) {
         byte[] serializedKey = serializeKey(key);
-        return asyncPool.acquire().thenCompose(connection -> {
+        byte[] data = executeRead(() -> asyncPool.acquire().thenCompose(connection -> {
             try {
                 RedisStringCommands<byte[], byte[]> commands = getRedisStringCommands(connection);
-                return CompletableFuture.completedFuture(get(serializedKey, requiredType, supplier, commands));
+                return CompletableFuture.completedFuture(commands.get(serializedKey));
             } finally {
                 asyncPool.release(connection);
             }
-        }).join();
+        }).join());
+        if (data != null) {
+            Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
+            if (deserialized.isPresent()) {
+                return deserialized.get();
+            }
+        }
+
+        T value = supplier.get();
+        putValue(serializedKey, value);
+        return value;
     }
 
     @Override
@@ -160,7 +170,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
      */
     @Override
     protected <T> Optional<T> getValue(Argument<T> requiredType, byte[] serializedKey) {
-        return asyncPool.acquire().thenCompose(connection -> {
+        return executeRead(() -> asyncPool.acquire().thenCompose(connection -> {
             try {
                 RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
                 RedisKeyCommands<byte[], byte[]> keyCommands = getRedisKeyCommands(connection);
@@ -168,7 +178,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
             } finally {
                 asyncPool.release(connection);
             }
-        }).join();
+        }).join());
     }
 
     private <T> Optional<T> getValue(
@@ -198,15 +208,18 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
     @Override
     protected <T> void putValue(byte[] serializedKey, T value) {
         Optional<byte[]> serialized = valueSerializer.serialize(value);
-        asyncPool.acquire().thenAccept(connection -> {
-            try {
-                RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
-                RedisKeyCommands<byte[], byte[]> keyCommands = getRedisKeyCommands(connection);
-                putValue(serializedKey, serialized, stringCommands, keyCommands);
-            } finally {
-                asyncPool.release(connection);
-            }
-        }).join();
+        executeInsert(() -> {
+            asyncPool.acquire().thenAccept(connection -> {
+                try {
+                    RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
+                    RedisKeyCommands<byte[], byte[]> keyCommands = getRedisKeyCommands(connection);
+                    putValue(serializedKey, serialized, stringCommands, keyCommands);
+                } finally {
+                    asyncPool.release(connection);
+                }
+            }).join();
+            return null;
+        });
     }
 
     private void putValue(byte[] serializedKey,
@@ -236,27 +249,27 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
         @Override
         public <T> CompletableFuture<Optional<T>> get(Object key, Argument<T> requiredType) {
             byte[] serializedKey = serializeKey(key);
-            return asyncPool.acquire().thenCompose(connection -> {
+            return executeReadAsync(() -> asyncPool.acquire().thenCompose(connection -> {
                 RedisStringAsyncCommands<byte[], byte[]> commands = getRedisStringAsyncCommands(connection);
 
                 return commands.get(serializedKey).thenCompose(data -> {
                     if (data != null) {
                         return getWithExpire(requiredType, serializedKey, data);
                     }
-                    return CompletableFuture.completedFuture(Optional.empty());
+                    return CompletableFuture.completedFuture(Optional.<T>empty());
                 }).whenComplete((data, ex) -> {
                     asyncPool.release(connection);
                     if (ex != null) {
                         LOG.error(ex.getMessage(), ex);
                     }
                 });
-            });
+            })).toCompletableFuture();
         }
 
         @Override
         public <T> CompletableFuture<T> get(Object key, Argument<T> requiredType, Supplier<T> supplier) {
             byte[] serializedKey = serializeKey(key);
-            return asyncPool.acquire().thenCompose(connection -> {
+            return executeReadAsync(() -> asyncPool.acquire().thenCompose(connection -> {
                 RedisStringAsyncCommands<byte[], byte[]> stringCommands = getRedisStringAsyncCommands(connection);
                 RedisKeyAsyncCommands<byte[], byte[]> keyCommands = getRedisKeyAsyncCommands(connection);
                 return stringCommands.get(serializedKey).thenCompose(data -> {
@@ -269,28 +282,25 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                             return CompletableFuture.completedFuture(deserialized.get());
                         }
                     }
-                    return putFromSupplier(serializedKey, supplier);
+                    return CompletableFuture.completedFuture(null);
                 }).whenComplete((data, ex) -> {
                     asyncPool.release(connection);
                     if (ex != null) {
                         LOG.error(ex.getMessage(), ex);
                     }
                 });
-            });
+            })).thenCompose(value -> value != null ? CompletableFuture.completedFuture(value) : putFromSupplier(serializedKey, supplier))
+                    .toCompletableFuture();
         }
 
         @Override
         public <T> CompletableFuture<Optional<T>> putIfAbsent(Object key, T value) {
             byte[] serializedKey = serializeKey(key);
-            return asyncPool.acquire().thenCompose(connection -> {
+            return executeReadAsync(() -> asyncPool.acquire().thenCompose(connection -> {
                 RedisStringAsyncCommands<byte[], byte[]> stringCommands = getRedisStringAsyncCommands(connection);
                 return stringCommands.get(serializedKey).thenCompose(data -> {
                     if (data != null) {
                         return getWithExpire(Argument.of((Class<T>) value.getClass()), serializedKey, data);
-                    }
-                    Optional<byte[]> serialized = valueSerializer.serialize(value);
-                    if (serialized.isPresent()) {
-                        return putWithExpire(serializedKey, serialized.get(), value).thenApply(ignore -> Optional.of(value));
                     }
                     return CompletableFuture.completedFuture(Optional.empty());
                 }).whenComplete((data, ex) -> {
@@ -299,7 +309,16 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                         LOG.error(ex.getMessage(), ex);
                     }
                 });
-            });
+            })).thenCompose(existing -> {
+                if (existing.isPresent()) {
+                    return CompletableFuture.completedFuture(existing);
+                }
+                Optional<byte[]> serialized = valueSerializer.serialize(value);
+                if (serialized.isPresent()) {
+                    return putWithExpire(serializedKey, serialized.get(), value).thenApply(ignore -> Optional.of(value));
+                }
+                return CompletableFuture.completedFuture(Optional.<T>empty());
+            }).toCompletableFuture();
         }
 
         @Override
@@ -419,7 +438,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
         }
 
         private CompletionStage<Boolean> putWithExpire(byte[] serializedKey, byte[] serialized, Object value) {
-            return asyncPool.acquire().thenCompose(connection -> {
+            return executeInsertAsync(() -> asyncPool.acquire().thenCompose(connection -> {
                 RedisStringAsyncCommands<byte[], byte[]> commands = getRedisStringAsyncCommands(connection);
                 if (expireAfterWritePolicy != null) {
                     return commands.psetex(serializedKey, expireAfterWritePolicy.getExpirationAfterWrite(value), serialized)
@@ -440,7 +459,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
                             })
                             .thenApply(isOK());
                 }
-            });
+            }));
         }
 
         private Function<String, Boolean> isOK() {

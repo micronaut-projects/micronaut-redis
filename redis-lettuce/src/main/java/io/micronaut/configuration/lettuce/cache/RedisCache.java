@@ -103,7 +103,17 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
     @Override
     public <T> T get(Object key, Argument<T> requiredType, Supplier<T> supplier) {
         byte[] serializedKey = serializeKey(key);
-        return get(serializedKey, requiredType, supplier, redisStringCommands);
+        byte[] data = executeRead(() -> redisStringCommands.get(serializedKey));
+        if (data != null) {
+            Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
+            if (deserialized.isPresent()) {
+                return deserialized.get();
+            }
+        }
+
+        T value = supplier.get();
+        putValue(serializedKey, value);
+        return value;
     }
 
     @Override
@@ -138,9 +148,9 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
      */
     @Override
     protected <T> Optional<T> getValue(Argument<T> requiredType, byte[] serializedKey) {
-        byte[] data = redisStringCommands.get(serializedKey);
+        byte[] data = executeRead(() -> redisStringCommands.get(serializedKey));
         if (expireAfterAccess != null) {
-            redisKeyCommands.pexpire(serializedKey, expireAfterAccess);
+            executeRead(() -> redisKeyCommands.pexpire(serializedKey, expireAfterAccess));
         }
         if (data != null) {
             return valueSerializer.deserialize(data, requiredType);
@@ -159,12 +169,15 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
     @Override
     protected <T> void putValue(byte[] serializedKey, T value) {
         Optional<byte[]> serialized = valueSerializer.serialize(value);
-        putValue(serializedKey,
-                serialized,
-                expireAfterWritePolicy,
-                redisStringCommands,
-                redisKeyCommands,
-                value);
+        executeInsert(() -> {
+            putValue(serializedKey,
+                    serialized,
+                    expireAfterWritePolicy,
+                    redisStringCommands,
+                    redisKeyCommands,
+                    value);
+            return null;
+        });
     }
 
     @Override
@@ -213,7 +226,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
         @Override
         public <T> CompletableFuture<Optional<T>> get(Object key, Argument<T> requiredType) {
             byte[] serializedKey = serializeKey(key);
-            return redisStringAsyncCommands.get(serializedKey).thenCompose(data -> {
+            return executeReadAsync(() -> redisStringAsyncCommands.get(serializedKey)).thenCompose(data -> {
                 if (data != null) {
                     return getWithExpire(requiredType, serializedKey, data);
                 }
@@ -224,12 +237,13 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
         @Override
         public <T> CompletableFuture<T> get(Object key, Argument<T> requiredType, Supplier<T> supplier) {
             byte[] serializedKey = serializeKey(key);
-            return redisStringAsyncCommands.get(serializedKey).thenCompose(data -> {
+            return executeReadAsync(() -> redisStringAsyncCommands.get(serializedKey)).thenCompose(data -> {
                 if (data != null) {
                     Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
                     boolean hasValue = deserialized.isPresent();
                     if (expireAfterAccess != null && hasValue) {
-                        return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccess).thenApply(ignore -> deserialized.get());
+                        return executeReadAsync(() -> redisKeyAsyncCommands.expire(serializedKey, expireAfterAccess))
+                                .thenApply(ignore -> deserialized.get());
                     } else if (hasValue) {
                         return CompletableFuture.completedFuture(deserialized.get());
                     }
@@ -241,7 +255,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
         @Override
         public <T> CompletableFuture<Optional<T>> putIfAbsent(Object key, T value) {
             byte[] serializedKey = serializeKey(key);
-            return redisStringAsyncCommands.get(serializedKey).thenCompose(data -> {
+            return executeReadAsync(() -> redisStringAsyncCommands.get(serializedKey)).thenCompose(data -> {
                 if (data != null) {
                     return getWithExpire(Argument.of((Class<T>) value.getClass()), serializedKey, data);
                 }
@@ -315,7 +329,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
         private <T> CompletionStage<Optional<T>> getWithExpire(Argument<T> requiredType, byte[] serializedKey, byte[] data) {
             Optional<T> deserialized = valueSerializer.deserialize(data, requiredType);
             if (expireAfterAccess != null && deserialized.isPresent()) {
-                return redisKeyAsyncCommands.expire(serializedKey, expireAfterAccess)
+                return executeReadAsync(() -> redisKeyAsyncCommands.expire(serializedKey, expireAfterAccess))
                         .thenApply(ignore -> deserialized);
             }
             return CompletableFuture.completedFuture(deserialized);
@@ -344,9 +358,11 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
 
         private CompletionStage<Boolean> putWithExpire(byte[] serializedKey, byte[] serialized, Object value) {
             if (expireAfterWritePolicy != null) {
-                return redisStringAsyncCommands.psetex(serializedKey, expireAfterWritePolicy.getExpirationAfterWrite(value), serialized).thenApply(isOK());
+                return executeInsertAsync(() -> redisStringAsyncCommands.psetex(serializedKey, expireAfterWritePolicy.getExpirationAfterWrite(value), serialized))
+                        .thenApply(isOK());
             } else {
-                return redisStringAsyncCommands.set(serializedKey, serialized).thenApply(isOK());
+                return executeInsertAsync(() -> redisStringAsyncCommands.set(serializedKey, serialized))
+                        .thenApply(isOK());
             }
         }
 

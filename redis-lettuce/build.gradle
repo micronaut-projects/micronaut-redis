@@ -8,6 +8,8 @@ dependencies {
     api libs.managed.lettuce
     api mnCache.micronaut.cache.core
 
+    implementation mn.micronaut.retry
+
     compileOnly mnSession.micronaut.session
     compileOnly mn.micronaut.management
     compileOnly mnMicrometer.micronaut.micrometer.core

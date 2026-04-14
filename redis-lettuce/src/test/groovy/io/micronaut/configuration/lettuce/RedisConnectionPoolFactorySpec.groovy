@@ -3,14 +3,19 @@ package io.micronaut.configuration.lettuce
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisConnectionStateListener
 import io.lettuce.core.ClientOptions
+import io.lettuce.core.ReadFrom
+import io.lettuce.core.RedisURI
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.StatefulConnection
 import io.lettuce.core.api.async.RedisAsyncCommands
 import io.lettuce.core.api.push.PushListener
 import io.lettuce.core.api.reactive.RedisReactiveCommands
 import io.lettuce.core.api.sync.RedisCommands
+import io.lettuce.core.cluster.RedisClusterClient
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection
 import io.lettuce.core.codec.ByteArrayCodec
 import io.lettuce.core.codec.RedisCodec
+import io.lettuce.core.masterreplica.StatefulRedisMasterReplicaConnection
 import io.lettuce.core.protocol.RedisCommand
 import io.lettuce.core.resource.ClientResources
 import io.lettuce.core.support.AsyncPool
@@ -107,6 +112,61 @@ class RedisConnectionPoolFactorySpec extends Specification {
         applicationContext?.stop()
     }
 
+    void "creates master replica redis connections with the primary URI appended"() {
+        given:
+        RedisCodec<String, String> codec = Mock()
+        RedisClient redisClient = Mock()
+        StatefulRedisMasterReplicaConnection<String, String> replicaConnection = Mock()
+        TestRedisConnectionPoolFactory<String, String> factory = new TestRedisConnectionPoolFactory<>(codec)
+        factory.masterReplicaConnection = replicaConnection
+        DefaultRedisConfiguration configuration = new DefaultRedisConfiguration()
+        configuration.setUri(URI.create("redis://localhost:6379"))
+        configuration.setReplicaUris(URI.create("redis://localhost:6380"))
+        configuration.setReadFrom("MASTER")
+
+        when:
+        StatefulRedisConnection<String, String> connection = factory.createConnection(redisClient, configuration)
+
+        then:
+        connection.is(replicaConnection)
+        factory.replicaUris*.port == [6380, 6379]
+        1 * replicaConnection.setReadFrom(_ as ReadFrom)
+    }
+
+    void "creates a pool of redis cluster connections"() {
+        given:
+        RedisCodec<String, String> codec = Mock()
+        RedisClusterClient redisClient = Mock()
+        StatefulRedisClusterConnection<String, String> clusterConnection = Mock() {
+            isOpen() >> true
+            closeAsync() >> CompletableFuture.completedFuture(null)
+        }
+        RedisConnectionPoolFactory<String, String> factory = new RedisConnectionPoolFactory<>(codec)
+        DefaultRedisConfiguration configuration = new DefaultRedisConfiguration()
+        configuration.setReadFrom("MASTER")
+        DefaultRedisConnectionPoolConfiguration poolConfiguration = newPoolConfiguration()
+        StatefulRedisClusterConnection<String, String> acquired = null
+
+        and:
+        1 * redisClient.connect(codec) >> clusterConnection
+        1 * clusterConnection.setReadFrom(_ as ReadFrom)
+
+        when:
+        AsyncPool<StatefulRedisClusterConnection<String, String>> pool = factory.redisClusterConnectionPool(redisClient, configuration, poolConfiguration)
+        acquired = pool.acquire().get(5, TimeUnit.SECONDS)
+
+        then:
+        acquired.is(clusterConnection)
+
+        cleanup:
+        if (pool != null) {
+            if (acquired != null) {
+                pool.release(acquired).get(5, TimeUnit.SECONDS)
+            }
+            pool.close()
+        }
+    }
+
     void "injects byte array pool into cache beans when application pool is also present"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run([
@@ -143,6 +203,14 @@ class RedisConnectionPoolFactorySpec extends Specification {
         RedisClient redisClient() {
             return new TestRedisClient()
         }
+    }
+
+    private static DefaultRedisConnectionPoolConfiguration newPoolConfiguration() {
+        DefaultRedisConnectionPoolConfiguration poolConfiguration = new DefaultRedisConnectionPoolConfiguration(new ApplicationConfiguration())
+        poolConfiguration.maxTotal = 1
+        poolConfiguration.maxIdle = 1
+        poolConfiguration.minIdle = 0
+        return poolConfiguration
     }
 
     private static final class TestRedisClient extends RedisClient {
@@ -260,5 +328,20 @@ class RedisConnectionPoolFactorySpec extends Specification {
     }
 
     private static final class ByteArrayTestStatefulRedisConnection extends TestStatefulRedisConnection<byte[], byte[]> {
+    }
+
+    private static final class TestRedisConnectionPoolFactory<K, V> extends RedisConnectionPoolFactory<K, V> {
+        StatefulRedisMasterReplicaConnection<K, V> masterReplicaConnection
+        List<RedisURI> replicaUris
+
+        TestRedisConnectionPoolFactory(RedisCodec<K, V> defaultCodec) {
+            super(defaultCodec)
+        }
+
+        @Override
+        StatefulRedisMasterReplicaConnection<K, V> createMasterReplicaConnection(RedisClient redisClient, List<RedisURI> redisUris) {
+            replicaUris = redisUris
+            return masterReplicaConnection
+        }
     }
 }

@@ -48,7 +48,7 @@ import java.util.concurrent.CompletionStage;
  */
 @Factory
 @Requires(beans = {DefaultRedisConfiguration.class, DefaultRedisConnectionPoolConfiguration.class})
-public final class RedisConnectionPoolFactory<K, V> {
+public class RedisConnectionPoolFactory<K, V> {
 
     private final RedisCodec<K, V> defaultCodec;
 
@@ -117,19 +117,24 @@ public final class RedisConnectionPoolFactory<K, V> {
         return stage.toCompletableFuture().join();
     }
 
-    private StatefulRedisConnection<K, V> createConnection(RedisClient redisClient, AbstractRedisConfiguration config) {
-        if (config.getUri().isPresent() && !config.getReplicaUris().isEmpty()) {
+    StatefulRedisConnection<K, V> createConnection(RedisClient redisClient, AbstractRedisConfiguration config) {
+        RedisURI redisUri = config.getUri().orElse(null);
+        if (redisUri != null && !config.getReplicaUris().isEmpty()) {
             List<RedisURI> uris = new ArrayList<>(config.getReplicaUris());
-            uris.add(config.getUri().get());
+            uris.add(redisUri);
 
-            StatefulRedisMasterReplicaConnection<K, V> connection = MasterReplica.connect(redisClient, defaultCodec, uris);
+            StatefulRedisMasterReplicaConnection<K, V> connection = createMasterReplicaConnection(redisClient, uris);
             config.getReadFrom().ifPresent(connection::setReadFrom);
             return connection;
         }
         return redisClient.connect(defaultCodec);
     }
 
-    private StatefulRedisClusterConnection<K, V> createClusterConnection(
+    StatefulRedisMasterReplicaConnection<K, V> createMasterReplicaConnection(RedisClient redisClient, List<RedisURI> redisUris) {
+        return MasterReplica.connect(redisClient, defaultCodec, redisUris);
+    }
+
+    StatefulRedisClusterConnection<K, V> createClusterConnection(
         RedisClusterClient redisClient,
         AbstractRedisConfiguration config
     ) {

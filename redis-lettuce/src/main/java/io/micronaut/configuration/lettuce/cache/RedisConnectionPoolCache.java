@@ -38,9 +38,11 @@ import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -106,6 +108,57 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
         }).join();
     }
 
+    /**
+     * Resolve the values for the given keys.
+     *
+     * @param keys The cache keys
+     * @param <K> The key type
+     * @return An ordered map containing all requested keys
+     */
+    @NonNull
+    public <K> Map<K, Object> get(@NonNull Collection<K> keys) {
+        return get(keys, Argument.OBJECT_ARGUMENT);
+    }
+
+    /**
+     * Resolve the values for the given keys.
+     *
+     * @param keys The cache keys
+     * @param requiredType The required type
+     * @param <K> The key type
+     * @param <T> The value type
+     * @return An ordered map containing all requested keys
+     */
+    @NonNull
+    public <K, T> Map<K, T> get(@NonNull Collection<K> keys, @NonNull Argument<T> requiredType) {
+        return asyncPool.acquire().thenCompose(connection -> {
+            try {
+                RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
+                RedisKeyCommands<byte[], byte[]> keyCommands = getRedisKeyCommands(connection);
+                return CompletableFuture.completedFuture(getValues(keys, requiredType, stringCommands, keyCommands));
+            } finally {
+                asyncPool.release(connection);
+            }
+        }).join();
+    }
+
+    /**
+     * Cache the specified values in bulk.
+     *
+     * @param values The values to cache
+     */
+    public void put(@NonNull Map<?, ?> values) {
+        asyncPool.acquire().thenAccept(connection -> {
+            try {
+                RedisStringCommands<byte[], byte[]> stringCommands = getRedisStringCommands(connection);
+                RedisKeyCommands<byte[], byte[]> keyCommands = getRedisKeyCommands(connection);
+                putValues(values, stringCommands, keyCommands);
+            } finally {
+                asyncPool.release(connection);
+            }
+        }).join();
+    }
+
     @Override
     public void invalidate(Object key) {
         byte[] serializedKey = serializeKey(key);
@@ -113,6 +166,22 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
             try {
                 RedisKeyCommands<byte[], byte[]> commands = getRedisKeyCommands(connection);
                 invalidate(Collections.singletonList(serializedKey), commands);
+            } finally {
+                asyncPool.release(connection);
+            }
+        }).join();
+    }
+
+    /**
+     * Invalidate the values for the given keys.
+     *
+     * @param keys The keys to invalidate
+     */
+    public void invalidate(@NonNull Collection<?> keys) {
+        asyncPool.acquire().thenAccept(connection -> {
+            try {
+                RedisKeyCommands<byte[], byte[]> commands = getRedisKeyCommands(connection);
+                invalidateValues(keys, commands);
             } finally {
                 asyncPool.release(connection);
             }

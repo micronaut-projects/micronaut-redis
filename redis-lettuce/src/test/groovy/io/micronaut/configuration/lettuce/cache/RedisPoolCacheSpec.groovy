@@ -194,6 +194,57 @@ class RedisPoolCacheSpec extends RedisSpec {
         applicationContext.close()
     }
 
+    void "test bulk read write and invalidate with redis pooled sync cache"() {
+        setup:
+        ApplicationContext applicationContext = createApplicationContext()
+
+        when:
+        RedisConnectionPoolCache redisCache = applicationContext.getBean(RedisConnectionPoolCache, Qualifiers.byName("test"))
+        redisCache.put("deleteme", "should get deleted")
+        redisCache.put([
+                "three": 3,
+                "test" : new Foo(name: "test"),
+                "four" : "four",
+                "two"  : new Foo(name: "two"),
+                "test-list": [new Foo(name: "abc")] as List<Foo>,
+                "deleteme": null,
+        ])
+        Map<String, Object> result = redisCache.get(["four", "two", "test", "missing", "test-list", "three", "deleteme"])
+
+        then:
+        result.keySet().toList() == ["four", "two", "test", "missing", "test-list", "three", "deleteme"]
+        result.get("four") == "four"
+        result.get("two") == new Foo(name: "two")
+        result.get("test") == new Foo(name: "test")
+        result.get("missing") == null
+        result.get("test-list").get(0) == new Foo(name: "abc")
+        result.get("three") == 3
+        result.get("deleteme") == null
+        !redisCache.get("deleteme", Object).isPresent()
+
+        when:
+        Map<String, Foo> typed = redisCache.get(["two", "test"], Argument.of(Foo))
+
+        then:
+        typed.keySet().toList() == ["two", "test"]
+        typed.get("two") == new Foo(name: "two")
+        typed.get("test") == new Foo(name: "test")
+
+        when:
+        redisCache.invalidate(["test", "two", "three", "four"])
+
+        then:
+        !redisCache.get("test", Foo).isPresent()
+        !redisCache.get("two", Foo).isPresent()
+        !redisCache.get("three", Integer).isPresent()
+        !redisCache.get("four", String).isPresent()
+        redisCache.get("test-list", Argument.listOf(Foo)).isPresent()
+        !redisCache.get("deleteme", Object).isPresent()
+
+        cleanup:
+        applicationContext.stop()
+    }
+
     void "test creating expiration after write policy that is not of type ExpirationAfterWritePolicy"() {
         given:
         ApplicationContext applicationContext = createApplicationContext()

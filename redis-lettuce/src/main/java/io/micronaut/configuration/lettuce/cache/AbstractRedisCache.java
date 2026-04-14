@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
+import io.lettuce.core.KeyValue;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisKeyAsyncCommands;
@@ -29,13 +30,20 @@ import io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWriteP
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.convert.ConversionService;
+import io.micronaut.core.convert.exceptions.ConversionErrorException;
 import io.micronaut.core.serialize.JdkSerializer;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.type.Argument;
+import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.time.Duration;
-import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.Optional;
 
 /**
  * An abstract class implementing SyncCache for the redis.
@@ -247,6 +255,117 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
         } else {
             redisKeyCommands.del(serializedKey);
         }
+    }
+
+    /**
+     * Resolve the values for the given keys and convert them to the required type.
+     *
+     * @param keys               The cache keys
+     * @param requiredType       The required type
+     * @param redisStringCommands The redis string commands
+     * @param redisKeyCommands   The redis key commands
+     * @param <K>                The type of the unserialized key
+     * @param <T>                The concrete type
+     * @return An ordered map containing all requested keys in the original order
+     */
+    protected <K, T> Map<K, T> getValues(
+        @NonNull Collection<K> keys,
+        @NonNull Argument<T> requiredType,
+        RedisStringCommands<byte[], byte[]> redisStringCommands,
+        RedisKeyCommands<byte[], byte[]> redisKeyCommands
+    ) {
+        if (keys.isEmpty()) {
+            return new LinkedHashMap<>();
+        }
+
+        List<K> orderedKeys = new ArrayList<>(keys.size());
+        byte[][] serializedKeys = new byte[keys.size()][];
+        int index = 0;
+        for (K key : keys) {
+            orderedKeys.add(key);
+            serializedKeys[index++] = serializeKey(key);
+        }
+
+        List<KeyValue<byte[], byte[]>> values = redisStringCommands.mget(serializedKeys);
+        Map<K, T> resolved = new LinkedHashMap<>(orderedKeys.size());
+        for (int i = 0; i < orderedKeys.size(); i++) {
+            K key = orderedKeys.get(i);
+            KeyValue<byte[], byte[]> value = values.get(i);
+            if (value != null && value.hasValue()) {
+                T deserialized = valueSerializer.deserialize(value.getValue(), requiredType)
+                    .orElseThrow(() -> new ConversionErrorException(requiredType,
+                        new IllegalArgumentException("Cannot convert cached value for [" + key + "] to target type: " + requiredType.getType())));
+                resolved.put(key, deserialized);
+                if (expireAfterAccess != null) {
+                    redisKeyCommands.pexpire(serializedKeys[i], expireAfterAccess);
+                }
+            } else {
+                resolved.put(key, null);
+            }
+        }
+        return resolved;
+    }
+
+    /**
+     * Cache the specified values in bulk.
+     *
+     * @param values The values to store
+     * @param redisStringCommands The redis string commands
+     * @param redisKeyCommands The redis key commands
+     */
+    protected void putValues(
+        @NonNull Map<?, ?> values,
+        RedisStringCommands<byte[], byte[]> redisStringCommands,
+        RedisKeyCommands<byte[], byte[]> redisKeyCommands
+    ) {
+        if (values.isEmpty()) {
+            return;
+        }
+
+        Map<byte[], byte[]> toSave = new LinkedHashMap<>(values.size());
+        Map<byte[], Long> toExpire = expireAfterWritePolicy == null ? null : new LinkedHashMap<>(values.size());
+        List<byte[]> toDelete = new ArrayList<>(values.size());
+        values.forEach((key, value) -> {
+            byte[] serializedKey = serializeKey(key);
+            if (value == null) {
+                toDelete.add(serializedKey);
+                return;
+            }
+
+            Optional<byte[]> serialized = valueSerializer.serialize(value);
+            if (serialized.isPresent()) {
+                toSave.put(serializedKey, serialized.get());
+                if (toExpire != null) {
+                    toExpire.put(serializedKey, expireAfterWritePolicy.getExpirationAfterWrite(value));
+                }
+            } else {
+                toDelete.add(serializedKey);
+            }
+        });
+
+        if (!toSave.isEmpty()) {
+            redisStringCommands.mset(toSave);
+            if (toExpire != null) {
+                toExpire.forEach(redisKeyCommands::pexpire);
+            }
+        }
+        if (!toDelete.isEmpty()) {
+            redisKeyCommands.del(toDelete.toArray(new byte[0][]));
+        }
+    }
+
+    /**
+     * Invalidate the values for the given keys.
+     *
+     * @param keys The keys to invalidate
+     * @param redisKeyCommands The redis key commands
+     */
+    protected void invalidateValues(@NonNull Collection<?> keys, RedisKeyCommands<byte[], byte[]> redisKeyCommands) {
+        if (keys.isEmpty()) {
+            return;
+        }
+        byte[][] serializedKeys = keys.stream().map(this::serializeKey).toArray(byte[][]::new);
+        redisKeyCommands.del(serializedKeys);
     }
 
     /**

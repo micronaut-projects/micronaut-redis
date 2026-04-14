@@ -4,10 +4,12 @@ import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisConnectionStateListener
 import io.lettuce.core.ClientOptions
 import io.lettuce.core.api.StatefulRedisConnection
+import io.lettuce.core.api.StatefulConnection
 import io.lettuce.core.api.async.RedisAsyncCommands
 import io.lettuce.core.api.push.PushListener
 import io.lettuce.core.api.reactive.RedisReactiveCommands
 import io.lettuce.core.api.sync.RedisCommands
+import io.lettuce.core.codec.ByteArrayCodec
 import io.lettuce.core.codec.RedisCodec
 import io.lettuce.core.protocol.RedisCommand
 import io.lettuce.core.resource.ClientResources
@@ -16,6 +18,9 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Replaces
 import io.micronaut.context.annotation.Requires
+import io.micronaut.configuration.lettuce.cache.RedisAsyncConnectionPoolFactory
+import io.micronaut.configuration.lettuce.cache.RedisConnectionPoolCache
+import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.runtime.ApplicationConfiguration
 import jakarta.inject.Singleton
 import spock.lang.Specification
@@ -73,6 +78,7 @@ class RedisConnectionPoolFactorySpec extends Specification {
             'spec.name'          : SPEC_NAME,
             'redis.uri'          : 'redis://localhost',
             'redis.pool.enabled' : true,
+            'redis.pool.min-idle': 0,
             'redis.pool.max-total': 2,
         ])
         AsyncPool<StatefulRedisConnection<String, String>> pool = applicationContext.getBean(AsyncPool)
@@ -101,6 +107,34 @@ class RedisConnectionPoolFactorySpec extends Specification {
         applicationContext?.stop()
     }
 
+    void "injects byte array pool into cache beans when application pool is also present"() {
+        given:
+        ApplicationContext applicationContext = ApplicationContext.run([
+            'spec.name'                 : SPEC_NAME,
+            'redis.uri'                 : 'redis://localhost',
+            'redis.pool.enabled'        : true,
+            'redis.pool.min-idle'       : 0,
+            'redis.pool.max-total'      : 2,
+            'redis.caches.test.enabled' : true,
+        ])
+
+        when:
+        RedisConnectionPoolCache redisCache = applicationContext.getBean(RedisConnectionPoolCache, Qualifiers.byName("test"))
+        AsyncPool<StatefulRedisConnection<String, String>> applicationPool = applicationContext.getBean(AsyncPool)
+        AsyncPool<StatefulConnection<byte[], byte[]>> cachePool = applicationContext.getBean(
+            AsyncPool,
+            Qualifiers.byName(RedisAsyncConnectionPoolFactory.CACHE_POOL_BEAN)
+        )
+
+        then:
+        redisCache != null
+        applicationPool != null
+        cachePool.is(redisCache.getNativeCache())
+
+        cleanup:
+        applicationContext?.stop()
+    }
+
     @Factory
     @Requires(property = 'spec.name', value = SPEC_NAME)
     static class TestRedisClientFactory {
@@ -118,11 +152,14 @@ class RedisConnectionPoolFactorySpec extends Specification {
 
         @Override
         <K, V> StatefulRedisConnection<K, V> connect(RedisCodec<K, V> codec) {
+            if (codec instanceof ByteArrayCodec) {
+                return (StatefulRedisConnection<K, V>) new ByteArrayTestStatefulRedisConnection()
+            }
             return new TestStatefulRedisConnection<>()
         }
     }
 
-    private static final class TestStatefulRedisConnection<K, V> implements StatefulRedisConnection<K, V> {
+    private static class TestStatefulRedisConnection<K, V> implements StatefulRedisConnection<K, V> {
         private boolean open = true
         private Duration timeout = Duration.ofSeconds(60)
 
@@ -220,5 +257,8 @@ class RedisConnectionPoolFactorySpec extends Specification {
         RedisCodec<K, V> getCodec() {
             return null
         }
+    }
+
+    private static final class ByteArrayTestStatefulRedisConnection extends TestStatefulRedisConnection<byte[], byte[]> {
     }
 }

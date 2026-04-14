@@ -102,7 +102,6 @@ class RedisClientFactorySpec extends RedisSpec {
                 'redis.uri': RedisContainerUtils.getRedisPort("redis://localhost"),
                 'redis.pool.enabled': true,
                 'redis.pool.max-total': 2,
-                'redis.pool.min-idle': 1,
         ])
         AsyncPool<StatefulRedisConnection<String, String>> pool = applicationContext.getBean(AsyncPool)
         StatefulRedisConnection<String, String> first = null

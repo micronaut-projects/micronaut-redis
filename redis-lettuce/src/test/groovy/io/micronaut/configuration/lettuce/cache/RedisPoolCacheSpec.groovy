@@ -1,6 +1,7 @@
 package io.micronaut.configuration.lettuce.cache
 
 import groovy.transform.Canonical
+import io.lettuce.core.api.StatefulConnection
 import io.lettuce.core.support.AsyncPool
 import io.micronaut.configuration.lettuce.AbstractRedisConnectionPoolConfiguration
 import io.micronaut.configuration.lettuce.RedisSpec
@@ -209,7 +210,7 @@ class RedisPoolCacheSpec extends RedisSpec {
                 cacheConfig,
                 ConversionService.SHARED,
                 applicationContext.getBean(BeanLocator.class),
-                applicationContext.getBean(AsyncPool.class)
+                applicationContext.getBean(AsyncPool.class, Qualifiers.byName(RedisAsyncConnectionPoolFactory.CACHE_POOL_BEAN))
         )
 
         then:
@@ -234,7 +235,7 @@ class RedisPoolCacheSpec extends RedisSpec {
                 cacheConfig,
                 ConversionService.SHARED,
                 applicationContext.getBean(BeanLocator.class),
-                applicationContext.getBean(AsyncPool.class)
+                applicationContext.getBean(AsyncPool.class, Qualifiers.byName(RedisAsyncConnectionPoolFactory.CACHE_POOL_BEAN))
         )
 
         then:
@@ -259,7 +260,7 @@ class RedisPoolCacheSpec extends RedisSpec {
                 cacheConfig,
                 ConversionService.SHARED,
                 applicationContext.getBean(BeanLocator.class),
-                applicationContext.getBean(AsyncPool.class)
+                applicationContext.getBean(AsyncPool.class, Qualifiers.byName(RedisAsyncConnectionPoolFactory.CACHE_POOL_BEAN))
         )
 
         then:

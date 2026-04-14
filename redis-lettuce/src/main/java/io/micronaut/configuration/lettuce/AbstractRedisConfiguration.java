@@ -29,16 +29,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Abstract configuration for Lettuce.
  */
 public abstract class AbstractRedisConfiguration extends RedisURI implements Named, Toggleable {
 
-    private RedisURI uri;
-    private List<RedisURI> uris = Collections.emptyList();
-    private List<RedisURI> replicaUris = Collections.emptyList();
+    private RedisURI rawUri;
+    private List<RedisURI> rawUris = Collections.emptyList();
+    private List<RedisURI> rawReplicaUris = Collections.emptyList();
+    private RedisURI mergedUri;
+    private List<RedisURI> mergedUris = Collections.emptyList();
+    private List<RedisURI> mergedReplicaUris = Collections.emptyList();
     private Integer ioThreadPoolSize;
     private Integer computationThreadPoolSize;
     private String name;
@@ -62,7 +64,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      * @return Get the Redis URI for configuration.
      */
     public Optional<RedisURI> getUri() {
-        return Optional.ofNullable(uri).map(this::applyConfiguredRedisUriSettings);
+        return Optional.ofNullable(mergedUri);
     }
 
     /**
@@ -71,14 +73,15 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      * @param uri The URI
      */
     public void setUri(URI uri) {
-        this.uri = RedisURI.create(uri);
+        this.rawUri = RedisURI.create(uri);
+        recomputeMergedUris();
     }
 
     /**
      * @return Get the Redis URIs for cluster configuration.
      */
     public List<RedisURI> getUris() {
-        return uris.stream().map(this::applyConfiguredRedisUriSettings).collect(Collectors.toList());
+        return mergedUris;
     }
 
     /**
@@ -87,7 +90,8 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      * @param uris The URI
      */
     public void setUris(URI... uris) {
-        this.uris = Arrays.stream(uris).map(RedisURI::create).collect(Collectors.toList());
+        this.rawUris = Arrays.stream(uris).map(RedisURI::create).toList();
+        recomputeMergedUris();
     }
 
     /**
@@ -95,7 +99,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      * @since 6.5.0
      */
     public List<RedisURI> getReplicaUris() {
-        return replicaUris.stream().map(this::applyConfiguredRedisUriSettings).collect(Collectors.toList());
+        return mergedReplicaUris;
     }
 
     /**
@@ -105,7 +109,8 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      * @since 6.5.0
      */
     public void setReplicaUris(@NonNull URI... uris) {
-        this.replicaUris = Arrays.stream(uris).map(RedisURI::create).collect(Collectors.toList());
+        this.rawReplicaUris = Arrays.stream(uris).map(RedisURI::create).toList();
+        recomputeMergedUris();
     }
 
     /**
@@ -176,36 +181,48 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
     public void setTimeout(Duration timeout) {
         super.setTimeout(timeout);
         this.configuredTimeout = timeout;
+        recomputeMergedUris();
     }
 
     @Override
     public void setDatabase(int database) {
         super.setDatabase(database);
         this.configuredDatabase = database;
+        recomputeMergedUris();
     }
 
     @Override
     public void setSsl(boolean ssl) {
         super.setSsl(ssl);
         this.configuredSsl = ssl;
+        recomputeMergedUris();
     }
 
     @Override
     public void setStartTls(boolean startTls) {
         super.setStartTls(startTls);
         this.configuredStartTls = startTls;
+        recomputeMergedUris();
     }
 
     @Override
     public void setVerifyPeer(boolean verifyPeer) {
         super.setVerifyPeer(verifyPeer);
         this.configuredVerifyMode = getVerifyMode();
+        recomputeMergedUris();
     }
 
     @Override
     public void setVerifyPeer(SslVerifyMode verifyMode) {
         super.setVerifyPeer(verifyMode);
         this.configuredVerifyMode = verifyMode;
+        recomputeMergedUris();
+    }
+
+    @Override
+    public void setClientName(String clientName) {
+        super.setClientName(clientName);
+        recomputeMergedUris();
     }
 
     /**
@@ -229,6 +246,12 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      */
     public void setReadFrom(@NonNull String readFrom) {
         this.readFrom = ReadFrom.valueOf(readFrom);
+    }
+
+    private void recomputeMergedUris() {
+        this.mergedUri = rawUri == null ? null : applyConfiguredRedisUriSettings(rawUri);
+        this.mergedUris = rawUris.stream().map(this::applyConfiguredRedisUriSettings).toList();
+        this.mergedReplicaUris = rawReplicaUris.stream().map(this::applyConfiguredRedisUriSettings).toList();
     }
 
     private RedisURI applyConfiguredRedisUriSettings(RedisURI redisURI) {

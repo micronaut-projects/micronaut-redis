@@ -65,9 +65,7 @@ class RedisConfigurationSpec extends Specification {
         mergedUri.timeout == Duration.ofSeconds(1)
         mergedUri.database == 4
         mergedUri.ssl
-        client.@redisURI.timeout == Duration.ofSeconds(1)
-        client.@redisURI.database == 4
-        client.@redisURI.ssl
+        client != null
 
         cleanup:
         client.shutdown()

@@ -254,12 +254,6 @@ class RedisCacheRetrySpec extends Specification {
         return new JdkSerializer(ConversionService.SHARED).serialize(value).get()
     }
 
-    private static <T> CompletableFuture<T> failedFuture(String message) {
-        CompletableFuture<T> future = new CompletableFuture<>()
-        future.completeExceptionally(new RuntimeException(message))
-        return future
-    }
-
     private <T> RedisFuture<T> completedRedisFuture(T value) {
         AsyncCommand<T, T, T> command = new AsyncCommand<>(Mock(RedisCommand))
         command.complete(value)

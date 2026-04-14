@@ -132,6 +132,9 @@ public class DefaultRedisClusterClientFactory<K, V> {
     @Singleton
     @SuppressWarnings("unchecked")
     public StatefulRedisClusterPubSubConnection<K, V> redisClusterPubSubConnection(StatefulRedisPubSubConnection<K, V> pubSubConnection) {
+        if (!(pubSubConnection instanceof StatefulRedisClusterPubSubConnection)) {
+            throw new IllegalStateException("Expected a StatefulRedisClusterPubSubConnection but got: " + pubSubConnection.getClass().getName());
+        }
         return (StatefulRedisClusterPubSubConnection<K, V>) pubSubConnection;
     }
 }

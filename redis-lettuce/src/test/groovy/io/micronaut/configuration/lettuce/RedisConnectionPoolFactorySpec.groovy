@@ -133,6 +133,44 @@ class RedisConnectionPoolFactorySpec extends Specification {
         1 * replicaConnection.setReadFrom(_ as ReadFrom)
     }
 
+    void "creates standalone redis connections when replica uris are absent"() {
+        given:
+        RedisCodec<String, String> codec = Mock()
+        RedisClient redisClient = Mock()
+        StatefulRedisConnection<String, String> standaloneConnection = Mock()
+        RedisConnectionPoolFactory<String, String> factory = new RedisConnectionPoolFactory<>(codec)
+        DefaultRedisConfiguration configuration = new DefaultRedisConfiguration()
+        configuration.setUri(URI.create("redis://localhost:6379"))
+
+        when:
+        StatefulRedisConnection<String, String> connection = factory.createConnection(redisClient, configuration)
+
+        then:
+        connection.is(standaloneConnection)
+        1 * redisClient.connect(codec) >> standaloneConnection
+        0 * _
+    }
+
+    void "creates master replica redis connections without read from when not configured"() {
+        given:
+        RedisCodec<String, String> codec = Mock()
+        RedisClient redisClient = Mock()
+        StatefulRedisMasterReplicaConnection<String, String> replicaConnection = Mock()
+        TestRedisConnectionPoolFactory<String, String> factory = new TestRedisConnectionPoolFactory<>(codec)
+        factory.masterReplicaConnection = replicaConnection
+        DefaultRedisConfiguration configuration = new DefaultRedisConfiguration()
+        configuration.setUri(URI.create("redis://localhost:6379"))
+        configuration.setReplicaUris(URI.create("redis://localhost:6380"))
+
+        when:
+        StatefulRedisConnection<String, String> connection = factory.createConnection(redisClient, configuration)
+
+        then:
+        connection.is(replicaConnection)
+        factory.replicaUris*.port == [6380, 6379]
+        0 * replicaConnection.setReadFrom(_)
+    }
+
     void "creates a pool of redis cluster connections"() {
         given:
         RedisCodec<String, String> codec = Mock()
@@ -165,6 +203,24 @@ class RedisConnectionPoolFactorySpec extends Specification {
             }
             pool.close()
         }
+    }
+
+    void "creates cluster redis connections without read from when not configured"() {
+        given:
+        RedisCodec<String, String> codec = Mock()
+        RedisClusterClient redisClient = Mock()
+        StatefulRedisClusterConnection<String, String> clusterConnection = Mock()
+        RedisConnectionPoolFactory<String, String> factory = new RedisConnectionPoolFactory<>(codec)
+        DefaultRedisConfiguration configuration = new DefaultRedisConfiguration()
+
+        when:
+        StatefulRedisClusterConnection<String, String> connection = factory.createClusterConnection(redisClient, configuration)
+
+        then:
+        connection.is(clusterConnection)
+        1 * redisClient.connect(codec) >> clusterConnection
+        0 * clusterConnection.setReadFrom(_)
+        0 * _
     }
 
     void "injects byte array pool into cache beans when application pool is also present"() {

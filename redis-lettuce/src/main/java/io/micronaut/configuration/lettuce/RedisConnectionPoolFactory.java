@@ -35,6 +35,7 @@ import jakarta.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -117,11 +118,20 @@ public class RedisConnectionPoolFactory<K, V> {
         return stage.toCompletableFuture().join();
     }
 
+    /**
+     * Creates a standalone or master-replica connection for the configured server definition.
+     * Subclasses overriding this method must keep the default codec and preserve the existing
+     * read-preference behavior for replica-aware connections.
+     *
+     * @param redisClient The Redis client
+     * @param config The Redis configuration
+     * @return The Redis connection
+     */
     StatefulRedisConnection<K, V> createConnection(RedisClient redisClient, AbstractRedisConfiguration config) {
-        RedisURI redisUri = config.getUri().orElse(null);
-        if (redisUri != null && !config.getReplicaUris().isEmpty()) {
+        Optional<RedisURI> redisUri = config.getUri();
+        if (redisUri.isPresent() && !config.getReplicaUris().isEmpty()) {
             List<RedisURI> uris = new ArrayList<>(config.getReplicaUris());
-            uris.add(redisUri);
+            uris.add(redisUri.orElseThrow());
 
             StatefulRedisMasterReplicaConnection<K, V> connection = createMasterReplicaConnection(redisClient, uris);
             config.getReadFrom().ifPresent(connection::setReadFrom);
@@ -130,10 +140,28 @@ public class RedisConnectionPoolFactory<K, V> {
         return redisClient.connect(defaultCodec);
     }
 
+    /**
+     * Creates the underlying master-replica connection used by {@link #createConnection(RedisClient, AbstractRedisConfiguration)}.
+     * Subclasses overriding this method must return an open connection backed by the supplied URIs
+     * and compatible with the factory's default codec.
+     *
+     * @param redisClient The Redis client
+     * @param redisUris The ordered Redis URIs, including the primary URI
+     * @return The master-replica connection
+     */
     StatefulRedisMasterReplicaConnection<K, V> createMasterReplicaConnection(RedisClient redisClient, List<RedisURI> redisUris) {
         return MasterReplica.connect(redisClient, defaultCodec, redisUris);
     }
 
+    /**
+     * Creates a cluster connection for the configured Redis client.
+     * Subclasses overriding this method must apply any configured read preference before returning
+     * the connection.
+     *
+     * @param redisClient The Redis cluster client
+     * @param config The Redis configuration
+     * @return The Redis cluster connection
+     */
     StatefulRedisClusterConnection<K, V> createClusterConnection(
         RedisClusterClient redisClient,
         AbstractRedisConfiguration config

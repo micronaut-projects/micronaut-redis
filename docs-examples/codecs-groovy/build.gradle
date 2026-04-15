@@ -1,0 +1,8 @@
+plugins {
+    id("micronaut-redis.docs-examples-conventions")
+    id("groovy")
+}
+
+dependencies {
+    testImplementation localGroovy()
+}

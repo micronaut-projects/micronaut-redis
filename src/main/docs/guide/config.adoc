@@ -70,11 +70,7 @@ When using named redis connections, you can change the codec for each connection
 For example:
 
 .Supply different codecs for named connections
-[source,groovy]
-----
-include::{testsredis}/NamedCodecFactory.groovy[tags=namedCodec, indent=0]
-include::{testsredis}/NamedCodecFactory.groovy[tags=namedCodec2, indent=0]
-----
+snippet::io.micronaut.configuration.lettuce.docs.NamedCodecFactory[tags="namedCodec,namedCodec2", project-base="docs-examples/codecs"]
 
 == Redis Health Checks
 

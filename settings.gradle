@@ -12,6 +12,8 @@ plugins {
 rootProject.name = 'redis-parent'
 
 include 'redis-bom'
+include 'docs-examples:codecs-java'
+include 'docs-examples:codecs-groovy'
 include 'redis-lettuce'
 include 'test-suite-graal'
 include 'test-suite-utils'

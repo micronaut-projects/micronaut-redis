@@ -1,5 +1,6 @@
 package io.micronaut.configuration.lettuce.cache
 
+import groovy.transform.Canonical
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.async.RedisStringAsyncCommands
 import io.lettuce.core.protocol.AsyncCommand
@@ -248,10 +249,10 @@ class RedisCacheSpec extends RedisSpec {
         then:
         result.keySet().toList() == ["four", "two", "test", "missing", "test-list", "three", "deleteme"]
         result.get("four") == "four"
-        result.get("two") == new Foo(name: "two")
-        result.get("test") == new Foo(name: "test")
+        result.get("two").name == "two"
+        result.get("test").name == "test"
         result.get("missing") == null
-        result.get("test-list").get(0) == new Foo(name: "abc")
+        result.get("test-list").get(0).name == "abc"
         result.get("three") == 3
         result.get("deleteme") == null
         !redisCache.get("deleteme", Object).isPresent()
@@ -392,6 +393,7 @@ class RedisCacheSpec extends RedisSpec {
             applicationContext.stop()
     }
 
+    @Canonical
     static class Foo implements Serializable {
         String name
     }

@@ -214,10 +214,10 @@ class RedisPoolCacheSpec extends RedisSpec {
         then:
         result.keySet().toList() == ["four", "two", "test", "missing", "test-list", "three", "deleteme"]
         result.get("four") == "four"
-        result.get("two") == new Foo(name: "two")
-        result.get("test") == new Foo(name: "test")
+        result.get("two").name == "two"
+        result.get("test").name == "test"
         result.get("missing") == null
-        result.get("test-list").get(0) == new Foo(name: "abc")
+        result.get("test-list").get(0).name == "abc"
         result.get("three") == 3
         result.get("deleteme") == null
         !redisCache.get("deleteme", Object).isPresent()

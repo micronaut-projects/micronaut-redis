@@ -15,9 +15,9 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
-import org.jspecify.annotations.NonNull;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.runtime.ApplicationConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.nio.charset.Charset;
 import java.time.Duration;
@@ -107,6 +107,33 @@ public abstract class AbstractRedisCacheConfiguration {
      */
     public Charset getCharset() {
         return charset;
+    }
+
+    /**
+     * Sets the name of the server to use.
+     *
+     * @param server The server name
+     */
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    /**
+     * Sets the {@link ObjectSerializer} to use for serializing keys.
+     *
+     * @param keySerializer The key serializer
+     */
+    public void setKeySerializer(Class<ObjectSerializer> keySerializer) {
+        this.keySerializer = keySerializer;
+    }
+
+    /**
+     * Sets the {@link ObjectSerializer} to use for serializing values.
+     *
+     * @param valueSerializer The value serializer
+     */
+    public void setValueSerializer(Class<ObjectSerializer> valueSerializer) {
+        this.valueSerializer = valueSerializer;
     }
 
     /**

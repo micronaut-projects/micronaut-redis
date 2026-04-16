@@ -22,6 +22,7 @@ redis:
     uri: redis://localhost
     metrics:
         command-latency-recorder:
+            enabled: true
             histogram: false
             local-distinction: false
             min-latency: 2ms
@@ -32,6 +33,7 @@ redis:
 ----
 
 The same settings can be applied to named Redis connections under `redis.servers.<name>.metrics.command-latency-recorder`.
+Set `enabled: false` to disable the recorder for either the default or a named connection.
 
 === Multiple Redis Connections
 

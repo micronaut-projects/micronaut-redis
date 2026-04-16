@@ -50,7 +50,7 @@ public class MetricsClientResourceMutator implements ClientResourcesMutator {
     @Override
     public void mutate(ClientResources.Builder builder, AbstractRedisConfiguration config) {
         AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration recorderConfiguration =
-                config.getName().equals(Environment.DEFAULT_NAME)
+                Environment.DEFAULT_NAME.equals(config.getName())
                         ? defaultConfiguration
                         : beanLocator.findBean(AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.class, Qualifiers.byName(config.getName()))
                                 .orElse(defaultConfiguration);

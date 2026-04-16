@@ -3,7 +3,6 @@ package io.micronaut.configuration.lettuce
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
 import io.lettuce.core.api.StatefulRedisConnection
-import io.lettuce.core.metrics.MicrometerCommandLatencyRecorder
 import io.lettuce.core.metrics.MicrometerOptions
 import io.lettuce.core.api.sync.RedisCommands
 import io.micrometer.core.instrument.MeterRegistry
@@ -145,7 +144,8 @@ class RedisClientFactorySpec extends RedisSpec {
         ])
 
         then:
-        MicrometerOptions options = commandLatencyOptions(applicationContext.getBean(RedisClient))
+        def commandLatencyRecorderConfiguration = applicationContext.getBean(AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration)
+        MicrometerOptions options = commandLatencyRecorderConfiguration.toMicrometerOptions()
         !options.isHistogram()
         options.localDistinction()
         options.minLatency() == Duration.ofMillis(2)
@@ -165,19 +165,13 @@ class RedisClientFactorySpec extends RedisSpec {
         ])
 
         then:
-        MicrometerOptions options = commandLatencyOptions(applicationContext.getBean(RedisClient, Qualifiers.byName("foo")))
+        def commandLatencyRecorderConfiguration = applicationContext.getBean(AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration, Qualifiers.byName("foo"))
+        MicrometerOptions options = commandLatencyRecorderConfiguration.toMicrometerOptions()
         !options.isHistogram()
         options.targetPercentiles().toList() == [0.33d, 0.66d]
 
         cleanup:
         applicationContext.stop()
-    }
-
-    private static MicrometerOptions commandLatencyOptions(RedisClient client) {
-        MicrometerCommandLatencyRecorder recorder = (MicrometerCommandLatencyRecorder) client.resources.commandLatencyRecorder()
-        def field = MicrometerCommandLatencyRecorder.getDeclaredField("options")
-        field.accessible = true
-        (MicrometerOptions) field.get(recorder)
     }
 
     void "test redis client uses defined codec"() {

@@ -90,9 +90,10 @@ final class TopLevelRedisConnectionRegistrar {
         RedisClient redisClient = beanContext.getBean(RedisClient.class);
         AbstractRedisConfiguration config = beanContext.getBean(AbstractRedisConfiguration.class);
         RedisCodec codec = (RedisCodec) beanContext.getBean((Argument) Argument.of(RedisCodec.class, keyType, valueType));
-        if (config.getUri().isPresent() && !config.getReplicaUris().isEmpty()) {
+        var primaryUri = config.getUri();
+        if (primaryUri.isPresent() && !config.getReplicaUris().isEmpty()) {
             List<RedisURI> uris = new ArrayList<>(config.getReplicaUris());
-            uris.add(config.getUri().get());
+            uris.add(primaryUri.get());
 
             StatefulRedisMasterReplicaConnection<?, ?> connection = MasterReplica.connect(
                 redisClient,

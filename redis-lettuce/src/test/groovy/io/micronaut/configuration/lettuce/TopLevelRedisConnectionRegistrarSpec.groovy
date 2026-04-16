@@ -32,6 +32,29 @@ class TopLevelRedisConnectionRegistrarSpec extends Specification {
         2 * beanContext.registerBeanDefinition(_)
     }
 
+    void "top level standalone registrar skips primary named and invalid codecs"() {
+        given:
+        BeanContext beanContext = Mock()
+        BeanDefinition<RedisCodec> primaryCodec = Mock()
+        BeanDefinition<RedisCodec> namedCodec = Mock()
+        BeanDefinition<RedisCodec> invalidCodec = Mock()
+        def registrar = new TopLevelRedisConnectionRegistrar(beanContext)
+
+        when:
+        registrar.registerBeans()
+
+        then:
+        1 * beanContext.getBeanDefinitions(RedisCodec) >> [primaryCodec, namedCodec, invalidCodec]
+        1 * primaryCodec.isPrimary() >> true
+        0 * primaryCodec.getBeanName()
+        1 * namedCodec.isPrimary() >> false
+        1 * namedCodec.getBeanName() >> Optional.of('named')
+        1 * invalidCodec.isPrimary() >> false
+        1 * invalidCodec.getBeanName() >> Optional.empty()
+        1 * invalidCodec.getTypeArguments(RedisCodec) >> [Argument.of(byte[].class)]
+        0 * beanContext.registerBeanDefinition(_)
+    }
+
     void "top level cluster registrar registers connection beans for unqualified codecs"() {
         given:
         BeanContext beanContext = Mock()
@@ -47,6 +70,29 @@ class TopLevelRedisConnectionRegistrarSpec extends Specification {
         1 * codecDefinition.getBeanName() >> Optional.empty()
         1 * codecDefinition.getTypeArguments(RedisCodec) >> [Argument.of(byte[].class), Argument.of(byte[].class)]
         2 * beanContext.registerBeanDefinition(_)
+    }
+
+    void "top level cluster registrar skips primary named and invalid codecs"() {
+        given:
+        BeanContext beanContext = Mock()
+        BeanDefinition<RedisCodec> primaryCodec = Mock()
+        BeanDefinition<RedisCodec> namedCodec = Mock()
+        BeanDefinition<RedisCodec> invalidCodec = Mock()
+        def registrar = new TopLevelRedisClusterConnectionRegistrar(beanContext)
+
+        when:
+        registrar.registerBeans()
+
+        then:
+        1 * beanContext.getBeanDefinitions(RedisCodec) >> [primaryCodec, namedCodec, invalidCodec]
+        1 * primaryCodec.isPrimary() >> true
+        0 * primaryCodec.getBeanName()
+        1 * namedCodec.isPrimary() >> false
+        1 * namedCodec.getBeanName() >> Optional.of('named')
+        1 * invalidCodec.isPrimary() >> false
+        1 * invalidCodec.getBeanName() >> Optional.empty()
+        1 * invalidCodec.getTypeArguments(RedisCodec) >> [Argument.of(byte[].class)]
+        0 * beanContext.registerBeanDefinition(_)
     }
 
     void "standalone registrar creates direct connection when no replicas are configured"() {

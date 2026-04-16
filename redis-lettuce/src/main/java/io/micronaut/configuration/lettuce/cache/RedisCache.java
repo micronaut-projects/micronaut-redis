@@ -17,10 +17,17 @@ package io.micronaut.configuration.lettuce.cache;
 
 import io.lettuce.core.*;
 import io.lettuce.core.api.StatefulConnection;
+import io.lettuce.core.api.async.RedisAsyncCommands;
 import io.lettuce.core.api.async.RedisKeyAsyncCommands;
 import io.lettuce.core.api.async.RedisStringAsyncCommands;
+import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.api.sync.RedisKeyCommands;
 import io.lettuce.core.api.sync.RedisStringCommands;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import io.lettuce.core.cluster.api.async.AsyncNodeSelection;
+import io.lettuce.core.cluster.api.async.RedisAdvancedClusterAsyncCommands;
+import io.lettuce.core.cluster.api.sync.NodeSelection;
+import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import io.micronaut.cache.AsyncCache;
 import io.micronaut.cache.SyncCache;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
@@ -34,6 +41,7 @@ import io.micronaut.core.type.Argument;
 import io.micronaut.core.util.StringUtils;
 import jakarta.annotation.PreDestroy;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -115,12 +123,16 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
     @Override
     public void invalidateAll() {
         ScanArgs args = ScanArgs.Builder.limit(invalidateScanCount).match(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
-        ScanIterator<byte[]> scanIterator = ScanIterator.scan(redisKeyCommands, args);
-
-        List<byte[]> keys = scanIterator.stream().collect(Collectors.toList());
-        if (!keys.isEmpty()) {
-            redisKeyCommands.del(keys.toArray(new byte[keys.size()][]));
+        if (connection instanceof StatefulRedisClusterConnection<byte[], byte[]> clusterConnection) {
+            RedisAdvancedClusterCommands<byte[], byte[]> clusterCommands = clusterConnection.sync();
+            NodeSelection<byte[], byte[]> masters = clusterCommands.masters();
+            for (int i = 0; i < masters.size(); i++) {
+                RedisCommands<byte[], byte[]> nodeCommands = masters.commands(i);
+                deleteByPattern(nodeCommands, args);
+            }
+            return;
         }
+        deleteByPattern(redisKeyCommands, args);
     }
 
     @Override
@@ -271,6 +283,17 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
         @Override
         public CompletableFuture<Boolean> invalidateAll() {
             ScanArgs args = ScanArgs.Builder.limit(invalidateScanCount).match(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
+            if (connection instanceof StatefulRedisClusterConnection<byte[], byte[]> clusterConnection) {
+                RedisAdvancedClusterAsyncCommands<byte[], byte[]> clusterCommands = clusterConnection.async();
+                AsyncNodeSelection<byte[], byte[]> masters = clusterCommands.masters();
+                List<CompletableFuture<Long>> deleteFutures = new ArrayList<>(masters.size());
+                for (int i = 0; i < masters.size(); i++) {
+                    RedisAsyncCommands<byte[], byte[]> nodeCommands = masters.commands(i);
+                    deleteFutures.add(deleteByPattern(nodeCommands, args));
+                }
+                return CompletableFuture.allOf(deleteFutures.toArray(new CompletableFuture[0]))
+                    .thenApply(ignore -> deleteFutures.stream().mapToLong(CompletableFuture::join).sum() > 0);
+            }
 
             return allKeys(ScanCursor.INITIAL, args).thenCompose(keysToDelete -> {
                     if (keysToDelete.isEmpty()) {
@@ -279,6 +302,21 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
                     return deleteByKeys(keysToDelete.toArray(new byte[keysToDelete.size()][]));
                 }
             );
+        }
+
+        private CompletableFuture<List<byte[]>> allKeys(RedisKeyAsyncCommands<byte[], byte[]> commands, ScanCursor initialCursor, ScanArgs args) {
+            if (initialCursor.isFinished()) {
+                return CompletableFuture.completedFuture(new LinkedList<>());
+            }
+
+            return commands.scan(initialCursor, args).thenCompose(nextCursor -> {
+                List<byte[]> keysToDelete = nextCursor.getKeys();
+
+                return allKeys(commands, nextCursor, args).thenCompose(it -> {
+                    it.addAll(keysToDelete);
+                    return CompletableFuture.completedFuture(it);
+                });
+            }).toCompletableFuture();
         }
 
         private CompletableFuture<List<byte[]>> allKeys(ScanCursor initialCursor, ScanArgs args) {
@@ -293,6 +331,15 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
                     it.addAll(keysToDelete);
                     return CompletableFuture.completedFuture(it);
                 });
+            });
+        }
+
+        private CompletableFuture<Long> deleteByPattern(RedisKeyAsyncCommands<byte[], byte[]> commands, ScanArgs args) {
+            return allKeys(commands, ScanCursor.INITIAL, args).thenCompose(keysToDelete -> {
+                if (keysToDelete.isEmpty()) {
+                    return CompletableFuture.completedFuture(0L);
+                }
+                return commands.del(keysToDelete.toArray(new byte[0][])).toCompletableFuture();
             });
         }
 
@@ -354,5 +401,12 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
             return "OK"::equals;
         }
 
+    }
+
+    private void deleteByPattern(RedisKeyCommands<byte[], byte[]> commands, ScanArgs args) {
+        List<byte[]> keys = ScanIterator.scan(commands, args).stream().collect(Collectors.toList());
+        if (!keys.isEmpty()) {
+            commands.del(keys.toArray(new byte[0][]));
+        }
     }
 }

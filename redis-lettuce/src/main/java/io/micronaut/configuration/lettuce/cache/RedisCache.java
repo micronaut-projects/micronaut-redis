@@ -339,7 +339,11 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
                 if (keysToDelete.isEmpty()) {
                     return CompletableFuture.completedFuture(0L);
                 }
-                return commands.del(keysToDelete.toArray(new byte[0][])).toCompletableFuture();
+                List<CompletableFuture<Long>> deleteFutures = keysToDelete.stream()
+                    .map(key -> commands.del(key).toCompletableFuture())
+                    .toList();
+                return CompletableFuture.allOf(deleteFutures.toArray(new CompletableFuture[0]))
+                    .thenApply(ignore -> deleteFutures.stream().mapToLong(CompletableFuture::join).sum());
             });
         }
 
@@ -405,8 +409,8 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
 
     private void deleteByPattern(RedisKeyCommands<byte[], byte[]> commands, ScanArgs args) {
         List<byte[]> keys = ScanIterator.scan(commands, args).stream().collect(Collectors.toList());
-        if (!keys.isEmpty()) {
-            commands.del(keys.toArray(new byte[0][]));
+        for (byte[] key : keys) {
+            commands.del(key);
         }
     }
 }

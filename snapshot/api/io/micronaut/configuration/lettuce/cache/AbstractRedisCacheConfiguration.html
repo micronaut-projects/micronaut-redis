@@ -83,6 +83,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#getExpireAfterAccess()" tabindex="0">getExpireAfterAccess()</a></li>
 <li><a href="#getExpirationAfterWritePolicy()" tabindex="0">getExpirationAfterWritePolicy()</a></li>
 <li><a href="#getCharset()" tabindex="0">getCharset()</a></li>
+<li><a href="#setServer(java.lang.String)" tabindex="0">setServer(String)</a></li>
+<li><a href="#setKeySerializer(java.lang.Class)" tabindex="0">setKeySerializer(Class)</a></li>
+<li><a href="#setValueSerializer(java.lang.Class)" tabindex="0">setValueSerializer(Class)</a></li>
 <li><a href="#setExpireAfterWrite(java.time.Duration)" tabindex="0">setExpireAfterWrite(Duration)</a></li>
 <li><a href="#setExpireAfterAccess(java.time.Duration)" tabindex="0">setExpireAfterAccess(Duration)</a></li>
 <li><a href="#setCharset(java.nio.charset.Charset)" tabindex="0">setCharset(Charset)</a></li>
@@ -231,6 +234,21 @@ read.</div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInvalidateScanCount(java.lang.Long)" class="member-name-link">setInvalidateScanCount</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;invalidateScanCount)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the count used for the scan command in <a href="RedisCache.html#invalidateAll()"><code>RedisCache.invalidateAll()</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setKeySerializer(java.lang.Class)" class="member-name-link">setKeySerializer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;io.micronaut.core.serialize.ObjectSerializer&gt;&nbsp;keySerializer)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the <code>ObjectSerializer</code> to use for serializing keys.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setServer(java.lang.String)" class="member-name-link">setServer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;server)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the name of the server to use.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setValueSerializer(java.lang.Class)" class="member-name-link">setValueSerializer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;io.micronaut.core.serialize.ObjectSerializer&gt;&nbsp;valueSerializer)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the <code>ObjectSerializer</code> to use for serializing values.</div>
 </div>
 </div>
 </div>
@@ -432,6 +450,45 @@ read.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The charset used to serialize and deserialize values</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setServer(java.lang.String)">
+<h3>setServer</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setServer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;server)</span></div>
+<div class="block">Sets the name of the server to use.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>server</code> - The server name</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setKeySerializer(java.lang.Class)">
+<h3>setKeySerializer</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setKeySerializer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;io.micronaut.core.serialize.ObjectSerializer&gt;&nbsp;keySerializer)</span></div>
+<div class="block">Sets the <code>ObjectSerializer</code> to use for serializing keys.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>keySerializer</code> - The key serializer</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setValueSerializer(java.lang.Class)">
+<h3>setValueSerializer</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setValueSerializer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;io.micronaut.core.serialize.ObjectSerializer&gt;&nbsp;valueSerializer)</span></div>
+<div class="block">Sets the <code>ObjectSerializer</code> to use for serializing values.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>valueSerializer</code> - The value serializer</dd>
 </dl>
 </div>
 </section>

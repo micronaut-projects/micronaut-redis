@@ -86,6 +86,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#getValue(io.micronaut.core.type.Argument,byte%5B%5D)" tabindex="0">getValue(Argument, byte[])</a></li>
 <li><a href="#putValue(byte%5B%5D,T)" tabindex="0">putValue(byte[], T)</a></li>
 <li><a href="#putValue(byte%5B%5D,java.util.Optional,io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy,io.lettuce.core.api.sync.RedisStringCommands,io.lettuce.core.api.sync.RedisKeyCommands,T)" tabindex="0">putValue(byte[], Optional, ExpirationAfterWritePolicy, RedisStringCommands, RedisKeyCommands, T)</a></li>
+<li><a href="#getValues(java.util.Collection,io.micronaut.core.type.Argument,io.lettuce.core.api.sync.RedisStringCommands,io.lettuce.core.api.sync.RedisKeyCommands)" tabindex="0">getValues(Collection, Argument, RedisStringCommands, RedisKeyCommands)</a></li>
+<li><a href="#putValues(java.util.Map,io.lettuce.core.api.sync.RedisStringCommands,io.lettuce.core.api.sync.RedisKeyCommands)" tabindex="0">putValues(Map, RedisStringCommands, RedisKeyCommands)</a></li>
+<li><a href="#invalidateValues(java.util.Collection,io.lettuce.core.api.sync.RedisKeyCommands)" tabindex="0">invalidateValues(Collection, RedisKeyCommands)</a></li>
 <li><a href="#getKeysPattern()" tabindex="0">getKeysPattern()</a></li>
 <li><a href="#serializeKey(java.lang.Object)" tabindex="0">serializeKey(Object)</a></li>
 </ol>
@@ -220,6 +223,20 @@ implements io.micronaut.cache.SyncCache&lt;C&gt;, <a href="https://docs.oracle.c
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getValue(io.micronaut.core.type.Argument,byte%5B%5D)" class="member-name-link">getValue</a><wbr>(io.micronaut.core.type.Argument&lt;T&gt;&nbsp;requiredType,
  byte[]&nbsp;serializedKey)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected &lt;K,<wbr>T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;K,<wbr>T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValues(java.util.Collection,io.micronaut.core.type.Argument,io.lettuce.core.api.sync.RedisStringCommands,io.lettuce.core.api.sync.RedisKeyCommands)" class="member-name-link">getValues</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;K&gt;&nbsp;keys,
+ @NonNull io.micronaut.core.type.Argument&lt;T&gt;&nbsp;requiredType,
+ io.lettuce.core.api.sync.RedisStringCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisStringCommands,
+ io.lettuce.core.api.sync.RedisKeyCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Resolve the values for the given keys and convert them to the required type.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#invalidateValues(java.util.Collection,io.lettuce.core.api.sync.RedisKeyCommands)" class="member-name-link">invalidateValues</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;?&gt;&nbsp;keys,
+ io.lettuce.core.api.sync.RedisKeyCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Invalidate the values for the given keys.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#put(java.lang.Object,java.lang.Object)" class="member-name-link">put</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;key,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value)</code></div>
@@ -240,9 +257,16 @@ implements io.micronaut.cache.SyncCache&lt;C&gt;, <a href="https://docs.oracle.c
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#putValue(byte%5B%5D,T)" class="member-name-link">putValue</a><wbr>(byte[]&nbsp;serializedKey,
  T&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected byte[]</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#serializeKey(java.lang.Object)" class="member-name-link">serializeKey</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;key)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#putValues(java.util.Map,io.lettuce.core.api.sync.RedisStringCommands,io.lettuce.core.api.sync.RedisKeyCommands)" class="member-name-link">putValues</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;?,<wbr>?&gt;&nbsp;values,
+ io.lettuce.core.api.sync.RedisStringCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisStringCommands,
+ io.lettuce.core.api.sync.RedisKeyCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Cache the specified values in bulk.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected byte[]</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#serializeKey(java.lang.Object)" class="member-name-link">serializeKey</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;key)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Serialize the key.</div>
 </div>
 </div>
@@ -533,6 +557,62 @@ implements io.micronaut.cache.SyncCache&lt;C&gt;, <a href="https://docs.oracle.c
 <dd><code>redisStringCommands</code> - </dd>
 <dd><code>redisKeyCommands</code> - </dd>
 <dd><code>value</code> - </dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getValues(java.util.Collection,io.micronaut.core.type.Argument,io.lettuce.core.api.sync.RedisStringCommands,io.lettuce.core.api.sync.RedisKeyCommands)">
+<h3>getValues</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="type-parameters">&lt;K,<wbr>T&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;K,<wbr>T&gt;</span>&nbsp;<span class="element-name">getValues</span><wbr><span class="parameters">(@NonNull <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;K&gt;&nbsp;keys,
+ @NonNull io.micronaut.core.type.Argument&lt;T&gt;&nbsp;requiredType,
+ io.lettuce.core.api.sync.RedisStringCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisStringCommands,
+ io.lettuce.core.api.sync.RedisKeyCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands)</span></div>
+<div class="block">Resolve the values for the given keys and convert them to the required type.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="getValues(java.util.Collection,io.micronaut.core.type.Argument,io.lettuce.core.api.sync.RedisStringCommands,io.lettuce.core.api.sync.RedisKeyCommands)-type-param-K"><code>K</code> - The type of the unserialized key</span></dd>
+<dd><span id="getValues(java.util.Collection,io.micronaut.core.type.Argument,io.lettuce.core.api.sync.RedisStringCommands,io.lettuce.core.api.sync.RedisKeyCommands)-type-param-T"><code>T</code> - The concrete type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>keys</code> - The cache keys</dd>
+<dd><code>requiredType</code> - The required type</dd>
+<dd><code>redisStringCommands</code> - The redis string commands</dd>
+<dd><code>redisKeyCommands</code> - The redis key commands</dd>
+<dt>Returns:</dt>
+<dd>An ordered map containing all requested keys in the original order</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="putValues(java.util.Map,io.lettuce.core.api.sync.RedisStringCommands,io.lettuce.core.api.sync.RedisKeyCommands)">
+<h3>putValues</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">putValues</span><wbr><span class="parameters">(@NonNull <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;?,<wbr>?&gt;&nbsp;values,
+ io.lettuce.core.api.sync.RedisStringCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisStringCommands,
+ io.lettuce.core.api.sync.RedisKeyCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands)</span></div>
+<div class="block">Cache the specified values in bulk.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>values</code> - The values to store</dd>
+<dd><code>redisStringCommands</code> - The redis string commands</dd>
+<dd><code>redisKeyCommands</code> - The redis key commands</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="invalidateValues(java.util.Collection,io.lettuce.core.api.sync.RedisKeyCommands)">
+<h3>invalidateValues</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">invalidateValues</span><wbr><span class="parameters">(@NonNull <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;?&gt;&nbsp;keys,
+ io.lettuce.core.api.sync.RedisKeyCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands)</span></div>
+<div class="block">Invalidate the values for the given keys.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>keys</code> - The keys to invalidate</dd>
+<dd><code>redisKeyCommands</code> - The redis key commands</dd>
 </dl>
 </div>
 </section>

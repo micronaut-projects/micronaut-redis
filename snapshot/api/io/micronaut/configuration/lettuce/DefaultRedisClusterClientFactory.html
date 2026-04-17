@@ -67,6 +67,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#redisConnection(io.lettuce.core.cluster.RedisClusterClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)" tabindex="0">redisConnection(RedisClusterClient, AbstractRedisConfiguration)</a></li>
 <li><a href="#redisConnection(io.lettuce.core.cluster.RedisClusterClient)" tabindex="0">redisConnection(RedisClusterClient)</a></li>
 <li><a href="#redisPubSubConnection(io.lettuce.core.cluster.RedisClusterClient)" tabindex="0">redisPubSubConnection(RedisClusterClient)</a></li>
+<li><a href="#redisClusterPubSubConnection(io.lettuce.core.pubsub.StatefulRedisPubSubConnection)" tabindex="0">redisClusterPubSubConnection(StatefulRedisPubSubConnection)</a></li>
 </ol>
 </li>
 </ol>
@@ -134,22 +135,27 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create the client based on config URIs and optional client resource mutators.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>io.lettuce.core.cluster.api.StatefulRedisClusterConnection<wbr>&lt;<a href="#type-param-K" title="type parameter in DefaultRedisClusterClientFactory">K</a>,<wbr><a href="#type-param-V" title="type parameter in DefaultRedisClusterClientFactory">V</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#redisConnection(io.lettuce.core.cluster.RedisClusterClient)" class="member-name-link">redisConnection</a><wbr>(io.lettuce.core.cluster.RedisClusterClient&nbsp;redisClient)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection<wbr>&lt;<a href="#type-param-K" title="type parameter in DefaultRedisClusterClientFactory">K</a>,<wbr><a href="#type-param-V" title="type parameter in DefaultRedisClusterClientFactory">V</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisClusterPubSubConnection(io.lettuce.core.pubsub.StatefulRedisPubSubConnection)" class="member-name-link">redisClusterPubSubConnection</a><wbr>(io.lettuce.core.pubsub.StatefulRedisPubSubConnection&lt;<a href="#type-param-K" title="type parameter in DefaultRedisClusterClientFactory">K</a>,<wbr><a href="#type-param-V" title="type parameter in DefaultRedisClusterClientFactory">V</a>&gt;&nbsp;pubSubConnection)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Exposes the pub/sub connection as the cluster-specific type.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>io.lettuce.core.cluster.api.StatefulRedisClusterConnection<wbr>&lt;<a href="#type-param-K" title="type parameter in DefaultRedisClusterClientFactory">K</a>,<wbr><a href="#type-param-V" title="type parameter in DefaultRedisClusterClientFactory">V</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#redisConnection(io.lettuce.core.cluster.RedisClusterClient)" class="member-name-link">redisConnection</a><wbr>(io.lettuce.core.cluster.RedisClusterClient&nbsp;redisClient)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
 <div class="deprecation-comment">use <a href="#redisConnection(io.lettuce.core.cluster.RedisClusterClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)"><code>redisConnection(RedisClusterClient, AbstractRedisConfiguration)</code></a> instead</div>
 </div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.cluster.api.StatefulRedisClusterConnection<wbr>&lt;<a href="#type-param-K" title="type parameter in DefaultRedisClusterClientFactory">K</a>,<wbr><a href="#type-param-V" title="type parameter in DefaultRedisClusterClientFactory">V</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisConnection(io.lettuce.core.cluster.RedisClusterClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)" class="member-name-link">redisConnection</a><wbr>(io.lettuce.core.cluster.RedisClusterClient&nbsp;redisClient,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.cluster.api.StatefulRedisClusterConnection<wbr>&lt;<a href="#type-param-K" title="type parameter in DefaultRedisClusterClientFactory">K</a>,<wbr><a href="#type-param-V" title="type parameter in DefaultRedisClusterClientFactory">V</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisConnection(io.lettuce.core.cluster.RedisClusterClient,io.micronaut.configuration.lettuce.AbstractRedisConfiguration)" class="member-name-link">redisConnection</a><wbr>(io.lettuce.core.cluster.RedisClusterClient&nbsp;redisClient,
  <a href="AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a>&nbsp;config)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Establish redis connection.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.pubsub.StatefulRedisPubSubConnection<wbr>&lt;<a href="#type-param-K" title="type parameter in DefaultRedisClusterClientFactory">K</a>,<wbr><a href="#type-param-V" title="type parameter in DefaultRedisClusterClientFactory">V</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisPubSubConnection(io.lettuce.core.cluster.RedisClusterClient)" class="member-name-link">redisPubSubConnection</a><wbr>(io.lettuce.core.cluster.RedisClusterClient&nbsp;redisClient)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.lettuce.core.pubsub.StatefulRedisPubSubConnection<wbr>&lt;<a href="#type-param-K" title="type parameter in DefaultRedisClusterClientFactory">K</a>,<wbr><a href="#type-param-V" title="type parameter in DefaultRedisClusterClientFactory">V</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#redisPubSubConnection(io.lettuce.core.cluster.RedisClusterClient)" class="member-name-link">redisPubSubConnection</a><wbr>(io.lettuce.core.cluster.RedisClusterClient&nbsp;redisClient)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -268,6 +274,23 @@ loadScripts(document, 'script');</script>
 <dd><code>redisClient</code> - redisClient</dd>
 <dt>Returns:</dt>
 <dd>connection</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="redisClusterPubSubConnection(io.lettuce.core.pubsub.StatefulRedisPubSubConnection)">
+<h3>redisClusterPubSubConnection</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations">@Bean(typed=io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection.class)
+@Singleton
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection&lt;<a href="#type-param-K" title="type parameter in DefaultRedisClusterClientFactory">K</a>,<wbr><a href="#type-param-V" title="type parameter in DefaultRedisClusterClientFactory">V</a>&gt;</span>&nbsp;<span class="element-name">redisClusterPubSubConnection</span><wbr><span class="parameters">(io.lettuce.core.pubsub.StatefulRedisPubSubConnection&lt;<a href="#type-param-K" title="type parameter in DefaultRedisClusterClientFactory">K</a>,<wbr><a href="#type-param-V" title="type parameter in DefaultRedisClusterClientFactory">V</a>&gt;&nbsp;pubSubConnection)</span></div>
+<div class="block">Exposes the pub/sub connection as the cluster-specific type.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>pubSubConnection</code> - the pub/sub connection</dd>
+<dt>Returns:</dt>
+<dd>cluster pub/sub connection</dd>
 </dl>
 </div>
 </section>

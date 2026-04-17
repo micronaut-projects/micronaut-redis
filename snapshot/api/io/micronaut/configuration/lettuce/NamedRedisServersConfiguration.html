@@ -63,6 +63,19 @@ loadScripts(document, 'script');</script>
 <li><a href="#%3Cinit%3E(java.lang.String)" tabindex="0">NamedRedisServersConfiguration(String)</a></li>
 </ol>
 </li>
+<li><a href="#method-detail" tabindex="0">Method Details</a>
+<ol class="toc-list">
+<li><a href="#getUri()" tabindex="0">getUri()</a></li>
+<li><a href="#getUris()" tabindex="0">getUris()</a></li>
+<li><a href="#getReplicaUris()" tabindex="0">getReplicaUris()</a></li>
+<li><a href="#setTimeout(java.time.Duration)" tabindex="0">setTimeout(Duration)</a></li>
+<li><a href="#setDatabase(int)" tabindex="0">setDatabase(int)</a></li>
+<li><a href="#setSsl(boolean)" tabindex="0">setSsl(boolean)</a></li>
+<li><a href="#setStartTls(boolean)" tabindex="0">setStartTls(boolean)</a></li>
+<li><a href="#setVerifyPeer(boolean)" tabindex="0">setVerifyPeer(boolean)</a></li>
+<li><a href="#setVerifyPeer(io.lettuce.core.SslVerifyMode)" tabindex="0">setVerifyPeer(SslVerifyMode)</a></li>
+</ol>
+</li>
 </ol>
 <button class="hide-sidebar"><span>Hide sidebar&nbsp;</span><img src="../../../../resource-files/left.svg" alt="Hide sidebar"></button><button class="show-sidebar"><img src="../../../../resource-files/right.svg" alt="Show sidebar"><span>&nbsp;Show sidebar</span></button></nav>
 <main role="main">
@@ -141,12 +154,49 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
+<div id="method-summary-table">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;io.lettuce.core.RedisURI&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getReplicaUris()" class="member-name-link">getReplicaUris</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;io.lettuce.core.RedisURI&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getUri()" class="member-name-link">getUri</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;io.lettuce.core.RedisURI&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getUris()" class="member-name-link">getUris</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDatabase(int)" class="member-name-link">setDatabase</a><wbr>(int&nbsp;database)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSsl(boolean)" class="member-name-link">setSsl</a><wbr>(boolean&nbsp;ssl)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setStartTls(boolean)" class="member-name-link">setStartTls</a><wbr>(boolean&nbsp;startTls)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTimeout(java.time.Duration)" class="member-name-link">setTimeout</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;timeout)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setVerifyPeer(boolean)" class="member-name-link">setVerifyPeer</a><wbr>(boolean&nbsp;verifyPeer)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setVerifyPeer(io.lettuce.core.SslVerifyMode)" class="member-name-link">setVerifyPeer</a><wbr>(io.lettuce.core.SslVerifyMode&nbsp;verifyMode)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+</div>
+</div>
+</div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.micronaut.configuration.lettuce.AbstractRedisConfiguration">Methods inherited from class&nbsp;<a href="AbstractRedisConfiguration.html#method-summary" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></h3>
-<code><a href="AbstractRedisConfiguration.html#getComputationThreadPoolSize()" title="getComputationThreadPoolSize()">getComputationThreadPoolSize</a>, <a href="AbstractRedisConfiguration.html#getIoThreadPoolSize()" title="getIoThreadPoolSize()">getIoThreadPoolSize</a>, <a href="AbstractRedisConfiguration.html#getName()" title="getName()">getName</a>, <a href="AbstractRedisConfiguration.html#getReadFrom()" title="getReadFrom()">getReadFrom</a>, <a href="AbstractRedisConfiguration.html#getReplicaUris()" title="getReplicaUris()">getReplicaUris</a>, <a href="AbstractRedisConfiguration.html#getUri()" title="getUri()">getUri</a>, <a href="AbstractRedisConfiguration.html#getUris()" title="getUris()">getUris</a>, <a href="AbstractRedisConfiguration.html#setComputationThreadPoolSize(java.lang.Integer)" title="setComputationThreadPoolSize(Integer)">setComputationThreadPoolSize</a>, <a href="AbstractRedisConfiguration.html#setIoThreadPoolSize(java.lang.Integer)" title="setIoThreadPoolSize(Integer)">setIoThreadPoolSize</a>, <a href="AbstractRedisConfiguration.html#setName(java.lang.String)" title="setName(String)">setName</a>, <a href="AbstractRedisConfiguration.html#setReadFrom(java.lang.String)" title="setReadFrom(String)">setReadFrom</a>, <a href="AbstractRedisConfiguration.html#setReplicaUris(java.net.URI...)" title="setReplicaUris(URI...)">setReplicaUris</a>, <a href="AbstractRedisConfiguration.html#setUri(java.net.URI)" title="setUri(URI)">setUri</a>, <a href="AbstractRedisConfiguration.html#setUris(java.net.URI...)" title="setUris(URI...)">setUris</a></code></div>
+<code><a href="AbstractRedisConfiguration.html#getComputationThreadPoolSize()" title="getComputationThreadPoolSize()">getComputationThreadPoolSize</a>, <a href="AbstractRedisConfiguration.html#getIoThreadPoolSize()" title="getIoThreadPoolSize()">getIoThreadPoolSize</a>, <a href="AbstractRedisConfiguration.html#getName()" title="getName()">getName</a>, <a href="AbstractRedisConfiguration.html#getReadFrom()" title="getReadFrom()">getReadFrom</a>, <a href="AbstractRedisConfiguration.html#setComputationThreadPoolSize(java.lang.Integer)" title="setComputationThreadPoolSize(Integer)">setComputationThreadPoolSize</a>, <a href="AbstractRedisConfiguration.html#setIoThreadPoolSize(java.lang.Integer)" title="setIoThreadPoolSize(Integer)">setIoThreadPoolSize</a>, <a href="AbstractRedisConfiguration.html#setName(java.lang.String)" title="setName(String)">setName</a>, <a href="AbstractRedisConfiguration.html#setReadFrom(java.lang.String)" title="setReadFrom(String)">setReadFrom</a>, <a href="AbstractRedisConfiguration.html#setReplicaUris(java.net.URI...)" title="setReplicaUris(URI...)">setReplicaUris</a>, <a href="AbstractRedisConfiguration.html#setUri(java.net.URI)" title="setUri(URI)">setUri</a>, <a href="AbstractRedisConfiguration.html#setUris(java.net.URI...)" title="setUris(URI...)">setUris</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.lettuce.core.RedisURI">Methods inherited from class&nbsp;io.lettuce.core.RedisURI</h3>
-<code>applyAuthentication, applySsl, builder, builder, create, create, create, equals, getClientName, getCredentialsProvider, getDatabase, getDriverInfo, getHost, getLibraryName, getLibraryVersion, getPort, getSentinelMasterId, getSentinels, getSocket, getTimeout, getVerifyMode, hashCode, isSsl, isStartTls, isVerifyPeer, setAuthentication, setAuthentication, setAuthentication, setAuthentication, setClientName, setCredentialsProvider, setDatabase, setDriverInfo, setHost, setLibraryName, setLibraryVersion, setPort, setSentinelMasterId, setSocket, setSsl, setStartTls, setTimeout, setVerifyPeer, setVerifyPeer, toString, toURI</code></div>
+<code>applyAuthentication, applySsl, builder, builder, create, create, create, equals, getClientName, getCredentialsProvider, getDatabase, getDriverInfo, getHost, getLibraryName, getLibraryVersion, getPort, getSentinelMasterId, getSentinels, getSocket, getTimeout, getVerifyMode, hashCode, isSsl, isStartTls, isVerifyPeer, setAuthentication, setAuthentication, setAuthentication, setAuthentication, setClientName, setCredentialsProvider, setDriverInfo, setHost, setLibraryName, setLibraryVersion, setPort, setSentinelMasterId, setSocket, toString, toURI</code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#method-summary" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -174,6 +224,128 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>name</code> - name from configuration</dd>
+</dl>
+</div>
+</section>
+</li>
+</ul>
+</section>
+</li>
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method-detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="getUri()">
+<h3>getUri</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;io.lettuce.core.RedisURI&gt;</span>&nbsp;<span class="element-name">getUri</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="AbstractRedisConfiguration.html#getUri()">getUri</a></code>&nbsp;in class&nbsp;<code><a href="AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></code></dd>
+<dt>Returns:</dt>
+<dd>Get the Redis URI for configuration.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getUris()">
+<h3>getUris</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;io.lettuce.core.RedisURI&gt;</span>&nbsp;<span class="element-name">getUris</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="AbstractRedisConfiguration.html#getUris()">getUris</a></code>&nbsp;in class&nbsp;<code><a href="AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></code></dd>
+<dt>Returns:</dt>
+<dd>Get the Redis URIs for cluster configuration.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getReplicaUris()">
+<h3>getReplicaUris</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;io.lettuce.core.RedisURI&gt;</span>&nbsp;<span class="element-name">getReplicaUris</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="AbstractRedisConfiguration.html#getReplicaUris()">getReplicaUris</a></code>&nbsp;in class&nbsp;<code><a href="AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></code></dd>
+<dt>Returns:</dt>
+<dd>Get the Redis URIs for read replicas.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setTimeout(java.time.Duration)">
+<h3>setTimeout</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setTimeout</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;timeout)</span></div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code>setTimeout</code>&nbsp;in class&nbsp;<code>io.lettuce.core.RedisURI</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setDatabase(int)">
+<h3>setDatabase</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setDatabase</span><wbr><span class="parameters">(int&nbsp;database)</span></div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code>setDatabase</code>&nbsp;in class&nbsp;<code>io.lettuce.core.RedisURI</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setSsl(boolean)">
+<h3>setSsl</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSsl</span><wbr><span class="parameters">(boolean&nbsp;ssl)</span></div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code>setSsl</code>&nbsp;in class&nbsp;<code>io.lettuce.core.RedisURI</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setStartTls(boolean)">
+<h3>setStartTls</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setStartTls</span><wbr><span class="parameters">(boolean&nbsp;startTls)</span></div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code>setStartTls</code>&nbsp;in class&nbsp;<code>io.lettuce.core.RedisURI</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setVerifyPeer(boolean)">
+<h3>setVerifyPeer</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setVerifyPeer</span><wbr><span class="parameters">(boolean&nbsp;verifyPeer)</span></div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code>setVerifyPeer</code>&nbsp;in class&nbsp;<code>io.lettuce.core.RedisURI</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setVerifyPeer(io.lettuce.core.SslVerifyMode)">
+<h3>setVerifyPeer</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setVerifyPeer</span><wbr><span class="parameters">(io.lettuce.core.SslVerifyMode&nbsp;verifyMode)</span></div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code>setVerifyPeer</code>&nbsp;in class&nbsp;<code>io.lettuce.core.RedisURI</code></dd>
 </dl>
 </div>
 </section>

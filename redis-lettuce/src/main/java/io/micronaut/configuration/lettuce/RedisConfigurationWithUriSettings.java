@@ -40,7 +40,7 @@ abstract class RedisConfigurationWithUriSettings extends AbstractRedisConfigurat
 
     @Override
     public List<RedisURI> getUris() {
-        return super.getUris().stream().map(this::applyConfiguredRedisUriSettings).collect(Collectors.toList());
+        return super.getUris().stream().map(this::applyConfiguredRedisUriSettings).toList();
     }
 
     @Override

@@ -153,7 +153,7 @@ class RedisClientFactorySpec extends RedisSpec {
         options.targetPercentiles().toList() == [0.25d, 0.75d]
 
         cleanup:
-        applicationContext.stop()
+        applicationContext.close()
     }
 
     void "test named redis command latency recorder settings are configurable"() {

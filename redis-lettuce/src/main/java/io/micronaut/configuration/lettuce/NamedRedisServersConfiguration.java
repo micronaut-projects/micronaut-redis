@@ -25,7 +25,7 @@ import io.micronaut.context.annotation.Parameter;
  * @since 1.0
  */
 @EachProperty(value = RedisSetting.REDIS_SERVERS)
-public class NamedRedisServersConfiguration extends AbstractRedisConfiguration {
+public class NamedRedisServersConfiguration extends RedisConfigurationWithUriSettings {
 
     /**
      * Constructor.

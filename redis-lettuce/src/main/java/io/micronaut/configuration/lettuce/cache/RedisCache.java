@@ -34,8 +34,10 @@ import io.micronaut.core.type.Argument;
 import io.micronaut.core.util.StringUtils;
 import jakarta.annotation.PreDestroy;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -116,10 +118,54 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
         return value;
     }
 
+    /**
+     * Resolve the values for the given keys.
+     *
+     * @param keys The cache keys
+     * @param <K> The key type
+     * @return An ordered map containing all requested keys
+     */
+    @NonNull
+    public <K> Map<K, Object> getAll(@NonNull Collection<K> keys) {
+        return getAll(keys, Argument.OBJECT_ARGUMENT);
+    }
+
+    /**
+     * Resolve the values for the given keys.
+     *
+     * @param keys The cache keys
+     * @param requiredType The required type
+     * @param <K> The key type
+     * @param <T> The value type
+     * @return An ordered map containing all requested keys
+     */
+    @NonNull
+    public <K, T> Map<K, T> getAll(@NonNull Collection<K> keys, @NonNull Argument<T> requiredType) {
+        return getValues(keys, requiredType, redisStringCommands, redisKeyCommands);
+    }
+
+    /**
+     * Cache the specified values in bulk.
+     *
+     * @param values The values to cache
+     */
+    public void putAll(@NonNull Map<?, ?> values) {
+        putValues(values, redisStringCommands, redisKeyCommands);
+    }
+
     @Override
     public void invalidate(Object key) {
         byte[] serializedKey = serializeKey(key);
         redisKeyCommands.del(serializedKey);
+    }
+
+    /**
+     * Invalidate the values for the given keys.
+     *
+     * @param keys The keys to invalidate
+     */
+    public void invalidateAllKeys(@NonNull Collection<?> keys) {
+        invalidateValues(keys, redisKeyCommands);
     }
 
     @Override

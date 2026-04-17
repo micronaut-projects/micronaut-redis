@@ -3,7 +3,9 @@ package io.micronaut.configuration.lettuce
 import io.lettuce.core.ReadFrom
 import io.lettuce.core.cluster.RedisClusterClient
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection
+import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands
+import io.lettuce.core.codec.RedisCodec
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection
 import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
@@ -74,6 +76,47 @@ class DefaultRedisClusterClientFactorySpec extends RedisClusterSpec {
 
         cleanup:
         applicationContext.stop()
+    }
+
+    void "test redis cluster-specific pubsub connection bean"() {
+        given:
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.uris': redisClusterUris,
+        ])
+        RedisClusterClient client = applicationContext.getBean(RedisClusterClient)
+        fixPartitions(client)
+
+        when:
+        StatefulRedisClusterPubSubConnection<String, String> connection = applicationContext.getBean(StatefulRedisClusterPubSubConnection<String, String>)
+        StatefulRedisPubSubConnection<String, String> genericConnection = applicationContext.getBean(StatefulRedisPubSubConnection<String, String>)
+
+        then:
+        connection.is(genericConnection)
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test cluster-specific pubsub bean rejects non-cluster pubsub connection"() {
+        given:
+        def factory = new DefaultRedisClusterClientFactory<String, String>(Mock(RedisCodec))
+        StatefulRedisPubSubConnection<String, String> connection = Mock(StatefulRedisPubSubConnection)
+
+        when:
+        factory.redisClusterPubSubConnection(connection)
+
+        then:
+        IllegalStateException e = thrown()
+        e.message == "Expected a StatefulRedisClusterPubSubConnection but got: ${connection.getClass().getName()}"
+    }
+
+    void "test cluster-specific pubsub bean returns cluster pubsub connection"() {
+        given:
+        def factory = new DefaultRedisClusterClientFactory<String, String>(Mock(RedisCodec))
+        StatefulRedisClusterPubSubConnection<String, String> connection = Mock(StatefulRedisClusterPubSubConnection)
+
+        expect:
+        factory.redisClusterPubSubConnection(connection).is(connection)
     }
 
     void "test redis cluster with metrics"() {

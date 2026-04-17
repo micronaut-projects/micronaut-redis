@@ -171,7 +171,7 @@ class RedisClientFactorySpec extends RedisSpec {
         options.targetPercentiles().toList() == [0.33d, 0.66d]
 
         cleanup:
-        applicationContext.stop()
+        applicationContext.close()
     }
 
     void "test redis client uses defined codec"() {

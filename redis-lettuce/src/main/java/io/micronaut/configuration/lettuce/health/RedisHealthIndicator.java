@@ -30,6 +30,7 @@ import io.micronaut.management.health.aggregator.HealthAggregator;
 import io.micronaut.management.health.indicator.HealthIndicator;
 import io.micronaut.management.health.indicator.HealthResult;
 import io.micronaut.scheduling.TaskExecutors;
+import io.micronaut.inject.qualifiers.Qualifiers;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.reactivestreams.Publisher;
@@ -44,6 +45,7 @@ import reactor.core.scheduler.Schedulers;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
@@ -93,34 +95,56 @@ public class RedisHealthIndicator implements HealthIndicator {
 
     @Override
     public Publisher<HealthResult> getResult() {
-        Flux<HealthResult> clientResults = getResult(RedisClient.class, RedisClient::connect, StatefulRedisConnection::reactive);
-        Flux<HealthResult> clusteredClientResults = getResult(RedisClusterClient.class, RedisClusterClient::connect, StatefulRedisClusterConnection::reactive);
+        Flux<HealthResult> clientResults = getResult(RedisClient.class, StatefulRedisConnection.class, RedisClient::connect, StatefulRedisConnection::reactive);
+        Flux<HealthResult> clusteredClientResults = getResult(RedisClusterClient.class, StatefulRedisClusterConnection.class, RedisClusterClient::connect, StatefulRedisClusterConnection::reactive);
         return this.healthAggregator.aggregate(
                 NAME,
                 Flux.concat(clientResults, clusteredClientResults)
         );
     }
 
-    private <T, R extends StatefulConnection<K, V>, K, V> Flux<HealthResult> getResult(Class<T> type, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
-        Collection<BeanRegistration<T>> registrations = beanContext.getActiveBeanRegistrations(type);
+    private <T, R extends StatefulConnection<K, V>, K, V> Flux<HealthResult> getResult(Class<T> clientType, Class<R> connectionType, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
+        Collection<BeanRegistration<T>> registrations = beanContext.getActiveBeanRegistrations(clientType);
         Flux<BeanRegistration<T>> redisClients = Flux.fromIterable(registrations);
-        return redisClients.flatMap(client -> healthResultForClient(client, getConnection, getReactive)).subscribeOn(scheduler);
+        return redisClients.flatMap(client -> healthResultForClient(client, connectionType, getConnection, getReactive)).subscribeOn(scheduler);
     }
 
-    private <T, R extends StatefulConnection<K, V>, K, V> Mono<HealthResult> healthResultForClient(BeanRegistration<T> client, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
-        R connection;
+    private <T, R extends StatefulConnection<K, V>, K, V> Mono<HealthResult> healthResultForClient(BeanRegistration<T> client, Class<R> connectionType, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
         String connectionName = client.getIdentifier().getName();
+        Optional<R> existingConnection = findExistingConnection(connectionType, connectionName);
         String dbName = "redis(" + connectionName + ")";
+        if (existingConnection.isPresent()) {
+            return healthResultForConnection(existingConnection.get(), dbName, getReactive, false);
+        }
+
+        R connection;
         try {
             connection = getConnection.apply(client.getBean());
         } catch (Exception e) {
             return Mono.just(healthResultForThrowable(e, dbName));
         }
+        return healthResultForConnection(connection, dbName, getReactive, true);
+    }
+
+    private <R extends StatefulConnection<K, V>, K, V> Mono<HealthResult> healthResultForConnection(R connection, String dbName, Function<R, BaseRedisReactiveCommands<K, V>> getReactive, boolean closeConnection) {
         Mono<String> pingCommand = getReactive.apply(connection).ping();
         pingCommand = pingCommand.timeout(Duration.ofSeconds(TIMEOUT_SECONDS)).retry(RETRY);
-        return pingCommand.map(s -> healthResultForPingResponse(s, dbName))
-                .onErrorResume(throwable -> Mono.just(healthResultForThrowable(throwable, dbName)))
-                .doFinally(f -> closeOnSignal(connection, f));
+        Mono<HealthResult> healthResult = pingCommand.map(s -> healthResultForPingResponse(s, dbName))
+            .onErrorResume(throwable -> Mono.just(healthResultForThrowable(throwable, dbName)));
+        if (closeConnection) {
+            return healthResult.doFinally(f -> closeOnSignal(connection, f));
+        }
+        return healthResult;
+    }
+
+    private <R> Optional<R> findExistingConnection(Class<R> connectionType, String connectionName) {
+        if (StringUtils.isNotEmpty(connectionName)) {
+            Optional<R> namedConnection = beanContext.findBean(connectionType, Qualifiers.byName(connectionName));
+            if (namedConnection.isPresent()) {
+                return namedConnection;
+            }
+        }
+        return beanContext.findBean(connectionType);
     }
 
     private <R extends StatefulConnection<K, V>, K, V> void closeOnSignal(R connection, SignalType signalType) {

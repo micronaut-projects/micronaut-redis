@@ -33,6 +33,7 @@ import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.serialize.JdkSerializer;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.type.Argument;
+import io.micronaut.core.util.StringUtils;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
     protected final ExpirationAfterWritePolicy expireAfterWritePolicy;
     protected final Long expireAfterAccess;
     protected final Long invalidateScanCount;
+    protected final String keyPrefix;
 
     protected AbstractRedisCache(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
@@ -74,6 +76,7 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
 
         this.redisCacheConfiguration = redisCacheConfiguration;
         this.expireAfterWritePolicy = configureExpirationAfterWritePolicy(redisCacheConfiguration, beanLocator);
+        this.keyPrefix = resolveKeyPrefix(defaultRedisCacheConfiguration, redisCacheConfiguration);
 
 
         this.keySerializer = redisCacheConfiguration
@@ -374,7 +377,7 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
      * @return The default keys pattern.
      */
     protected String getKeysPattern() {
-        return getName() + ":*";
+        return keyPrefix + ":*";
     }
 
     /**
@@ -418,6 +421,19 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
     }
 
     private DefaultStringKeySerializer newDefaultKeySerializer(RedisCacheConfiguration redisCacheConfiguration, ConversionService conversionService) {
-        return new DefaultStringKeySerializer(redisCacheConfiguration.getCacheName(), redisCacheConfiguration.getCharset(), conversionService);
+        return new DefaultStringKeySerializer(keyPrefix, redisCacheConfiguration.getCharset(), conversionService);
+    }
+
+    private String resolveKeyPrefix(DefaultRedisCacheConfiguration defaultRedisCacheConfiguration, RedisCacheConfiguration redisCacheConfiguration) {
+        String namespace = redisCacheConfiguration
+                .getNamespace()
+                .orElseGet(() -> defaultRedisCacheConfiguration.getNamespace().orElse(null));
+        if (StringUtils.isEmpty(namespace)) {
+            return redisCacheConfiguration.getCacheName();
+        }
+        if (namespace.endsWith(":")) {
+            return namespace + redisCacheConfiguration.getCacheName();
+        }
+        return namespace + ":" + redisCacheConfiguration.getCacheName();
     }
 }

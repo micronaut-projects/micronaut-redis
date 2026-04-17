@@ -9,10 +9,14 @@ Within your application configuration configure the Redis URL and Redis caches:
 ----
 redis:
     uri: redis://localhost
+    cache:
+        namespace: ${micronaut.application.name}
     caches:
         my-cache:
             expire-after-write: 1h
 ----
+
+- Set `redis.cache.namespace` to prefix all cache keys, or override it per cache with `redis.caches.<cache-name>.namespace`
 
 .Cache Configuration Example with a Dynamic Expiration policy
 [configuration]

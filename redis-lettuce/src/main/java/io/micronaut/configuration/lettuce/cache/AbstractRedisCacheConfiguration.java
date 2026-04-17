@@ -39,6 +39,7 @@ public abstract class AbstractRedisCacheConfiguration {
     protected Duration expireAfterAccess;
     protected String expirationAfterWritePolicy;
     protected Long invalidateScanCount = 100L;
+    protected String namespace;
 
     /**
      * Constructor.
@@ -103,6 +104,13 @@ public abstract class AbstractRedisCacheConfiguration {
     }
 
     /**
+     * @return The namespace to prefix cache keys with.
+     */
+    public Optional<String> getNamespace() {
+        return Optional.ofNullable(namespace);
+    }
+
+    /**
      * @return The charset used to serialize and deserialize values
      */
     public Charset getCharset() {
@@ -162,6 +170,15 @@ public abstract class AbstractRedisCacheConfiguration {
      */
     public void setExpirationAfterWritePolicy(String expirationAfterWritePolicy) {
         this.expirationAfterWritePolicy = expirationAfterWritePolicy;
+    }
+
+    /**
+     * Sets the namespace to prefix cache keys with.
+     *
+     * @param namespace The namespace
+     */
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     /**

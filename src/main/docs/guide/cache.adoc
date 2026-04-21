@@ -14,9 +14,13 @@ redis:
     caches:
         my-cache:
             expire-after-write: 1h
+            read-retries: 2
+            insert-retries: 2
 ----
 
-- Set `redis.cache.namespace` to prefix all cache keys, or override it per cache with `redis.caches.<cache-name>.namespace`
+- Set `redis.cache.namespace` to prefix cache keys when using the default key serializer, or override it per cache with `redis.caches.<cache-name>.namespace`. If you configure a custom `redis.*.key-serializer`, incorporate the namespace into the serialized key.
+- `read-retries` retries failed Redis cache reads before the cache operation fails.
+- `insert-retries` retries failed Redis cache writes before the cache operation fails.
 
 .Cache Configuration Example with a Dynamic Expiration policy
 [configuration]

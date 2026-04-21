@@ -34,6 +34,9 @@ import io.micronaut.core.serialize.JdkSerializer;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.type.Argument;
 import io.micronaut.core.util.StringUtils;
+import io.micronaut.retry.RetryOperations;
+import io.micronaut.retry.RetryOperationsFactory;
+import io.micronaut.retry.RetryPolicy;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
@@ -42,8 +45,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.time.Duration;
-import java.util.function.Supplier;
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Supplier;
 
 /**
  * An abstract class implementing SyncCache for the redis.
@@ -63,6 +67,8 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
     protected final Long expireAfterAccess;
     protected final Long invalidateScanCount;
     protected final String keyPrefix;
+    private final RetryOperations readRetryOperations;
+    private final RetryOperations insertRetryOperations;
 
     protected AbstractRedisCache(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
@@ -105,6 +111,14 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
                 .orElse(defaultRedisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null));
 
         this.invalidateScanCount = redisCacheConfiguration.getInvalidateScanCount().orElse(100L);
+        int readRetries = redisCacheConfiguration.getReadRetries().orElse(defaultRedisCacheConfiguration.getReadRetries().orElse(0));
+        int insertRetries = redisCacheConfiguration.getInsertRetries().orElse(defaultRedisCacheConfiguration.getInsertRetries().orElse(0));
+        RetryOperationsFactory retryOperationsFactory = readRetries > 0 || insertRetries > 0
+                ? beanLocator.findOrInstantiateBean(RetryOperationsFactory.class)
+                    .orElseThrow(() -> new ConfigurationException("Redis cache retry configuration requires Micronaut Retry support"))
+                : null;
+        this.readRetryOperations = newRetryOperations(readRetries, retryOperationsFactory);
+        this.insertRetryOperations = newRetryOperations(insertRetries, retryOperationsFactory);
     }
 
     @Override
@@ -388,6 +402,72 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
      */
     protected byte[] serializeKey(Object key) {
         return keySerializer.serialize(key).orElseThrow(() -> new IllegalArgumentException("Key cannot be null"));
+    }
+
+    /**
+     * Execute a cache read with the configured retry count.
+     *
+     * @param supplier The read operation
+     * @param <T> The result type
+     * @return The operation result
+     */
+    protected final <T> T executeRead(Supplier<T> supplier) {
+        if (readRetryOperations == null) {
+            return supplier.get();
+        }
+        return readRetryOperations.execute(supplier);
+    }
+
+    /**
+     * Execute a cache insert with the configured retry count.
+     *
+     * @param supplier The insert operation
+     * @param <T> The result type
+     * @return The operation result
+     */
+    protected final <T> T executeInsert(Supplier<T> supplier) {
+        if (insertRetryOperations == null) {
+            return supplier.get();
+        }
+        return insertRetryOperations.execute(supplier);
+    }
+
+    /**
+     * Execute an asynchronous cache read with the configured retry count.
+     *
+     * @param supplier The read operation
+     * @param <T> The result type
+     * @return The operation stage
+     */
+    protected final <T> CompletionStage<T> executeReadAsync(Supplier<? extends CompletionStage<T>> supplier) {
+        if (readRetryOperations == null) {
+            return supplier.get();
+        }
+        return readRetryOperations.executeCompletionStage(supplier);
+    }
+
+    /**
+     * Execute an asynchronous cache insert with the configured retry count.
+     *
+     * @param supplier The insert operation
+     * @param <T> The result type
+     * @return The operation stage
+     */
+    protected final <T> CompletionStage<T> executeInsertAsync(Supplier<? extends CompletionStage<T>> supplier) {
+        if (insertRetryOperations == null) {
+            return supplier.get();
+        }
+        return insertRetryOperations.executeCompletionStage(supplier);
+    }
+
+    private RetryOperations newRetryOperations(int retries, RetryOperationsFactory retryOperationsFactory) {
+        if (retries <= 0) {
+            return null;
+        }
+        return retryOperationsFactory.createRetryOperations(RetryPolicy.builder()
+                .maxAttempts(retries)
+                .delay(Duration.ZERO)
+                .build());
     }
 
     private ExpirationAfterWritePolicy configureExpirationAfterWritePolicy(AbstractRedisCacheConfiguration redisCacheConfiguration, BeanLocator beanLocator) {

@@ -85,20 +85,29 @@ public class RedisConnectionUtil {
         throw new ConfigurationException(errorMessage);
     }
 
-    private static Optional<StatefulRedisClusterConnection> findStatefulRedisClusterConnection(BeanLocator beanLocator, Optional<String> serverName) {
-        Optional<StatefulRedisClusterConnection> namedConn = serverName.flatMap(name -> beanLocator.findBean(StatefulRedisClusterConnection.class, Qualifiers.byName(name)));
+    /**
+     * Utility method to find a named bean first and fallback to the default bean.
+     *
+     * @param beanLocator Bean locator
+     * @param beanType Bean type
+     * @param serverName Server name
+     * @param <T> Bean type
+     * @return The matching bean if available
+     */
+    public static <T> Optional<T> findNamedOrDefaultBean(BeanLocator beanLocator, Class<T> beanType, Optional<String> serverName) {
+        Optional<T> namedConn = serverName.flatMap(name -> beanLocator.findBean(beanType, Qualifiers.byName(name)));
         if (namedConn.isPresent()) {
             return namedConn;
         }
-        return beanLocator.findBean(StatefulRedisClusterConnection.class);
+        return beanLocator.findBean(beanType);
+    }
+
+    private static Optional<StatefulRedisClusterConnection> findStatefulRedisClusterConnection(BeanLocator beanLocator, Optional<String> serverName) {
+        return findNamedOrDefaultBean(beanLocator, StatefulRedisClusterConnection.class, serverName);
     }
 
     private static Optional<StatefulRedisConnection> findStatefulRedisConnection(BeanLocator beanLocator, Optional<String> serverName) {
-        Optional<StatefulRedisConnection> namedConn = serverName.flatMap(name -> beanLocator.findBean(StatefulRedisConnection.class, Qualifiers.byName(name)));
-        if (namedConn.isPresent()) {
-            return namedConn;
-        }
-        return beanLocator.findBean(StatefulRedisConnection.class);
+        return findNamedOrDefaultBean(beanLocator, StatefulRedisConnection.class, serverName);
     }
 
     /**
@@ -144,19 +153,11 @@ public class RedisConnectionUtil {
     }
 
     private static Optional<RedisClusterClient> findRedisClusterClient(BeanLocator beanLocator, Optional<String> serverName) {
-        Optional<RedisClusterClient> namedClient = serverName.flatMap(name -> beanLocator.findBean(RedisClusterClient.class, Qualifiers.byName(name)));
-        if (namedClient.isPresent()) {
-            return namedClient;
-        }
-        return beanLocator.findBean(RedisClusterClient.class);
+        return findNamedOrDefaultBean(beanLocator, RedisClusterClient.class, serverName);
     }
 
     private static Optional<RedisClient> findRedisClient(BeanLocator beanLocator, Optional<String> serverName) {
-        Optional<RedisClient> namedClient = serverName.flatMap(name -> beanLocator.findBean(RedisClient.class, Qualifiers.byName(name)));
-        if (namedClient.isPresent()) {
-            return namedClient;
-        }
-        return beanLocator.findBean(RedisClient.class);
+        return findNamedOrDefaultBean(beanLocator, RedisClient.class, serverName);
     }
 
 }

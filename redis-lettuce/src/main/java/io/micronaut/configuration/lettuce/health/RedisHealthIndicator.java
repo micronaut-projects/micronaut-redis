@@ -21,6 +21,7 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.reactive.BaseRedisReactiveCommands;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import io.micronaut.configuration.lettuce.RedisConnectionUtil;
 import io.micronaut.context.BeanContext;
 import io.micronaut.context.BeanRegistration;
 import io.micronaut.context.annotation.Requires;
@@ -30,7 +31,6 @@ import io.micronaut.management.health.aggregator.HealthAggregator;
 import io.micronaut.management.health.indicator.HealthIndicator;
 import io.micronaut.management.health.indicator.HealthResult;
 import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.inject.qualifiers.Qualifiers;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.reactivestreams.Publisher;
@@ -138,13 +138,11 @@ public class RedisHealthIndicator implements HealthIndicator {
     }
 
     private <R> Optional<R> findExistingConnection(Class<R> connectionType, String connectionName) {
-        if (StringUtils.isNotEmpty(connectionName)) {
-            Optional<R> namedConnection = beanContext.findBean(connectionType, Qualifiers.byName(connectionName));
-            if (namedConnection.isPresent()) {
-                return namedConnection;
-            }
-        }
-        return beanContext.findBean(connectionType);
+        return RedisConnectionUtil.findNamedOrDefaultBean(
+            beanContext,
+            connectionType,
+            Optional.ofNullable(connectionName).filter(StringUtils::isNotEmpty)
+        );
     }
 
     private <R extends StatefulConnection<K, V>, K, V> void closeOnSignal(R connection, SignalType signalType) {

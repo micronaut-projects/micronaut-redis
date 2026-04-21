@@ -135,6 +135,33 @@ class TopLevelRedisConnectionRegistrarSpec extends Specification {
         result.is(connection)
     }
 
+    void "standalone registrar closes created connections on destroy"() {
+        given:
+        BeanContext beanContext = Mock()
+        RedisClient redisClient = Mock()
+        AbstractRedisConfiguration config = Mock()
+        RedisCodec codec = Mock()
+        StatefulRedisConnection connection = Mock()
+        StatefulRedisPubSubConnection pubSubConnection = Mock()
+        def registrar = new TopLevelRedisConnectionRegistrar(beanContext)
+
+        when:
+        invokePrivate(registrar, 'createConnection', Argument.of(byte[].class), Argument.of(byte[].class))
+        invokePrivate(registrar, 'createPubSubConnection', Argument.of(byte[].class), Argument.of(byte[].class))
+        invokeClose(registrar)
+
+        then:
+        2 * beanContext.getBean(RedisClient) >> redisClient
+        1 * beanContext.getBean(AbstractRedisConfiguration) >> config
+        2 * beanContext.getBean(_ as Argument) >> codec
+        1 * config.getUri() >> Optional.empty()
+        0 * config.getReplicaUris()
+        1 * redisClient.connect(codec) >> connection
+        1 * redisClient.connectPubSub(codec) >> pubSubConnection
+        1 * connection.close()
+        1 * pubSubConnection.close()
+    }
+
     void "cluster registrar creates connection and applies read from"() {
         given:
         BeanContext beanContext = Mock()
@@ -175,9 +202,41 @@ class TopLevelRedisConnectionRegistrarSpec extends Specification {
         result.is(connection)
     }
 
+    void "cluster registrar closes created connections on destroy"() {
+        given:
+        BeanContext beanContext = Mock()
+        RedisClusterClient redisClient = Mock()
+        AbstractRedisConfiguration config = Mock()
+        RedisCodec codec = Mock()
+        StatefulRedisClusterConnection connection = Mock()
+        StatefulRedisClusterPubSubConnection pubSubConnection = Mock()
+        def registrar = new TopLevelRedisClusterConnectionRegistrar(beanContext)
+
+        when:
+        invokePrivate(registrar, 'createConnection', Argument.of(byte[].class), Argument.of(byte[].class))
+        invokePrivate(registrar, 'createPubSubConnection', Argument.of(byte[].class), Argument.of(byte[].class))
+        invokeClose(registrar)
+
+        then:
+        2 * beanContext.getBean(RedisClusterClient) >> redisClient
+        1 * beanContext.getBean(AbstractRedisConfiguration) >> config
+        2 * beanContext.getBean(_ as Argument) >> codec
+        1 * redisClient.connect(codec) >> connection
+        1 * config.getReadFrom() >> Optional.empty()
+        1 * redisClient.connectPubSub(codec) >> pubSubConnection
+        1 * connection.close()
+        1 * pubSubConnection.close()
+    }
+
     private static Object invokePrivate(Object target, String methodName, Argument<?> keyType, Argument<?> valueType) {
         def method = target.class.getDeclaredMethod(methodName, Argument, Argument)
         method.accessible = true
         return method.invoke(target, keyType, valueType)
+    }
+
+    private static void invokeClose(Object target) {
+        def method = target.class.getDeclaredMethod('closeConnections')
+        method.accessible = true
+        method.invoke(target)
     }
 }

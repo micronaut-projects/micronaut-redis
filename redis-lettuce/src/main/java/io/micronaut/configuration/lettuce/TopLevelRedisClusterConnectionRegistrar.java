@@ -16,6 +16,7 @@
 package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.cluster.RedisClusterClient;
+import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
@@ -26,9 +27,11 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.type.Argument;
 import io.micronaut.inject.BeanDefinition;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Registers additional typed top-level Redis cluster connection beans for unqualified codecs.
@@ -39,6 +42,7 @@ import java.util.List;
 final class TopLevelRedisClusterConnectionRegistrar {
 
     private final BeanContext beanContext;
+    private final List<StatefulConnection<?, ?>> createdConnections = new CopyOnWriteArrayList<>();
 
     TopLevelRedisClusterConnectionRegistrar(BeanContext beanContext) {
         this.beanContext = beanContext;
@@ -87,6 +91,7 @@ final class TopLevelRedisClusterConnectionRegistrar {
         RedisCodec codec = (RedisCodec) beanContext.getBean((Argument) Argument.of(RedisCodec.class, keyType, valueType));
         StatefulRedisClusterConnection<?, ?> connection = redisClient.connect(codec);
         config.getReadFrom().ifPresent(connection::setReadFrom);
+        createdConnections.add(connection);
         return connection;
     }
 
@@ -94,6 +99,16 @@ final class TopLevelRedisClusterConnectionRegistrar {
     private StatefulRedisPubSubConnection<?, ?> createPubSubConnection(Argument<?> keyType, Argument<?> valueType) {
         RedisClusterClient redisClient = beanContext.getBean(RedisClusterClient.class);
         RedisCodec codec = (RedisCodec) beanContext.getBean((Argument) Argument.of(RedisCodec.class, keyType, valueType));
-        return redisClient.connectPubSub(codec);
+        StatefulRedisPubSubConnection<?, ?> connection = redisClient.connectPubSub(codec);
+        createdConnections.add(connection);
+        return connection;
+    }
+
+    @PreDestroy
+    void closeConnections() {
+        for (StatefulConnection<?, ?> connection : createdConnections) {
+            connection.close();
+        }
+        createdConnections.clear();
     }
 }

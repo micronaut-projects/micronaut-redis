@@ -808,7 +808,9 @@ Lettuce is a non-blocking, reactive Redis client implementation and Micronaut pr
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">redis.uri=redis://localhost
-redis.caches.my-cache.expire-after-write=1h</code></pre>
+redis.caches.my-cache.expire-after-write=1h
+redis.caches.my-cache.read-retries=2
+redis.caches.my-cache.insert-retries=2</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -817,7 +819,9 @@ redis.caches.my-cache.expire-after-write=1h</code></pre>
     uri: redis://localhost
     caches:
         my-cache:
-            expire-after-write: 1h</code></pre>
+            expire-after-write: 1h
+            read-retries: 2
+            insert-retries: 2</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -826,7 +830,9 @@ redis.caches.my-cache.expire-after-write=1h</code></pre>
   uri="redis://localhost"
   [redis.caches]
     [redis.caches.my-cache]
-      expire-after-write="1h"</code></pre>
+      expire-after-write="1h"
+      read-retries=2
+      insert-retries=2</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -836,6 +842,8 @@ redis.caches.my-cache.expire-after-write=1h</code></pre>
   caches {
     myCache {
       expireAfterWrite = "1h"
+      readRetries = 2
+      insertRetries = 2
     }
   }
 }</code></pre>
@@ -849,6 +857,8 @@ redis.caches.my-cache.expire-after-write=1h</code></pre>
     caches {
       my-cache {
         expire-after-write = "1h"
+        read-retries = 2
+        insert-retries = 2
       }
     }
   }
@@ -862,7 +872,9 @@ redis.caches.my-cache.expire-after-write=1h</code></pre>
     "uri": "redis://localhost",
     "caches": {
       "my-cache": {
-        "expire-after-write": "1h"
+        "expire-after-write": "1h",
+        "read-retries": 2,
+        "insert-retries": 2
       }
     }
   }
@@ -870,6 +882,16 @@ redis.caches.my-cache.expire-after-write=1h</code></pre>
 </div>
 </div>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>read-retries</code> retries failed Redis cache reads before the cache operation fails.</p>
+</li>
+<li>
+<p><code>insert-retries</code> retries failed Redis cache writes before the cache operation fails.</p>
+</li>
+</ul>
 </div>
 <div class="openblock">
 <div class="title">Cache Configuration Example with a Dynamic Expiration policy</div>
@@ -1012,6 +1034,18 @@ redis.caches.my-cache.expiration-after-write-policy=&lt;class path of class impl
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Long</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the count used for the scan command in <a href="../api/io/micronaut/configuration/lettuce/cache/.html#RedisCache#invalidateAll--">cache.RedisCache#invalidateAll()</a>.
  See {@link io.lettuce.core.ScanArgs#limit(long)}. Defaults to 100L.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.read-retries</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of times a failed cache read should be retried.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.insert-retries</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of times a failed cache insert should be retried.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>

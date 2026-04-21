@@ -166,6 +166,22 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConnectionPoolConfiguration.html#enabled" class="member-name-link">enabled</a> - Variable in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConnectionPoolConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#executeInsert(java.util.function.Supplier)" class="member-name-link">executeInsert(Supplier)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
+<dd>
+<div class="block">Execute a cache insert with the configured retry count.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#executeInsertAsync(java.util.function.Supplier)" class="member-name-link">executeInsertAsync(Supplier)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
+<dd>
+<div class="block">Execute an asynchronous cache insert with the configured retry count.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#executeRead(java.util.function.Supplier)" class="member-name-link">executeRead(Supplier)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
+<dd>
+<div class="block">Execute a cache read with the configured retry count.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#executeReadAsync(java.util.function.Supplier)" class="member-name-link">executeReadAsync(Supplier)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
+<dd>
+<div class="block">Execute an asynchronous cache read with the configured retry count.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#expirationAfterWritePolicy" class="member-name-link">expirationAfterWritePolicy</a> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/expiration/ExpirationAfterWritePolicy.html" class="type-name-link" title="interface in io.micronaut.configuration.lettuce.cache.expiration">ExpirationAfterWritePolicy</a> - Interface in <a href="io/micronaut/configuration/lettuce/cache/expiration/package-summary.html">io.micronaut.configuration.lettuce.cache.expiration</a></dt>
@@ -266,6 +282,8 @@ read.</div>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#getExpiredSessionCheck()" class="member-name-link">getExpiredSessionCheck()</a> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#getInsertRetries()" class="member-name-link">getInsertRetries()</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#getInvalidateScanCount()" class="member-name-link">getInvalidateScanCount()</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
 <dd>
 <div class="block">Returns the count used for the scan command in <a href="io/micronaut/configuration/lettuce/cache/RedisCache.html#invalidateAll()"><code>RedisCache.invalidateAll()</code></a>.</div>
@@ -314,6 +332,8 @@ read.</div>
 <dd>
 <div class="block">See <code>ReadFrom</code>.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#getReadRetries()" class="member-name-link">getReadRetries()</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisKeyAsyncCommands(io.lettuce.core.api.StatefulConnection)" class="member-name-link">getRedisKeyAsyncCommands(StatefulConnection)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#getRedisKeyCommands(io.lettuce.core.api.StatefulConnection)" class="member-name-link">getRedisKeyCommands(StatefulConnection)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
@@ -375,6 +395,8 @@ read.</div>
 </dl>
 <h2 class="title" id="I:I">I</h2>
 <dl class="index">
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#insertRetries" class="member-name-link">insertRetries</a> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#INVALID_REDIS_CONNECTION_MESSAGE" class="member-name-link">INVALID_REDIS_CONNECTION_MESSAGE</a> - Static variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/RedisCache.html#invalidate(java.lang.Object)" class="member-name-link">invalidate(Object)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCache</a></dt>
@@ -556,6 +578,8 @@ read.</div>
 </dl>
 <h2 class="title" id="I:R">R</h2>
 <dl class="index">
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#readRetries" class="member-name-link">readRetries</a> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/redis/testcontainers/Redis.html" class="type-name-link" title="class in io.micronaut.redis.testcontainers">Redis</a> - Class in <a href="io/micronaut/redis/testcontainers/package-summary.html">io.micronaut.redis.testcontainers</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/redis/testcontainers/Redis.html#%3Cinit%3E()" class="member-name-link">Redis()</a> - Constructor for class io.micronaut.redis.testcontainers.<a href="io/micronaut/redis/testcontainers/Redis.html" title="class in io.micronaut.redis.testcontainers">Redis</a></dt>
@@ -784,6 +808,8 @@ CPUs).</div>
 <dd>
 <div class="block">Sets the duration to check for expired sessions.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#setInsertRetries(java.lang.Integer)" class="member-name-link">setInsertRetries(Integer)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#setInvalidateScanCount(java.lang.Long)" class="member-name-link">setInvalidateScanCount(Long)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
 <dd>
 <div class="block">Sets the count used for the scan command in <a href="io/micronaut/configuration/lettuce/cache/RedisCache.html#invalidateAll()"><code>RedisCache.invalidateAll()</code></a>.</div>
@@ -808,6 +834,8 @@ CPUs).</div>
 <dd>
 <div class="block">Sets the read from property by name.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#setReadRetries(java.lang.Integer)" class="member-name-link">setReadRetries(Integer)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#setReplicaUris(java.net.URI...)" class="member-name-link">setReplicaUris(URI...)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
 <dd>
 <div class="block">Sets the Replica Redis URIs for read replica configuration.</div>

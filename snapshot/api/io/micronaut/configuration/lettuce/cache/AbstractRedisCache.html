@@ -91,6 +91,10 @@ loadScripts(document, 'script');</script>
 <li><a href="#invalidateValues(java.util.Collection,io.lettuce.core.api.sync.RedisKeyCommands)" tabindex="0">invalidateValues(Collection, RedisKeyCommands)</a></li>
 <li><a href="#getKeysPattern()" tabindex="0">getKeysPattern()</a></li>
 <li><a href="#serializeKey(java.lang.Object)" tabindex="0">serializeKey(Object)</a></li>
+<li><a href="#executeRead(java.util.function.Supplier)" tabindex="0">executeRead(Supplier)</a></li>
+<li><a href="#executeInsert(java.util.function.Supplier)" tabindex="0">executeInsert(Supplier)</a></li>
+<li><a href="#executeReadAsync(java.util.function.Supplier)" tabindex="0">executeReadAsync(Supplier)</a></li>
+<li><a href="#executeInsertAsync(java.util.function.Supplier)" tabindex="0">executeInsertAsync(Supplier)</a></li>
 </ol>
 </li>
 </ol>
@@ -194,6 +198,26 @@ implements io.micronaut.cache.SyncCache&lt;C&gt;, <a href="https://docs.oracle.c
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final &lt;T&gt;&nbsp;T</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#executeInsert(java.util.function.Supplier)" class="member-name-link">executeInsert</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;T&gt;&nbsp;supplier)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Execute a cache insert with the configured retry count.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#executeInsertAsync(java.util.function.Supplier)" class="member-name-link">executeInsertAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;T&gt;&gt;&nbsp;supplier)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Execute an asynchronous cache insert with the configured retry count.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final &lt;T&gt;&nbsp;T</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#executeRead(java.util.function.Supplier)" class="member-name-link">executeRead</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;T&gt;&nbsp;supplier)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Execute a cache read with the configured retry count.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#executeReadAsync(java.util.function.Supplier)" class="member-name-link">executeReadAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;T&gt;&gt;&nbsp;supplier)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Execute an asynchronous cache read with the configured retry count.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected &lt;T&gt;&nbsp;T</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#get(byte%5B%5D,io.micronaut.core.type.Argument,java.util.function.Supplier,io.lettuce.core.api.sync.RedisStringCommands)" class="member-name-link">get</a><wbr>(byte[]&nbsp;key,
  io.micronaut.core.type.Argument&lt;T&gt;&nbsp;requiredType,
@@ -640,6 +664,74 @@ implements io.micronaut.cache.SyncCache&lt;C&gt;, <a href="https://docs.oracle.c
 <dd><code>key</code> - The key</dd>
 <dt>Returns:</dt>
 <dd>bytes of the object</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="executeRead(java.util.function.Supplier)">
+<h3>executeRead</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">executeRead</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;T&gt;&nbsp;supplier)</span></div>
+<div class="block">Execute a cache read with the configured retry count.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="executeRead(java.util.function.Supplier)-type-param-T"><code>T</code> - The result type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>supplier</code> - The read operation</dd>
+<dt>Returns:</dt>
+<dd>The operation result</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="executeInsert(java.util.function.Supplier)">
+<h3>executeInsert</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">executeInsert</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;T&gt;&nbsp;supplier)</span></div>
+<div class="block">Execute a cache insert with the configured retry count.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="executeInsert(java.util.function.Supplier)-type-param-T"><code>T</code> - The result type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>supplier</code> - The insert operation</dd>
+<dt>Returns:</dt>
+<dd>The operation result</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="executeReadAsync(java.util.function.Supplier)">
+<h3>executeReadAsync</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;T&gt;</span>&nbsp;<span class="element-name">executeReadAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;T&gt;&gt;&nbsp;supplier)</span></div>
+<div class="block">Execute an asynchronous cache read with the configured retry count.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="executeReadAsync(java.util.function.Supplier)-type-param-T"><code>T</code> - The result type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>supplier</code> - The read operation</dd>
+<dt>Returns:</dt>
+<dd>The operation stage</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="executeInsertAsync(java.util.function.Supplier)">
+<h3>executeInsertAsync</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;T&gt;</span>&nbsp;<span class="element-name">executeInsertAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;T&gt;&gt;&nbsp;supplier)</span></div>
+<div class="block">Execute an asynchronous cache insert with the configured retry count.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="executeInsertAsync(java.util.function.Supplier)-type-param-T"><code>T</code> - The result type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>supplier</code> - The insert operation</dd>
+<dt>Returns:</dt>
+<dd>The operation stage</dd>
 </dl>
 </div>
 </section>

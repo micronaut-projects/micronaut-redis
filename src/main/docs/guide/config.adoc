@@ -16,7 +16,7 @@ redis:
 If Micrometer is on the classpath, the Lettuce command latency recorder is enabled automatically. Histogram metrics remain enabled by default for compatibility, but you can now customize them in configuration:
 
 .Customizing Lettuce command latency metrics
-[source,yaml]
+[configuration]
 ----
 redis:
     uri: redis://localhost

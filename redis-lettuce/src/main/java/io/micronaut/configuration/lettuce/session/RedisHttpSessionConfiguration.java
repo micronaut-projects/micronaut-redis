@@ -36,10 +36,13 @@ import java.util.Optional;
 @ConfigurationProperties(RedisSetting.PREFIX)
 public class RedisHttpSessionConfiguration extends HttpSessionConfiguration implements Toggleable {
 
+    private static final String SESSION_CREATED_TOPIC_SUFFIX = "event:session-created";
+    private static final String ACTIVE_SESSIONS_KEY_SUFFIX = "active-sessions";
+
     private String namespace = "micronaut:session:";
     private String serverName;
-    private String sessionCreatedTopic = namespace + "event:session-created";
-    private String activeSessionsKey = namespace + "active-sessions";
+    private String sessionCreatedTopic;
+    private String activeSessionsKey;
     private Class<ObjectSerializer> valueSerializer;
     private Charset charset = StandardCharsets.UTF_8;
     private boolean enableKeyspaceEvents = true;
@@ -64,14 +67,14 @@ public class RedisHttpSessionConfiguration extends HttpSessionConfiguration impl
      * @return The topic to use to publish the creation of new sessions.
      */
     public String getSessionCreatedTopic() {
-        return sessionCreatedTopic;
+        return sessionCreatedTopic != null ? sessionCreatedTopic : namespace + SESSION_CREATED_TOPIC_SUFFIX;
     }
 
     /**
      * @return The key of the sorted set used to maintain a set of active sessions.
      */
     public String getActiveSessionsKey() {
-        return activeSessionsKey;
+        return activeSessionsKey != null ? activeSessionsKey : namespace + ACTIVE_SESSIONS_KEY_SUFFIX;
     }
 
     /**

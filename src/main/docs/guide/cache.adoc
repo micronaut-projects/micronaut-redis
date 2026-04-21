@@ -12,7 +12,12 @@ redis:
     caches:
         my-cache:
             expire-after-write: 1h
+            read-retries: 2
+            insert-retries: 2
 ----
+
+- `read-retries` retries failed Redis cache reads before the cache operation fails.
+- `insert-retries` retries failed Redis cache writes before the cache operation fails.
 
 .Cache Configuration Example with a Dynamic Expiration policy
 [configuration]

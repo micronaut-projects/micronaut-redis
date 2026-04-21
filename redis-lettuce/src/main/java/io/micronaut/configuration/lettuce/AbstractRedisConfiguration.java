@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Abstract configuration for Lettuce.
@@ -86,7 +85,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      * @param uris The URI
      */
     public void setUris(URI... uris) {
-        this.uris = Arrays.stream(uris).map(RedisURI::create).collect(Collectors.toList());
+        this.uris = Arrays.stream(uris).map(RedisURI::create).toList();
     }
 
     /**
@@ -104,7 +103,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      * @since 6.5.0
      */
     public void setReplicaUris(@NonNull URI... uris) {
-        this.replicaUris = Arrays.stream(uris).map(RedisURI::create).collect(Collectors.toList());
+        this.replicaUris = Arrays.stream(uris).map(RedisURI::create).toList();
     }
 
     /**

@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
+import io.lettuce.core.KeyValue;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisKeyAsyncCommands;
@@ -32,9 +33,19 @@ import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.serialize.JdkSerializer;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.core.type.Argument;
+import io.micronaut.retry.RetryOperations;
+import io.micronaut.retry.RetryOperationsFactory;
+import io.micronaut.retry.RetryPolicy;
+import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
 /**
@@ -54,6 +65,8 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
     protected final ExpirationAfterWritePolicy expireAfterWritePolicy;
     protected final Long expireAfterAccess;
     protected final Long invalidateScanCount;
+    private final RetryOperations readRetryOperations;
+    private final RetryOperations insertRetryOperations;
 
     protected AbstractRedisCache(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,
@@ -95,6 +108,14 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
                 .orElse(defaultRedisCacheConfiguration.getExpireAfterAccess().map(Duration::toMillis).orElse(null));
 
         this.invalidateScanCount = redisCacheConfiguration.getInvalidateScanCount().orElse(100L);
+        int readRetries = redisCacheConfiguration.getReadRetries().orElse(defaultRedisCacheConfiguration.getReadRetries().orElse(0));
+        int insertRetries = redisCacheConfiguration.getInsertRetries().orElse(defaultRedisCacheConfiguration.getInsertRetries().orElse(0));
+        RetryOperationsFactory retryOperationsFactory = readRetries > 0 || insertRetries > 0
+                ? beanLocator.findOrInstantiateBean(RetryOperationsFactory.class)
+                    .orElseThrow(() -> new ConfigurationException("Redis cache retry configuration requires Micronaut Retry support"))
+                : null;
+        this.readRetryOperations = newRetryOperations(readRetries, retryOperationsFactory);
+        this.insertRetryOperations = newRetryOperations(insertRetries, retryOperationsFactory);
     }
 
     @Override
@@ -250,6 +271,120 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
     }
 
     /**
+     * Resolve the values for the given keys and convert them to the required type.
+     *
+     * @param keys               The cache keys
+     * @param requiredType       The required type
+     * @param redisStringCommands The redis string commands
+     * @param redisKeyCommands   The redis key commands
+     * @param <K>                The type of the unserialized key
+     * @param <T>                The concrete type
+     * @return An ordered map containing all requested keys in the original order
+     */
+    protected <K, T> Map<K, T> getValues(
+        @NonNull Collection<K> keys,
+        @NonNull Argument<T> requiredType,
+        RedisStringCommands<byte[], byte[]> redisStringCommands,
+        RedisKeyCommands<byte[], byte[]> redisKeyCommands
+    ) {
+        if (keys.isEmpty()) {
+            return new LinkedHashMap<>();
+        }
+
+        List<K> orderedKeys = new ArrayList<>(keys.size());
+        byte[][] serializedKeys = new byte[keys.size()][];
+        int index = 0;
+        for (K key : keys) {
+            orderedKeys.add(key);
+            serializedKeys[index++] = serializeKey(key);
+        }
+
+        List<KeyValue<byte[], byte[]>> values = redisStringCommands.mget(serializedKeys);
+        Map<K, T> resolved = new LinkedHashMap<>(orderedKeys.size());
+        for (int i = 0; i < orderedKeys.size(); i++) {
+            K key = orderedKeys.get(i);
+            KeyValue<byte[], byte[]> value = values.get(i);
+            if (value != null && value.hasValue()) {
+                Optional<T> deserialized = valueSerializer.deserialize(value.getValue(), requiredType);
+                if (deserialized.isPresent()) {
+                    resolved.put(key, deserialized.get());
+                    if (expireAfterAccess != null) {
+                        redisKeyCommands.pexpire(serializedKeys[i], expireAfterAccess);
+                    }
+                } else {
+                    resolved.put(key, null);
+                }
+            } else {
+                resolved.put(key, null);
+            }
+        }
+        return resolved;
+    }
+
+    /**
+     * Cache the specified values in bulk.
+     *
+     * @param values The values to store
+     * @param redisStringCommands The redis string commands
+     * @param redisKeyCommands The redis key commands
+     */
+    protected void putValues(
+        @NonNull Map<?, ?> values,
+        RedisStringCommands<byte[], byte[]> redisStringCommands,
+        RedisKeyCommands<byte[], byte[]> redisKeyCommands
+    ) {
+        if (values.isEmpty()) {
+            return;
+        }
+
+        Map<byte[], byte[]> toSave = new LinkedHashMap<>(values.size());
+        Map<byte[], Long> toExpire = expireAfterWritePolicy == null ? null : new LinkedHashMap<>(values.size());
+        List<byte[]> toDelete = new ArrayList<>(values.size());
+        values.forEach((key, value) -> {
+            byte[] serializedKey = serializeKey(key);
+            if (value == null) {
+                toDelete.add(serializedKey);
+                return;
+            }
+
+            Optional<byte[]> serialized = valueSerializer.serialize(value);
+            if (serialized.isPresent()) {
+                toSave.put(serializedKey, serialized.get());
+                if (toExpire != null) {
+                    toExpire.put(serializedKey, expireAfterWritePolicy.getExpirationAfterWrite(value));
+                }
+            } else {
+                toDelete.add(serializedKey);
+            }
+        });
+
+        if (!toSave.isEmpty()) {
+            if (toExpire != null) {
+                toSave.forEach((k, v) -> redisStringCommands.psetex(k, toExpire.get(k), v));
+            } else {
+                redisStringCommands.mset(toSave);
+            }
+        }
+        if (!toDelete.isEmpty()) {
+            redisKeyCommands.del(toDelete.toArray(new byte[0][]));
+        }
+    }
+
+    /**
+     * Invalidate the values for the given keys.
+     *
+     * @param keys The keys to invalidate
+     * @param redisKeyCommands The redis key commands
+     */
+    protected void invalidateValues(@NonNull Collection<?> keys, RedisKeyCommands<byte[], byte[]> redisKeyCommands) {
+        if (keys.isEmpty()) {
+            return;
+        }
+        byte[][] serializedKeys = keys.stream().map(this::serializeKey).toArray(byte[][]::new);
+        redisKeyCommands.del(serializedKeys);
+    }
+
+    /**
      * @return The default keys pattern.
      */
     protected String getKeysPattern() {
@@ -264,6 +399,72 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
      */
     protected byte[] serializeKey(Object key) {
         return keySerializer.serialize(key).orElseThrow(() -> new IllegalArgumentException("Key cannot be null"));
+    }
+
+    /**
+     * Execute a cache read with the configured retry count.
+     *
+     * @param supplier The read operation
+     * @param <T> The result type
+     * @return The operation result
+     */
+    protected final <T> T executeRead(Supplier<T> supplier) {
+        if (readRetryOperations == null) {
+            return supplier.get();
+        }
+        return readRetryOperations.execute(supplier);
+    }
+
+    /**
+     * Execute a cache insert with the configured retry count.
+     *
+     * @param supplier The insert operation
+     * @param <T> The result type
+     * @return The operation result
+     */
+    protected final <T> T executeInsert(Supplier<T> supplier) {
+        if (insertRetryOperations == null) {
+            return supplier.get();
+        }
+        return insertRetryOperations.execute(supplier);
+    }
+
+    /**
+     * Execute an asynchronous cache read with the configured retry count.
+     *
+     * @param supplier The read operation
+     * @param <T> The result type
+     * @return The operation stage
+     */
+    protected final <T> CompletionStage<T> executeReadAsync(Supplier<? extends CompletionStage<T>> supplier) {
+        if (readRetryOperations == null) {
+            return supplier.get();
+        }
+        return readRetryOperations.executeCompletionStage(supplier);
+    }
+
+    /**
+     * Execute an asynchronous cache insert with the configured retry count.
+     *
+     * @param supplier The insert operation
+     * @param <T> The result type
+     * @return The operation stage
+     */
+    protected final <T> CompletionStage<T> executeInsertAsync(Supplier<? extends CompletionStage<T>> supplier) {
+        if (insertRetryOperations == null) {
+            return supplier.get();
+        }
+        return insertRetryOperations.executeCompletionStage(supplier);
+    }
+
+    private RetryOperations newRetryOperations(int retries, RetryOperationsFactory retryOperationsFactory) {
+        if (retries <= 0) {
+            return null;
+        }
+        return retryOperationsFactory.createRetryOperations(RetryPolicy.builder()
+                .maxAttempts(retries)
+                .delay(Duration.ZERO)
+                .build());
     }
 
     private ExpirationAfterWritePolicy configureExpirationAfterWritePolicy(AbstractRedisCacheConfiguration redisCacheConfiguration, BeanLocator beanLocator) {

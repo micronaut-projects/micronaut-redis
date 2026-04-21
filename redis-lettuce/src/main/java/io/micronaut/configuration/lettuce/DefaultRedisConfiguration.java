@@ -30,5 +30,5 @@ import io.micronaut.core.util.StringUtils;
 @Primary
 @Requires(property = RedisSetting.PREFIX)
 @Requires(property = RedisSetting.PREFIX + ".enabled", notEquals = StringUtils.FALSE)
-public class DefaultRedisConfiguration extends AbstractRedisConfiguration {
+public class DefaultRedisConfiguration extends RedisConfigurationWithUriSettings {
 }

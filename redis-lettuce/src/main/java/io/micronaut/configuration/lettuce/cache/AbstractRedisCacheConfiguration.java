@@ -15,9 +15,9 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
-import org.jspecify.annotations.NonNull;
 import io.micronaut.core.serialize.ObjectSerializer;
 import io.micronaut.runtime.ApplicationConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.nio.charset.Charset;
 import java.time.Duration;
@@ -39,6 +39,8 @@ public abstract class AbstractRedisCacheConfiguration {
     protected Duration expireAfterAccess;
     protected String expirationAfterWritePolicy;
     protected Long invalidateScanCount = 100L;
+    protected Integer readRetries;
+    protected Integer insertRetries;
 
     /**
      * Constructor.
@@ -110,6 +112,33 @@ public abstract class AbstractRedisCacheConfiguration {
     }
 
     /**
+     * Sets the name of the server to use.
+     *
+     * @param server The server name
+     */
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    /**
+     * Sets the {@link ObjectSerializer} to use for serializing keys.
+     *
+     * @param keySerializer The key serializer
+     */
+    public void setKeySerializer(Class<ObjectSerializer> keySerializer) {
+        this.keySerializer = keySerializer;
+    }
+
+    /**
+     * Sets the {@link ObjectSerializer} to use for serializing values.
+     *
+     * @param valueSerializer The value serializer
+     */
+    public void setValueSerializer(Class<ObjectSerializer> valueSerializer) {
+        this.valueSerializer = valueSerializer;
+    }
+
+    /**
      * @param expireAfterWrite The cache expiration duration after writing into it.
      */
     public void setExpireAfterWrite(Duration expireAfterWrite) {
@@ -157,5 +186,43 @@ public abstract class AbstractRedisCacheConfiguration {
      */
     public void setInvalidateScanCount(@NonNull Long invalidateScanCount) {
         this.invalidateScanCount = invalidateScanCount;
+    }
+
+    /**
+     * @return The number of times a failed cache read should be retried.
+     * @since 7.0.0
+     */
+    public Optional<Integer> getReadRetries() {
+        return Optional.ofNullable(readRetries);
+    }
+
+    /**
+     * @param readRetries The number of times a failed cache read should be retried.
+     * @since 7.0.0
+     */
+    public void setReadRetries(@NonNull Integer readRetries) {
+        if (readRetries < 0) {
+            throw new IllegalArgumentException("Redis cache read retries must be greater than or equal to 0");
+        }
+        this.readRetries = readRetries;
+    }
+
+    /**
+     * @return The number of times a failed cache insert should be retried.
+     * @since 7.0.0
+     */
+    public Optional<Integer> getInsertRetries() {
+        return Optional.ofNullable(insertRetries);
+    }
+
+    /**
+     * @param insertRetries The number of times a failed cache insert should be retried.
+     * @since 7.0.0
+     */
+    public void setInsertRetries(@NonNull Integer insertRetries) {
+        if (insertRetries < 0) {
+            throw new IllegalArgumentException("Redis cache insert retries must be greater than or equal to 0");
+        }
+        this.insertRetries = insertRetries;
     }
 }

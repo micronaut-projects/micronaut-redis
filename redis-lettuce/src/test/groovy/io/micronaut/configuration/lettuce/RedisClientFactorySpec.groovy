@@ -3,6 +3,7 @@ package io.micronaut.configuration.lettuce
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
 import io.lettuce.core.api.StatefulRedisConnection
+import io.lettuce.core.metrics.MicrometerOptions
 import io.lettuce.core.api.sync.RedisCommands
 import io.lettuce.core.support.AsyncPool
 import io.micrometer.core.instrument.MeterRegistry
@@ -11,6 +12,7 @@ import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.redis.test.RedisContainerUtils
 
 import java.util.concurrent.TimeUnit
+import java.time.Duration
 
 /**
  * @author Graeme Rocher
@@ -172,6 +174,48 @@ class RedisClientFactorySpec extends RedisSpec {
 
         cleanup:
         applicationContext.stop()
+    }
+
+    void "test redis command latency recorder settings are configurable"() {
+        when:
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.uri': 'redis://localhost:6379',
+                'redis.metrics.command-latency-recorder.histogram': false,
+                'redis.metrics.command-latency-recorder.local-distinction': true,
+                'redis.metrics.command-latency-recorder.min-latency': '2ms',
+                'redis.metrics.command-latency-recorder.max-latency': '3m',
+                'redis.metrics.command-latency-recorder.target-percentiles': [0.25d, 0.75d]
+        ])
+
+        then:
+        def commandLatencyRecorderConfiguration = applicationContext.getBean(AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration)
+        MicrometerOptions options = commandLatencyRecorderConfiguration.toMicrometerOptions()
+        !options.isHistogram()
+        options.localDistinction()
+        options.minLatency() == Duration.ofMillis(2)
+        options.maxLatency() == Duration.ofMinutes(3)
+        options.targetPercentiles().toList() == [0.25d, 0.75d]
+
+        cleanup:
+        applicationContext.close()
+    }
+
+    void "test named redis command latency recorder settings are configurable"() {
+        when:
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.servers.foo.uri': 'redis://localhost:6379',
+                'redis.servers.foo.metrics.command-latency-recorder.histogram': false,
+                'redis.servers.foo.metrics.command-latency-recorder.target-percentiles': [0.33d, 0.66d]
+        ])
+
+        then:
+        def commandLatencyRecorderConfiguration = applicationContext.getBean(AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration, Qualifiers.byName("foo"))
+        MicrometerOptions options = commandLatencyRecorderConfiguration.toMicrometerOptions()
+        !options.isHistogram()
+        options.targetPercentiles().toList() == [0.33d, 0.66d]
+
+        cleanup:
+        applicationContext.close()
     }
 
     void "test redis client uses defined codec"() {

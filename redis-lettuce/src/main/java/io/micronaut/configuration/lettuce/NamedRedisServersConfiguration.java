@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce;
 
+import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.EachProperty;
 import io.micronaut.context.annotation.Parameter;
 
@@ -33,5 +34,12 @@ public class NamedRedisServersConfiguration extends RedisConfigurationWithUriSet
      */
     public NamedRedisServersConfiguration(@Parameter String name) {
         setName(name);
+    }
+
+    /**
+     * Named command latency recorder configuration.
+     */
+    @ConfigurationProperties("metrics.command-latency-recorder")
+    public static class NamedRedisCommandLatencyRecorderConfiguration extends RedisCommandLatencyRecorderConfiguration {
     }
 }

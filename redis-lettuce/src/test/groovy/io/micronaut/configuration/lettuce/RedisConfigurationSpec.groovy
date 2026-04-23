@@ -7,11 +7,13 @@ import io.lettuce.core.SslVerifyMode
 import io.lettuce.core.codec.StringCodec
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.exceptions.NoSuchBeanException
-
+import io.micronaut.inject.qualifiers.Qualifiers
 import spock.lang.AutoCleanup
 import spock.lang.Specification
 
+import java.net.URI
 import java.time.Duration
+import java.util.List
 
 
 class RedisConfigurationSpec extends Specification {
@@ -48,6 +50,27 @@ class RedisConfigurationSpec extends Specification {
 
         then:
         thrown(NoSuchBeanException)
+    }
+
+    void "test redis metrics configuration binds command latency recorder settings"() {
+        given:
+        applicationContext = ApplicationContext.run([
+                'redis.uri': 'redis://localhost:6379',
+                'redis.metrics.command-latency-recorder.histogram': false,
+                'redis.metrics.command-latency-recorder.target-percentiles': [0.25d, 0.75d],
+                'redis.servers.foo.uri': 'redis://localhost:6379',
+                'redis.servers.foo.metrics.command-latency-recorder.enabled': false
+        ])
+
+        when:
+        def defaultConfig = applicationContext.getBean(AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration)
+        def namedConfig = applicationContext.getBean(AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration, Qualifiers.byName("foo"))
+
+        then:
+        !defaultConfig.isHistogram()
+        defaultConfig.getTargetPercentiles().toList() == [0.25d, 0.75d]
+        !namedConfig.isEnabled()
+        namedConfig.isHistogram()
     }
 
     void "test uri configuration applies separately bound RedisURI settings"() {

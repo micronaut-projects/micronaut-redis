@@ -19,7 +19,11 @@ import io.lettuce.core.metrics.MicrometerCommandLatencyRecorder;
 import io.lettuce.core.metrics.MicrometerOptions;
 import io.lettuce.core.resource.ClientResources;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Primary;
+import io.micronaut.context.env.Environment;
+import io.micronaut.inject.qualifiers.Qualifiers;
 
 import jakarta.inject.Singleton;
 
@@ -32,14 +36,25 @@ import jakarta.inject.Singleton;
 @Requires(beans = MeterRegistry.class)
 public class MetricsClientResourceMutator implements ClientResourcesMutator {
     private final MeterRegistry meterRegistry;
+    private final BeanLocator beanLocator;
+    private final AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration defaultConfiguration;
 
-    public MetricsClientResourceMutator(MeterRegistry meterRegistry) {
+    public MetricsClientResourceMutator(MeterRegistry meterRegistry,
+                                        BeanLocator beanLocator,
+                                        @Primary AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration defaultConfiguration) {
         this.meterRegistry = meterRegistry;
+        this.beanLocator = beanLocator;
+        this.defaultConfiguration = defaultConfiguration;
     }
 
     @Override
     public void mutate(ClientResources.Builder builder, AbstractRedisConfiguration config) {
-        MicrometerOptions options = MicrometerOptions.builder().histogram(true).build();
+        AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration recorderConfiguration =
+                Environment.DEFAULT_NAME.equals(config.getName())
+                        ? defaultConfiguration
+                        : beanLocator.findBean(AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.class, Qualifiers.byName(config.getName()))
+                                .orElse(defaultConfiguration);
+        MicrometerOptions options = recorderConfiguration.toMicrometerOptions();
         builder.commandLatencyRecorder(new MicrometerCommandLatencyRecorder(meterRegistry, options));
     }
 }

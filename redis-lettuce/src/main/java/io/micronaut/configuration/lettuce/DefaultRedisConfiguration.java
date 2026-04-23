@@ -31,4 +31,12 @@ import io.micronaut.core.util.StringUtils;
 @Requires(property = RedisSetting.PREFIX)
 @Requires(property = RedisSetting.PREFIX + ".enabled", notEquals = StringUtils.FALSE)
 public class DefaultRedisConfiguration extends RedisConfigurationWithUriSettings {
+
+    /**
+     * Default command latency recorder configuration.
+     */
+    @ConfigurationProperties("metrics.command-latency-recorder")
+    @Primary
+    public static class DefaultRedisCommandLatencyRecorderConfiguration extends RedisCommandLatencyRecorderConfiguration {
+    }
 }

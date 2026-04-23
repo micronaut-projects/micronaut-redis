@@ -11,6 +11,30 @@ redis:
     timeout: 30s
 ----
 
+=== Configuring Lettuce Command Latency Metrics
+
+If Micrometer is on the classpath, the Lettuce command latency recorder is enabled automatically. Histogram metrics remain enabled by default for compatibility, but you can now customize them in configuration:
+
+.Customizing Lettuce command latency metrics
+[configuration]
+----
+redis:
+    uri: redis://localhost
+    metrics:
+        command-latency-recorder:
+            enabled: true
+            histogram: false
+            local-distinction: false
+            min-latency: 2ms
+            max-latency: 3m
+            target-percentiles:
+              - 0.25
+              - 0.75
+----
+
+The same settings can be applied to named Redis connections under `redis.servers.<name>.metrics.command-latency-recorder`.
+Set `enabled: false` to disable the recorder for either the default or a named connection.
+
 === Multiple Redis Connections
 
 You can configure multiple Redis connections using the `redis.servers` setting. For example:

@@ -1,5 +1,21 @@
 package io.micronaut.configuration.lettuce.cache
 
+import io.lettuce.core.KeyScanCursor
+import io.lettuce.core.ScanArgs
+import io.lettuce.core.ScanCursor
+import io.lettuce.core.api.StatefulConnection
+import io.lettuce.core.api.async.RedisAsyncCommands
+import io.lettuce.core.api.async.RedisKeyAsyncCommands
+import io.lettuce.core.api.sync.RedisCommands
+import io.lettuce.core.api.sync.RedisKeyCommands
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection
+import io.lettuce.core.cluster.api.async.AsyncNodeSelection
+import io.lettuce.core.cluster.api.async.RedisAdvancedClusterAsyncCommands
+import io.lettuce.core.cluster.api.sync.NodeSelection
+import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands
+import io.lettuce.core.cluster.models.partitions.RedisClusterNode
+import io.lettuce.core.protocol.AsyncCommand
+import io.lettuce.core.protocol.RedisCommand
 import io.micronaut.context.BeanLocator
 import io.micronaut.core.convert.ConversionService
 import io.micronaut.core.type.Argument
@@ -104,6 +120,62 @@ class AbstractRedisCacheSpec extends Specification {
         cache.close()
     }
 
+    void "cluster sync key scan aggregates keys from all upstream nodes"() {
+        given:
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor()
+        def cache = new TestRedisCache(stubBeanLocator(scheduler), scheduler, 0, 0, null, null)
+        def connection = Mock(StatefulRedisClusterConnection<byte[], byte[]>)
+        def clusterCommands = Mock(RedisAdvancedClusterCommands<byte[], byte[]>)
+        def nodeSelection = Mock(NodeSelection<byte[], byte[]>)
+        def node1 = Mock(RedisCommands<byte[], byte[]>)
+        def node2 = Mock(RedisCommands<byte[], byte[]>)
+        def upstreamA = RedisClusterNode.of("upstream-a")
+        def upstreamB = RedisClusterNode.of("upstream-b")
+
+        when:
+        def keys = cache.collectInvalidateKeys(connection, Mock(RedisKeyCommands<byte[], byte[]>), "test:*".bytes)
+
+        then:
+        1 * connection.sync() >> clusterCommands
+        1 * clusterCommands.upstream() >> nodeSelection
+        1 * nodeSelection.asMap() >> [(upstreamA): node1, (upstreamB): node2]
+        1 * node1.scan(_ as ScanArgs) >> finishedKeyScanCursor("test:one".bytes)
+        1 * node2.scan(_ as ScanArgs) >> finishedKeyScanCursor("test:two".bytes, "test:three".bytes)
+        keys == ["test:one".bytes, "test:two".bytes, "test:three".bytes]
+
+        cleanup:
+        cache.close()
+    }
+
+    void "cluster async key scan aggregates keys from all upstream nodes"() {
+        given:
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor()
+        def cache = new TestRedisCache(stubBeanLocator(scheduler), scheduler, 0, 0, null, null)
+        def connection = Mock(StatefulRedisClusterConnection<byte[], byte[]>)
+        def clusterCommands = Mock(RedisAdvancedClusterAsyncCommands<byte[], byte[]>)
+        def nodeSelection = Mock(AsyncNodeSelection<byte[], byte[]>)
+        def node1 = Mock(RedisAsyncCommands<byte[], byte[]>)
+        def node2 = Mock(RedisAsyncCommands<byte[], byte[]>)
+        def upstreamA = RedisClusterNode.of("upstream-a")
+        def upstreamB = RedisClusterNode.of("upstream-b")
+
+        when:
+        def keys = cache.collectInvalidateKeysAsync(connection, Mock(RedisKeyAsyncCommands<byte[], byte[]>), "test:*".bytes)
+            .toCompletableFuture()
+            .join()
+
+        then:
+        1 * connection.async() >> clusterCommands
+        1 * clusterCommands.upstream() >> nodeSelection
+        1 * nodeSelection.asMap() >> [(upstreamA): node1, (upstreamB): node2]
+        1 * node1.scan(_ as ScanCursor, _ as ScanArgs) >> completedRedisFuture(finishedKeyScanCursor("test:one".bytes))
+        1 * node2.scan(_ as ScanCursor, _ as ScanArgs) >> completedRedisFuture(finishedKeyScanCursor("test:two".bytes, "test:three".bytes))
+        keys == ["test:one".bytes, "test:two".bytes, "test:three".bytes]
+
+        cleanup:
+        cache.close()
+    }
+
     private BeanLocator stubBeanLocator(ScheduledExecutorService scheduler) {
         RetryOperationsFactory retryOperationsFactory = RetryOperationsFactory.create(scheduler)
         Stub(BeanLocator) {
@@ -183,6 +255,18 @@ class AbstractRedisCacheSpec extends Specification {
             return executeInsertAsync(supplier).toCompletableFuture()
         }
 
+        List<byte[]> collectInvalidateKeys(StatefulConnection<byte[], byte[]> connection,
+                                          RedisKeyCommands<byte[], byte[]> redisKeyCommands,
+                                          byte[] pattern) {
+            return allKeys(connection, redisKeyCommands, pattern)
+        }
+
+        CompletionStage<List<byte[]>> collectInvalidateKeysAsync(StatefulConnection<byte[], byte[]> connection,
+                                                                 RedisKeyAsyncCommands<byte[], byte[]> redisKeyCommands,
+                                                                 byte[] pattern) {
+            return allKeys(connection, redisKeyCommands, pattern)
+        }
+
         private static RedisCacheConfiguration configuration(Integer readRetries, Integer insertRetries) {
             ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration()
             RedisCacheConfiguration configuration = new RedisCacheConfiguration("test", applicationConfiguration)
@@ -206,5 +290,20 @@ class AbstractRedisCacheSpec extends Specification {
             }
             return configuration
         }
+    }
+
+    private static KeyScanCursor<byte[]> finishedKeyScanCursor(byte[]... keys) {
+        KeyScanCursor<byte[]> cursor = new KeyScanCursor<>()
+        cursor.setCursor("0")
+        cursor.setFinished(true)
+        cursor.getKeys().addAll(keys.toList())
+        return cursor
+    }
+
+    private AsyncCommand<byte[], byte[], KeyScanCursor<byte[]>> completedRedisFuture(KeyScanCursor<byte[]> cursor) {
+        RedisCommand<byte[], byte[], KeyScanCursor<byte[]>> command = Mock()
+        AsyncCommand<byte[], byte[], KeyScanCursor<byte[]>> future = new AsyncCommand<>(command)
+        future.complete(cursor)
+        return future
     }
 }

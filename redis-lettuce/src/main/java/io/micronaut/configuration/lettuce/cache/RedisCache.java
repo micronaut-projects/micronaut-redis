@@ -35,7 +35,6 @@ import io.micronaut.core.util.StringUtils;
 import jakarta.annotation.PreDestroy;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,7 +42,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * An implementation of {@link SyncCache} for Lettuce / Redis.
@@ -170,10 +168,7 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
 
     @Override
     public void invalidateAll() {
-        ScanArgs args = ScanArgs.Builder.limit(invalidateScanCount).match(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
-        ScanIterator<byte[]> scanIterator = ScanIterator.scan(redisKeyCommands, args);
-
-        List<byte[]> keys = scanIterator.stream().collect(Collectors.toList());
+        List<byte[]> keys = allKeys(connection, redisKeyCommands, getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
         if (!keys.isEmpty()) {
             redisKeyCommands.del(keys.toArray(new byte[keys.size()][]));
         }
@@ -330,30 +325,14 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
 
         @Override
         public CompletableFuture<Boolean> invalidateAll() {
-            ScanArgs args = ScanArgs.Builder.limit(invalidateScanCount).match(getKeysPattern().getBytes(redisCacheConfiguration.getCharset()));
-
-            return allKeys(ScanCursor.INITIAL, args).thenCompose(keysToDelete -> {
+            return RedisCache.this.allKeys(connection, redisKeyAsyncCommands, getKeysPattern().getBytes(redisCacheConfiguration.getCharset()))
+                .thenCompose(keysToDelete -> {
                     if (keysToDelete.isEmpty()) {
                         return CompletableFuture.completedFuture(false);
                     }
                     return deleteByKeys(keysToDelete.toArray(new byte[keysToDelete.size()][]));
                 }
-            );
-        }
-
-        private CompletableFuture<List<byte[]>> allKeys(ScanCursor initialCursor, ScanArgs args) {
-            if (initialCursor.isFinished()) {
-                return CompletableFuture.completedFuture(new LinkedList<>());
-            }
-
-            return (CompletableFuture<List<byte[]>>) redisKeyAsyncCommands.scan(initialCursor, args).thenCompose(nextCursor -> {
-                List<byte[]> keysToDelete = nextCursor.getKeys();
-
-                return allKeys(nextCursor, args).thenCompose(it -> {
-                    it.addAll(keysToDelete);
-                    return CompletableFuture.completedFuture(it);
-                });
-            });
+            ).toCompletableFuture();
         }
 
         private CompletableFuture<Boolean> deleteByKeys(byte[]... serializedKey) {

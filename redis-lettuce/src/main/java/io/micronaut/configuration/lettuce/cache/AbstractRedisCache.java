@@ -16,10 +16,15 @@
 package io.micronaut.configuration.lettuce.cache;
 
 import io.lettuce.core.KeyValue;
+import io.lettuce.core.ScanArgs;
+import io.lettuce.core.ScanCursor;
+import io.lettuce.core.ScanIterator;
 import io.lettuce.core.api.StatefulConnection;
+import io.lettuce.core.api.async.RedisAsyncCommands;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisKeyAsyncCommands;
 import io.lettuce.core.api.async.RedisStringAsyncCommands;
+import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.api.sync.RedisKeyCommands;
 import io.lettuce.core.api.sync.RedisStringCommands;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
@@ -41,13 +46,16 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.time.Duration;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * An abstract class implementing SyncCache for the redis.
@@ -234,6 +242,98 @@ public abstract class AbstractRedisCache<C> implements SyncCache<C>, AutoCloseab
             throw new ConfigurationException(INVALID_REDIS_CONNECTION_MESSAGE);
         }
         return commands;
+    }
+
+    /**
+     * Collect the keys matching the given pattern for the current connection.
+     *
+     * @param connection The connection
+     * @param redisKeyCommands The redis key commands
+     * @param pattern The pattern to match
+     * @return A list of matching keys
+     */
+    protected List<byte[]> allKeys(StatefulConnection<byte[], byte[]> connection,
+                                   RedisKeyCommands<byte[], byte[]> redisKeyCommands,
+                                   byte[] pattern) {
+        if (connection instanceof StatefulRedisClusterConnection<byte[], byte[]> clusterConnection) {
+            return clusterConnection.sync().upstream().asMap().values().stream()
+                    .map(commands -> allKeys((RedisCommands<byte[], byte[]>) commands, pattern))
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+        }
+        return allKeys(redisKeyCommands, pattern);
+    }
+
+    /**
+     * Collect the keys matching the given pattern for the current connection.
+     *
+     * @param connection The connection
+     * @param redisKeyCommands The redis key commands
+     * @param pattern The pattern to match
+     * @return A stage that completes with the matching keys
+     */
+    protected CompletionStage<List<byte[]>> allKeys(StatefulConnection<byte[], byte[]> connection,
+                                                    RedisKeyAsyncCommands<byte[], byte[]> redisKeyCommands,
+                                                    byte[] pattern) {
+        if (connection instanceof StatefulRedisClusterConnection<byte[], byte[]> clusterConnection) {
+            ScanArgs args = newScanArgs(pattern);
+            List<CompletableFuture<List<byte[]>>> futures = clusterConnection.async().upstream().asMap().values().stream()
+                    .map(commands -> allKeys((RedisAsyncCommands<byte[], byte[]>) commands, ScanCursor.INITIAL, args).toCompletableFuture())
+                    .collect(Collectors.toList());
+            return combineKeyFutures(futures);
+        }
+        return allKeys(redisKeyCommands, ScanCursor.INITIAL, newScanArgs(pattern));
+    }
+
+    /**
+     * Collect the keys matching the given pattern using the provided sync commands.
+     *
+     * @param redisKeyCommands The redis key commands
+     * @param pattern The pattern to match
+     * @return A list of matching keys
+     */
+    protected List<byte[]> allKeys(RedisKeyCommands<byte[], byte[]> redisKeyCommands, byte[] pattern) {
+        ScanIterator<byte[]> scanIterator = ScanIterator.scan(redisKeyCommands, newScanArgs(pattern));
+        return scanIterator.stream().collect(Collectors.toList());
+    }
+
+    /**
+     * Collect the keys matching the given pattern using the provided async commands.
+     *
+     * @param redisKeyCommands The redis key commands
+     * @param initialCursor The initial cursor
+     * @param args The scan arguments
+     * @return A stage that completes with the matching keys
+     */
+    protected CompletionStage<List<byte[]>> allKeys(RedisKeyAsyncCommands<byte[], byte[]> redisKeyCommands,
+                                                    ScanCursor initialCursor,
+                                                    ScanArgs args) {
+        if (initialCursor.isFinished()) {
+            return CompletableFuture.completedFuture(new LinkedList<>());
+        }
+
+        return redisKeyCommands.scan(initialCursor, args).thenCompose(nextCursor -> {
+            List<byte[]> keysToDelete = nextCursor.getKeys();
+            return allKeys(redisKeyCommands, nextCursor, args).thenApply(existingKeys -> {
+                existingKeys.addAll(keysToDelete);
+                return existingKeys;
+            });
+        });
+    }
+
+    private CompletableFuture<List<byte[]>> combineKeyFutures(List<CompletableFuture<List<byte[]>>> futures) {
+        if (futures.isEmpty()) {
+            return CompletableFuture.completedFuture(new LinkedList<>());
+        }
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(ignore -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .flatMap(List::stream)
+                        .collect(Collectors.toList()));
+    }
+
+    private ScanArgs newScanArgs(byte[] pattern) {
+        return ScanArgs.Builder.limit(invalidateScanCount).match(pattern);
     }
 
     /**

@@ -2,10 +2,12 @@ package io.micronaut.configuration.lettuce
 
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.sync.RedisCommands
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection
 import io.lettuce.core.codec.ByteArrayCodec
 import io.lettuce.core.codec.RedisCodec
 import io.lettuce.core.codec.StringCodec
 import io.micronaut.context.ApplicationContext
+import io.micronaut.core.type.Argument
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.redis.test.RedisContainerUtils
 import io.netty.handler.codec.EncoderException
@@ -38,6 +40,37 @@ class RedisCodecFactorySpec extends RedisSpec {
         then:
         applicationContext.getBean(RedisCodec) == ByteArrayCodec.INSTANCE
         applicationContext.findBean(StringCodec).isEmpty()
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test custom top level RedisCodec is used without replacing the default factory"() {
+        when:
+        final applicationContext = ApplicationContext.run(
+                'spec.name': ByteArrayCodecFactory.SPEC_NAME,
+                'redis.uri': 'redis://localhost'
+        )
+
+        then:
+        applicationContext.getBean(Argument.of(RedisCodec, byte[].class, byte[].class)) == ByteArrayCodec.INSTANCE
+        applicationContext.getBean(RedisCodec) instanceof StringCodec
+        applicationContext.findBeanDefinition(Argument.of(StatefulRedisConnection, byte[].class, byte[].class)).present
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test custom top level RedisCodec is exposed for cluster connections without replacing the default factory"() {
+        when:
+        final applicationContext = ApplicationContext.run(
+                'spec.name': ByteArrayCodecFactory.SPEC_NAME,
+                'redis.uris': ['redis://localhost']
+        )
+
+        then:
+        applicationContext.getBean(Argument.of(RedisCodec, byte[].class, byte[].class)) == ByteArrayCodec.INSTANCE
+        applicationContext.findBeanDefinition(Argument.of(StatefulRedisClusterConnection, byte[].class, byte[].class)).present
 
         cleanup:
         applicationContext.stop()

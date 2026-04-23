@@ -99,23 +99,14 @@ Once you have the above configuration in place you can inject one of the followi
 The following example demonstrates the use of the `StatefulRedisConnection` interface's synchronous API:
 
 .Using StatefulRedisConnection
-[source,groovy]
-----
-@Inject StatefulRedisConnection<String, String> connection
-...
-include::{testsredis}/RedisClientFactorySpec.groovy[tags=commands, indent=0]
-----
+snippet::io.micronaut.configuration.lettuce.docs.RedisClientCommands[tags="commands", project-base="docs-examples/codecs"]
 
 NOTE: The Lettuce driver's `StatefulRedisConnection` interface is designed to be long-lived and there is no need to close the connection. It will be closed automatically when the application shuts down.
 
 === Redis codec configuration
 
 By default, a StringCodec is used for redis connections.
-This can be configured by supplying your own Factory that replaces the default one.
+This can be configured by supplying your own `RedisCodec` bean.
 
-.Configuring a custom RedisCodecFactory
-[source,groovy]
-----
-include::{testsredis}/ByteArrayCodecReplacementFactory.groovy[tags=codecReplacement, indent=0]
-include::{testsredis}/ByteArrayCodecReplacementFactory.groovy[tags=codecReplacement2, indent=0]
-----
+.Configuring a custom RedisCodec
+snippet::io.micronaut.configuration.lettuce.docs.ByteArrayCodecFactory[tags="codecFactory", project-base="docs-examples/codecs"]

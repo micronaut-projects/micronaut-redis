@@ -71,6 +71,7 @@ public class RedisHealthIndicator implements HealthIndicator {
     private final BeanContext beanContext;
     private final Scheduler scheduler;
     private final HealthAggregator<?> healthAggregator;
+    private final RedisHealthIndicatorConfiguration configuration;
 
     // Must include the connections otherwise the health check will be unknown until the first Redis command executed
     private final RedisClient[] redisClients;
@@ -89,6 +90,7 @@ public class RedisHealthIndicator implements HealthIndicator {
         this.beanContext = beanContext;
         this.healthAggregator = healthAggregator;
         this.scheduler = Schedulers.fromExecutorService(executorService);
+        this.configuration = beanContext.findBean(RedisHealthIndicatorConfiguration.class).orElseGet(RedisHealthIndicatorConfiguration::new);
         this.redisClients = redisClients;
         this.redisClusterClients = redisClusterClients;
     }
@@ -111,10 +113,12 @@ public class RedisHealthIndicator implements HealthIndicator {
 
     private <T, R extends StatefulConnection<K, V>, K, V> Mono<HealthResult> healthResultForClient(BeanRegistration<T> client, Class<R> connectionType, Function<T, R> getConnection, Function<R, BaseRedisReactiveCommands<K, V>> getReactive) {
         String connectionName = client.getIdentifier().getName();
-        Optional<R> existingConnection = findExistingConnection(connectionType, connectionName);
         String dbName = "redis(" + connectionName + ")";
-        if (existingConnection.isPresent()) {
-            return healthResultForConnection(existingConnection.get(), dbName, getReactive, false);
+        if (configuration.isReuseConnection()) {
+            Optional<R> existingConnection = findExistingConnection(connectionType, connectionName);
+            if (existingConnection.isPresent()) {
+                return healthResultForConnection(existingConnection.get(), dbName, getReactive, false);
+            }
         }
 
         R connection;

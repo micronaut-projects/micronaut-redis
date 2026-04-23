@@ -20,11 +20,53 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class RedisHealthIndicatorConnectionReuseSpec extends Specification {
 
-    void "health indicator reuses an existing redis connection bean"() {
+    void "health indicator opens a new redis connection by default"() {
         given:
         BeanContext beanContext = Mock()
         HealthAggregator<HealthResult> healthAggregator = Mock()
         RedisClient redisClient = Mock()
+        AtomicInteger closeCalls = new AtomicInteger()
+        StatefulRedisConnection<Object, Object> redisConnection = Mock() {
+            close() >> { closeCalls.incrementAndGet() }
+        }
+        RedisReactiveCommands<Object, Object> reactiveCommands = Mock()
+        BeanRegistration<RedisClient> registration = Stub() {
+            getBean() >> redisClient
+            getIdentifier() >> Stub(BeanIdentifier) {
+                getName() >> "default"
+            }
+        }
+        ExecutorService executorService = Executors.newSingleThreadExecutor()
+        beanContext.findBean(RedisHealthIndicatorConfiguration) >> Optional.empty()
+        RedisHealthIndicator healthIndicator = new RedisHealthIndicator(beanContext, executorService, healthAggregator, [redisClient] as RedisClient[], [] as io.lettuce.core.cluster.RedisClusterClient[])
+        beanContext.getActiveBeanRegistrations(RedisClient) >> [registration]
+        beanContext.getActiveBeanRegistrations(io.lettuce.core.cluster.RedisClusterClient) >> []
+        healthAggregator.aggregate(RedisHealthIndicator.NAME, _) >> { String name, publisher -> publisher }
+        redisClient.connect() >> redisConnection
+        redisConnection.reactive() >> reactiveCommands
+        reactiveCommands.ping() >> Mono.just("PONG")
+
+        when:
+        HealthResult result = Flux.from(healthIndicator.getResult()).blockFirst()
+
+        then:
+        result != null
+        result.status == HealthStatus.UP
+        new PollingConditions(timeout: 1).eventually {
+            assert closeCalls.get() == 1
+        }
+
+        cleanup:
+        executorService.shutdownNow()
+    }
+
+    void "health indicator reuses an existing redis connection bean when configured"() {
+        given:
+        BeanContext beanContext = Mock()
+        HealthAggregator<HealthResult> healthAggregator = Mock()
+        RedisClient redisClient = Mock()
+        RedisHealthIndicatorConfiguration configuration = new RedisHealthIndicatorConfiguration()
+        configuration.reuseConnection = true
         StatefulRedisConnection<Object, Object> redisConnection = Mock()
         RedisReactiveCommands<Object, Object> reactiveCommands = Mock()
         BeanRegistration<RedisClient> registration = Stub() {
@@ -34,12 +76,11 @@ class RedisHealthIndicatorConnectionReuseSpec extends Specification {
             }
         }
         ExecutorService executorService = Executors.newSingleThreadExecutor()
+        beanContext.findBean(RedisHealthIndicatorConfiguration) >> Optional.of(configuration)
         RedisHealthIndicator healthIndicator = new RedisHealthIndicator(beanContext, executorService, healthAggregator, [redisClient] as RedisClient[], [] as io.lettuce.core.cluster.RedisClusterClient[])
-
         beanContext.getActiveBeanRegistrations(RedisClient) >> [registration]
         beanContext.getActiveBeanRegistrations(io.lettuce.core.cluster.RedisClusterClient) >> []
         beanContext.findBean(StatefulRedisConnection, _) >> Optional.of(redisConnection)
-        beanContext.findBean(io.lettuce.core.cluster.api.StatefulRedisClusterConnection) >> Optional.empty()
         healthAggregator.aggregate(RedisHealthIndicator.NAME, _) >> { String name, publisher -> publisher }
         redisConnection.reactive() >> reactiveCommands
         reactiveCommands.ping() >> Mono.just("PONG")
@@ -57,11 +98,13 @@ class RedisHealthIndicatorConnectionReuseSpec extends Specification {
         executorService.shutdownNow()
     }
 
-    void "health indicator falls back to opening a redis connection when none exists"() {
+    void "health indicator falls back to opening a redis connection when reuse is enabled and none exists"() {
         given:
         BeanContext beanContext = Mock()
         HealthAggregator<HealthResult> healthAggregator = Mock()
         RedisClient redisClient = Mock()
+        RedisHealthIndicatorConfiguration configuration = new RedisHealthIndicatorConfiguration()
+        configuration.reuseConnection = true
         AtomicInteger closeCalls = new AtomicInteger()
         StatefulRedisConnection<Object, Object> redisConnection = Mock() {
             close() >> { closeCalls.incrementAndGet() }
@@ -74,13 +117,12 @@ class RedisHealthIndicatorConnectionReuseSpec extends Specification {
             }
         }
         ExecutorService executorService = Executors.newSingleThreadExecutor()
+        beanContext.findBean(RedisHealthIndicatorConfiguration) >> Optional.of(configuration)
         RedisHealthIndicator healthIndicator = new RedisHealthIndicator(beanContext, executorService, healthAggregator, [redisClient] as RedisClient[], [] as io.lettuce.core.cluster.RedisClusterClient[])
-
         beanContext.getActiveBeanRegistrations(RedisClient) >> [registration]
         beanContext.getActiveBeanRegistrations(io.lettuce.core.cluster.RedisClusterClient) >> []
         beanContext.findBean(StatefulRedisConnection, _) >> Optional.empty()
         beanContext.findBean(StatefulRedisConnection) >> Optional.empty()
-        beanContext.findBean(io.lettuce.core.cluster.api.StatefulRedisClusterConnection) >> Optional.empty()
         healthAggregator.aggregate(RedisHealthIndicator.NAME, _) >> { String name, publisher -> publisher }
         redisClient.connect() >> redisConnection
         redisConnection.reactive() >> reactiveCommands

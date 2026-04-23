@@ -32,10 +32,43 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 class RedisHealthIndicatorSpec extends RedisSpec {
 
-    void "redis health indicator reuses existing redis connection for repeated checks"() {
+    void "redis health indicator opens a new redis connection for repeated checks by default"() {
         when:
         ApplicationContext applicationContext = ApplicationContext.run([
                 'redis.port': RedisContainerUtils.getRedisPort(),
+                'spec.name': CountingRedisClientFactory.SPEC_NAME
+        ])
+        RedisHealthIndicator healthIndicator = applicationContext.getBean(RedisHealthIndicator)
+        ConnectCounter connectCounter = applicationContext.getBean(ConnectCounter)
+
+        then:
+        connectCounter.connectCalls == 0
+
+        when:
+        HealthResult first = Flux.from(healthIndicator.getResult()).blockFirst()
+        int initialConnectCalls = connectCounter.connectCalls
+        HealthResult second = Flux.from(healthIndicator.getResult()).blockFirst()
+        HealthResult third = Flux.from(healthIndicator.getResult()).blockFirst()
+
+        then:
+        first != null
+        first.status == HealthStatus.UP
+        initialConnectCalls == 1
+        second != null
+        second.status == HealthStatus.UP
+        third != null
+        third.status == HealthStatus.UP
+        connectCounter.connectCalls == 3
+
+        cleanup:
+        applicationContext.close()
+    }
+
+    void "redis health indicator can reuse existing redis connection for repeated checks"() {
+        when:
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.port': RedisContainerUtils.getRedisPort(),
+                'redis.health.reuse-connection': true,
                 'spec.name': CountingRedisClientFactory.SPEC_NAME
         ])
         RedisHealthIndicator healthIndicator = applicationContext.getBean(RedisHealthIndicator)

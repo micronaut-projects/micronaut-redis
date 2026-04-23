@@ -14,12 +14,14 @@ class RedisCacheConfigurationBindingSpec extends Specification {
         setter("setServer", String)
         setter("setKeySerializer", Class)
         setter("setValueSerializer", Class)
+        setter("setNamespace", String)
     }
 
     void "default cache configuration binds value serializer"() {
         given:
         ApplicationContext context = ApplicationContext.run(
-                'redis.cache.value-serializer': JacksonObjectSerializer.name
+                'redis.cache.value-serializer': JacksonObjectSerializer.name,
+                'redis.cache.namespace': 'tenant-a'
         )
 
         when:
@@ -27,6 +29,7 @@ class RedisCacheConfigurationBindingSpec extends Specification {
 
         then:
         configuration.valueSerializer.orElseThrow() == JacksonObjectSerializer
+        configuration.namespace.orElseThrow() == 'tenant-a'
 
         cleanup:
         context.close()
@@ -36,7 +39,8 @@ class RedisCacheConfigurationBindingSpec extends Specification {
         given:
         ApplicationContext context = ApplicationContext.run(
                 'redis.caches.test.enabled': 'true',
-                'redis.caches.test.value-serializer': JacksonObjectSerializer.name
+                'redis.caches.test.value-serializer': JacksonObjectSerializer.name,
+                'redis.caches.test.namespace': 'tenant-b'
         )
 
         when:
@@ -44,6 +48,7 @@ class RedisCacheConfigurationBindingSpec extends Specification {
 
         then:
         configuration.valueSerializer.orElseThrow() == JacksonObjectSerializer
+        configuration.namespace.orElseThrow() == 'tenant-b'
 
         cleanup:
         context.close()
@@ -56,11 +61,13 @@ class RedisCacheConfigurationBindingSpec extends Specification {
 
         when:
         configuration.setServer("default")
+        configuration.setNamespace("tenant-a")
         configuration.setKeySerializer((Class<ObjectSerializer>) JacksonObjectSerializer)
         configuration.setValueSerializer((Class<ObjectSerializer>) JacksonObjectSerializer)
 
         then:
         configuration.server.orElseThrow() == "default"
+        configuration.namespace.orElseThrow() == "tenant-a"
         configuration.keySerializer.orElseThrow() == JacksonObjectSerializer
         configuration.valueSerializer.orElseThrow() == JacksonObjectSerializer
     }
@@ -72,11 +79,13 @@ class RedisCacheConfigurationBindingSpec extends Specification {
 
         when:
         configuration.setServer("named")
+        configuration.setNamespace("tenant-b")
         configuration.setKeySerializer((Class<ObjectSerializer>) JacksonObjectSerializer)
         configuration.setValueSerializer((Class<ObjectSerializer>) JacksonObjectSerializer)
 
         then:
         configuration.server.orElseThrow() == "named"
+        configuration.namespace.orElseThrow() == "tenant-b"
         configuration.keySerializer.orElseThrow() == JacksonObjectSerializer
         configuration.valueSerializer.orElseThrow() == JacksonObjectSerializer
     }

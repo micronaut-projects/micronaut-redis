@@ -19,6 +19,7 @@ import spock.lang.Requires
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.ExecutionException
 
 /**
@@ -224,6 +225,60 @@ class RedisCacheSpec extends RedisSpec {
         for( var i = 0; i < 100; i++) {
             !redisCache.get(i.toString(), Foo).isPresent()
         }
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test cache namespace prefixes keys and scopes invalidateAll"() {
+        given:
+        ApplicationContext applicationContext = ApplicationContext.run(
+                'redis.port': RedisContainerUtils.getRedisPort(),
+                'redis.cache.namespace': 'tenant-a',
+                'redis.caches.test.enabled': 'true',
+                'redis.caches.test.invalidate-scan-count': 2
+        )
+        RedisCache redisCache = applicationContext.getBean(RedisCache, Qualifiers.byName("test"))
+        def commands = ((StatefulRedisConnection<byte[], byte[]>) redisCache.nativeCache).sync()
+
+        when:
+        redisCache.put("alpha", "one")
+        commands.set("tenant-b:test:alpha".getBytes(StandardCharsets.UTF_8), "two".getBytes(StandardCharsets.UTF_8))
+
+        then:
+        redisCache.get("alpha", String).orElse(null) == "one"
+        commands.get("tenant-a:test:alpha".getBytes(StandardCharsets.UTF_8)) != null
+        commands.get("tenant-b:test:alpha".getBytes(StandardCharsets.UTF_8)) != null
+
+        when:
+        redisCache.invalidateAll()
+
+        then:
+        !redisCache.get("alpha", String).isPresent()
+        commands.get("tenant-a:test:alpha".getBytes(StandardCharsets.UTF_8)) == null
+        commands.get("tenant-b:test:alpha".getBytes(StandardCharsets.UTF_8)) != null
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "test named cache namespace overrides default namespace"() {
+        given:
+        ApplicationContext applicationContext = ApplicationContext.run(
+                'redis.port': RedisContainerUtils.getRedisPort(),
+                'redis.cache.namespace': 'tenant-a',
+                'redis.caches.test.enabled': 'true',
+                'redis.caches.test.namespace': 'tenant-b'
+        )
+        RedisCache redisCache = applicationContext.getBean(RedisCache, Qualifiers.byName("test"))
+        def commands = ((StatefulRedisConnection<byte[], byte[]>) redisCache.nativeCache).sync()
+
+        when:
+        redisCache.put("alpha", "one")
+
+        then:
+        commands.get("tenant-a:test:alpha".getBytes(StandardCharsets.UTF_8)) == null
+        commands.get("tenant-b:test:alpha".getBytes(StandardCharsets.UTF_8)) != null
 
         cleanup:
         applicationContext.stop()

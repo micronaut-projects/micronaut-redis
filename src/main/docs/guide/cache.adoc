@@ -9,6 +9,8 @@ Within your application configuration configure the Redis URL and Redis caches:
 ----
 redis:
     uri: redis://localhost
+    cache:
+        namespace: ${micronaut.application.name}
     caches:
         my-cache:
             expire-after-write: 1h
@@ -16,6 +18,7 @@ redis:
             insert-retries: 2
 ----
 
+- Set `redis.cache.namespace` to prefix cache keys when using the default key serializer, or override it per cache with `redis.caches.<cache-name>.namespace`. If you configure a custom `redis.*.key-serializer`, incorporate the namespace into the serialized key.
 - `read-retries` retries failed Redis cache reads before the cache operation fails.
 - `insert-retries` retries failed Redis cache writes before the cache operation fails.
 

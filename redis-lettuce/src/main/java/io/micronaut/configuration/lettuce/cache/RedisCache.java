@@ -196,6 +196,13 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
         return asyncCache;
     }
 
+    private void deleteByPattern(RedisKeyCommands<byte[], byte[]> commands, ScanArgs args) {
+        List<byte[]> keys = ScanIterator.scan(commands, args).stream().collect(Collectors.toList());
+        for (byte[] key : keys) {
+            commands.del(key);
+        }
+    }
+
     /**
      * Get the value based on the parameters.
      *
@@ -467,12 +474,5 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
             return "OK"::equals;
         }
 
-    }
-
-    private void deleteByPattern(RedisKeyCommands<byte[], byte[]> commands, ScanArgs args) {
-        List<byte[]> keys = ScanIterator.scan(commands, args).stream().collect(Collectors.toList());
-        for (byte[] key : keys) {
-            commands.del(key);
-        }
     }
 }

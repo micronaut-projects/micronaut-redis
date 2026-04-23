@@ -1,0 +1,15 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation project(':micronaut-redis-lettuce')
+}
+
+tasks.withType(Test).configureEach {
+    failOnNoDiscoveredTests = false
+}

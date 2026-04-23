@@ -22,7 +22,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * Base configuration that keeps track of explicitly bound URI properties so they can be

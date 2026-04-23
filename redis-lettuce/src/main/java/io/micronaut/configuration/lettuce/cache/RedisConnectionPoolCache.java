@@ -32,6 +32,7 @@ import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.type.Argument;
 import io.micronaut.core.util.StringUtils;
 import jakarta.annotation.PreDestroy;
+import jakarta.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +74,7 @@ public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<State
             RedisCacheConfiguration redisCacheConfiguration,
             ConversionService conversionService,
             BeanLocator beanLocator,
+            @Named(RedisAsyncConnectionPoolFactory.CACHE_POOL_BEAN)
             AsyncPool<StatefulConnection<byte[], byte[]>> asyncPool
     ) {
         super(defaultRedisCacheConfiguration, redisCacheConfiguration, conversionService, beanLocator);

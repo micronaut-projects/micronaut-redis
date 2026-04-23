@@ -58,6 +58,33 @@ https://github.com/lettuce-io/lettuce-core/wiki/Configuring-Client-resources
 
 IMPORTANT: You may see `io.lettuce.core.RedisCommandTimeoutException: Command timed out after` if your code is blocking Lettuce's asynchronous execution because of the default value of the thread pool size being small.
 
+IMPORTANT: Increasing `io-thread-pool-size` or `computation-thread-pool-size` does not make a single `StatefulRedisConnection` process commands on multiple Redis connections. A long-lived Lettuce connection still uses a single underlying channel. If you need parallel reactive work across multiple Redis connections, enable `redis.pool` and borrow separate connections from the pool.
+
+====
+Pooled connections for parallel reactive commands
+
+Micronaut can create a Lettuce connection pool for application code:
+
+[configuration]
+----
+redis:
+    uri: redis://localhost
+    pool:
+        enabled: true
+        max-total: 16
+        min-idle: 4
+----
+
+Then inject `io.lettuce.core.support.AsyncPool<io.lettuce.core.api.StatefulRedisConnection<K, V>>` and release each acquired connection after use:
+
+[source,groovy]
+----
+include::redis-lettuce/src/test/groovy/io/micronaut/configuration/lettuce/RedisClientFactorySpec.groovy[tags=pooled-connections, indent=0]
+----
+
+If you configure Redis as a cluster with `redis.uris`, Micronaut instead exposes `io.lettuce.core.support.AsyncPool<io.lettuce.core.cluster.api.StatefulRedisClusterConnection<K, V>>` so you can borrow pooled cluster connections for the same pattern.
+====
+
 
 === Available Lettuce Beans
 
@@ -65,28 +92,21 @@ Once you have the above configuration in place you can inject one of the followi
 
 * `io.lettuce.core.RedisClient` - The main client interface
 * `io.lettuce.core.api.StatefulRedisConnection` - A connection interface that features synchronous, reactive (based on Reactor) and async APIs that operate on `String` values
+* `io.lettuce.core.support.AsyncPool<io.lettuce.core.api.StatefulRedisConnection<K, V>>` - An optional pool for borrowing multiple connections when you need parallel Redis work
+* `io.lettuce.core.support.AsyncPool<io.lettuce.core.cluster.api.StatefulRedisClusterConnection<K, V>>` - An optional cluster-aware pool available when `redis.uris` is configured
 * `io.lettuce.core.pubsub.StatefulRedisPubSubConnection` - A connection interface for dealing with Redis Pub/Sub
 
 The following example demonstrates the use of the `StatefulRedisConnection` interface's synchronous API:
 
 .Using StatefulRedisConnection
-[source,groovy]
-----
-@Inject StatefulRedisConnection<String, String> connection
-...
-include::{testsredis}/RedisClientFactorySpec.groovy[tags=commands, indent=0]
-----
+snippet::io.micronaut.configuration.lettuce.docs.RedisClientCommands[tags="commands", project-base="docs-examples/codecs"]
 
 NOTE: The Lettuce driver's `StatefulRedisConnection` interface is designed to be long-lived and there is no need to close the connection. It will be closed automatically when the application shuts down.
 
 === Redis codec configuration
 
 By default, a StringCodec is used for redis connections.
-This can be configured by supplying your own Factory that replaces the default one.
+This can be configured by supplying your own `RedisCodec` bean.
 
-.Configuring a custom RedisCodecFactory
-[source,groovy]
-----
-include::{testsredis}/ByteArrayCodecReplacementFactory.groovy[tags=codecReplacement, indent=0]
-include::{testsredis}/ByteArrayCodecReplacementFactory.groovy[tags=codecReplacement2, indent=0]
-----
+.Configuring a custom RedisCodec
+snippet::io.micronaut.configuration.lettuce.docs.ByteArrayCodecFactory[tags="codecFactory", project-base="docs-examples/codecs"]

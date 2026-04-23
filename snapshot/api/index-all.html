@@ -94,6 +94,8 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:C">C</h2>
 <dl class="index">
+<dt><a href="io/micronaut/configuration/lettuce/cache/RedisAsyncConnectionPoolFactory.html#CACHE_POOL_BEAN" class="member-name-link">CACHE_POOL_BEAN</a> - Static variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisAsyncConnectionPoolFactory.html" title="class in io.micronaut.configuration.lettuce.cache">RedisAsyncConnectionPoolFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html#cacheName" class="member-name-link">cacheName</a> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#charset" class="member-name-link">charset</a> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
@@ -668,6 +670,10 @@ read.</div>
 <dd>
 <div class="block">Creates the <code>RedisClient</code> from the configuration.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/RedisConnectionPoolFactory.html#redisClusterConnectionPool(io.lettuce.core.cluster.RedisClusterClient,io.micronaut.configuration.lettuce.DefaultRedisConfiguration,io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration)" class="member-name-link">redisClusterConnectionPool(RedisClusterClient, DefaultRedisConfiguration, DefaultRedisConnectionPoolConfiguration)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/RedisConnectionPoolFactory.html" title="class in io.micronaut.configuration.lettuce">RedisConnectionPoolFactory</a></dt>
+<dd>
+<div class="block">Creates a pool of default Redis cluster connections.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#redisClusterPubSubConnection(io.lettuce.core.pubsub.StatefulRedisPubSubConnection)" class="member-name-link">redisClusterPubSubConnection(StatefulRedisPubSubConnection)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a></dt>
 <dd>
 <div class="block">Exposes the pub/sub connection as the cluster-specific type.</div>
@@ -700,6 +706,10 @@ read.</div>
 <dd>
 <div class="block">Creates the <code>StatefulRedisConnection</code> from the <code>RedisClient</code>.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/RedisConnectionPoolFactory.html#redisConnectionPool(io.lettuce.core.RedisClient,io.micronaut.configuration.lettuce.DefaultRedisConfiguration,io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration)" class="member-name-link">redisConnectionPool(RedisClient, DefaultRedisConfiguration, DefaultRedisConnectionPoolConfiguration)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/RedisConnectionPoolFactory.html" title="class in io.micronaut.configuration.lettuce">RedisConnectionPoolFactory</a></dt>
+<dd>
+<div class="block">Creates a pool of default Redis connections.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/RedisConnectionPoolCache.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.cache">RedisConnectionPoolCache</a> - Class in <a href="io/micronaut/configuration/lettuce/cache/package-summary.html">io.micronaut.configuration.lettuce.cache</a></dt>
 <dd>
 <div class="block">An implementation of <code>SyncCache</code> for Lettuce / Redis using connection pooling.</div>
@@ -712,6 +722,13 @@ read.</div>
 <dd>
 <div class="block">Redis Async cache implementation.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/RedisConnectionPoolFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">RedisConnectionPoolFactory&lt;K,<wbr>V&gt;</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
+<dd>
+<div class="block">Creates optional pooled Redis connections for cases where callers need to run work across
+multiple underlying Lettuce connections instead of a single long-lived connection bean.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/RedisConnectionPoolFactory.html#%3Cinit%3E(io.lettuce.core.codec.RedisCodec)" class="member-name-link">RedisConnectionPoolFactory(RedisCodec)</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/RedisConnectionPoolFactory.html" title="class in io.micronaut.configuration.lettuce">RedisConnectionPoolFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/RedisConnectionUtil.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">RedisConnectionUtil</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
 <div class="block">Internal utility methods for configuration.</div>

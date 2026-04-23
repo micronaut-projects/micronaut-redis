@@ -54,8 +54,14 @@ loadScripts(document, 'script');</script>
 <div class="toc-header">Contents&nbsp;<input type="text" class="filter-input" disabled placeholder="Filter contents (type .)" aria-label="Filter table of contents" autocomplete="off" spellcheck="false"><input type="reset" class="reset-filter" disabled tabindex="-1" value="Reset"></div>
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
+<li><a href="#field-summary" tabindex="0">Field Summary</a></li>
 <li><a href="#constructor-summary" tabindex="0">Constructor Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
+<li><a href="#field-detail" tabindex="0">Field Details</a>
+<ol class="toc-list">
+<li><a href="#CACHE_POOL_BEAN" tabindex="0">CACHE_POOL_BEAN</a></li>
+</ol>
+</li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
 <li><a href="#%3Cinit%3E()" tabindex="0">RedisAsyncConnectionPoolFactory()</a></li>
@@ -93,6 +99,21 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#CACHE_POOL_BEAN" class="member-name-link">CACHE_POOL_BEAN</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -135,6 +156,30 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="CACHE_POOL_BEAN">
+<h3>CACHE_POOL_BEAN</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">CACHE_POOL_BEAN</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#io.micronaut.configuration.lettuce.cache.RedisAsyncConnectionPoolFactory.CACHE_POOL_BEAN">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -161,6 +206,7 @@ loadScripts(document, 'script');</script>
 <h3>getAsyncPool</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations">@Singleton
+@Named("redisCacheAsyncPool")
 @Requires(beans={<a href="DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a>.class,<a href="../DefaultRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration</a>.class,<a href="../DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration</a>.class})
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],<wbr>byte[]&gt;&gt;</span>&nbsp;<span class="element-name">getAsyncPool</span><wbr><span class="parameters">(<a href="DefaultRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">DefaultRedisCacheConfiguration</a>&nbsp;defaultRedisCacheConfiguration,
  <a href="../DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration</a>&nbsp;defaultRedisConfiguration,

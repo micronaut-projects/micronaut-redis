@@ -333,6 +333,112 @@ You may see <code>io.lettuce.core.RedisCommandTimeoutException: Command timed ou
 </tr>
 </table>
 </div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Increasing <code>io-thread-pool-size</code> or <code>computation-thread-pool-size</code> does not make a single <code>StatefulRedisConnection</code> process commands on multiple Redis connections. A long-lived Lettuce connection still uses a single underlying channel. If you need parallel reactive work across multiple Redis connections, enable <code>redis.pool</code> and borrow separate connections from the pool.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>Pooled connections for parallel reactive commands</p>
+</div>
+<div class="paragraph">
+<p>Micronaut can create a Lettuce connection pool for application code:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">redis.uri=redis://localhost
+redis.pool.enabled=true
+redis.pool.max-total=16
+redis.pool.min-idle=4</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+    uri: redis://localhost
+    pool:
+        enabled: true
+        max-total: 16
+        min-idle: 4</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+  uri="redis://localhost"
+  [redis.pool]
+    enabled=true
+    max-total=16
+    min-idle=4</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">redis {
+  uri = "redis://localhost"
+  pool {
+    enabled = true
+    maxTotal = 16
+    minIdle = 4
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  redis {
+    uri = "redis://localhost"
+    pool {
+      enabled = true
+      max-total = 16
+      min-idle = 4
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "redis": {
+    "uri": "redis://localhost",
+    "pool": {
+      "enabled": true,
+      "max-total": 16,
+      "min-idle": 4
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Then inject <code>io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.api.StatefulRedisConnection&lt;K, V&gt;&gt;</code> and release each acquired connection after use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">first.sync().set("first", "one")
+second.sync().set("second", "two")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you configure Redis as a cluster with <code>redis.uris</code>, Micronaut instead exposes <code>io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.cluster.api.StatefulRedisClusterConnection&lt;K, V&gt;&gt;</code> so you can borrow pooled cluster connections for the same pattern.</p>
+</div>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_available_lettuce_beans">Available Lettuce Beans</h3>
@@ -346,6 +452,12 @@ You may see <code>io.lettuce.core.RedisCommandTimeoutException: Command timed ou
 </li>
 <li>
 <p><code>io.lettuce.core.api.StatefulRedisConnection</code> - A connection interface that features synchronous, reactive (based on Reactor) and async APIs that operate on <code>String</code> values</p>
+</li>
+<li>
+<p><code>io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.api.StatefulRedisConnection&lt;K, V&gt;&gt;</code> - An optional pool for borrowing multiple connections when you need parallel Redis work</p>
+</li>
+<li>
+<p><code>io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.cluster.api.StatefulRedisClusterConnection&lt;K, V&gt;&gt;</code> - An optional cluster-aware pool available when <code>redis.uris</code> is configured</p>
 </li>
 <li>
 <p><code>io.lettuce.core.pubsub.StatefulRedisPubSubConnection</code> - A connection interface for dealing with Redis Pub/Sub</p>

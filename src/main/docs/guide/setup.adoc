@@ -81,6 +81,8 @@ Then inject `io.lettuce.core.support.AsyncPool<io.lettuce.core.api.StatefulRedis
 ----
 include::{testsredis}/RedisClientFactorySpec.groovy[tags=pooled-connections, indent=0]
 ----
+
+If you configure Redis as a cluster with `redis.uris`, Micronaut instead exposes `io.lettuce.core.support.AsyncPool<io.lettuce.core.cluster.api.StatefulRedisClusterConnection<K, V>>` so you can borrow pooled cluster connections for the same pattern.
 ====
 
 
@@ -91,6 +93,7 @@ Once you have the above configuration in place you can inject one of the followi
 * `io.lettuce.core.RedisClient` - The main client interface
 * `io.lettuce.core.api.StatefulRedisConnection` - A connection interface that features synchronous, reactive (based on Reactor) and async APIs that operate on `String` values
 * `io.lettuce.core.support.AsyncPool<io.lettuce.core.api.StatefulRedisConnection<K, V>>` - An optional pool for borrowing multiple connections when you need parallel Redis work
+* `io.lettuce.core.support.AsyncPool<io.lettuce.core.cluster.api.StatefulRedisClusterConnection<K, V>>` - An optional cluster-aware pool available when `redis.uris` is configured
 * `io.lettuce.core.pubsub.StatefulRedisPubSubConnection` - A connection interface for dealing with Redis Pub/Sub
 
 The following example demonstrates the use of the `StatefulRedisConnection` interface's synchronous API:

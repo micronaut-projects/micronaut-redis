@@ -35,6 +35,7 @@ import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.exceptions.ConfigurationException;
+import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
 import java.util.ArrayList;
@@ -51,8 +52,10 @@ import java.util.concurrent.CompletionStage;
  */
 @Factory
 public final class RedisAsyncConnectionPoolFactory {
+    public static final String CACHE_POOL_BEAN = "redisCacheAsyncPool";
 
     @Singleton
+    @Named(CACHE_POOL_BEAN)
     @Requires(beans = {DefaultRedisCacheConfiguration.class, DefaultRedisConnectionPoolConfiguration.class, DefaultRedisConfiguration.class})
     public AsyncPool<StatefulConnection<byte[], byte[]>> getAsyncPool(
             DefaultRedisCacheConfiguration defaultRedisCacheConfiguration,

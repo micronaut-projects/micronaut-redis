@@ -4,10 +4,13 @@ import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.sync.RedisCommands
+import io.lettuce.core.support.AsyncPool
 import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.redis.test.RedisContainerUtils
+
+import java.util.concurrent.TimeUnit
 
 /**
  * @author Graeme Rocher
@@ -90,6 +93,48 @@ class RedisClientFactorySpec extends RedisSpec {
         client.getResources().ioThreadPoolSize() == 10
 
         cleanup:
+        applicationContext.stop()
+    }
+
+    void "test redis connection pool settings"() {
+        given:
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.uri': RedisContainerUtils.getRedisPort("redis://localhost"),
+                'redis.pool.enabled': true,
+                'redis.pool.max-total': 2,
+        ])
+        AsyncPool<StatefulRedisConnection<String, String>> pool = applicationContext.getBean(AsyncPool)
+        StatefulRedisConnection<String, String> first = null
+        StatefulRedisConnection<String, String> second = null
+
+        when:
+        first = pool.acquire().get(5, TimeUnit.SECONDS)
+        second = pool.acquire().get(5, TimeUnit.SECONDS)
+
+        then:
+        first != null
+        second != null
+        !first.is(second)
+        first.isOpen()
+        second.isOpen()
+
+        when:
+        // tag::pooled-connections[]
+        first.sync().set("first", "one")
+        second.sync().set("second", "two")
+        // end::pooled-connections[]
+
+        then:
+        first.sync().get("first") == "one"
+        second.sync().get("second") == "two"
+
+        cleanup:
+        if (first != null) {
+            pool.release(first).get(5, TimeUnit.SECONDS)
+        }
+        if (second != null) {
+            pool.release(second).get(5, TimeUnit.SECONDS)
+        }
         applicationContext.stop()
     }
 

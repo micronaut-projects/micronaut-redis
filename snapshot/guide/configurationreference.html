@@ -423,6 +423,12 @@
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.cache.namespace</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the namespace to prefix cache keys with.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.cache.charset</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.nio.charset.Charset</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The charset used to serialize and deserialize values</p></td>
@@ -505,6 +511,12 @@
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.namespace</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the namespace to prefix cache keys with.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.caches.*.charset</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.nio.charset.Charset</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The charset used to serialize and deserialize values</p></td>
@@ -532,9 +544,66 @@
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
+<a id="io.micronaut.configuration.lettuce.DefaultRedisConfiguration$DefaultRedisCommandLatencyRecorderConfiguration" href="#io.micronaut.configuration.lettuce.DefaultRedisConfiguration$DefaultRedisCommandLatencyRecorderConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. Configuration Properties for <a href="../api/io/micronaut/configuration/lettuce/DefaultRedisConfiguration.DefaultRedisCommandLatencyRecorderConfiguration.html">DefaultRedisConfiguration$DefaultRedisCommandLatencyRecorderConfiguration</a></caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.metrics.command-latency-recorder.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the recorder is enabled.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.metrics.command-latency-recorder.histogram</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether histograms are enabled.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.metrics.command-latency-recorder.local-distinction</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether metrics are tracked per connection.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.metrics.command-latency-recorder.min-latency</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The minimum expected latency.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.metrics.command-latency-recorder.max-latency</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum expected latency.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.metrics.command-latency-recorder.target-percentiles</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.List</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The target percentiles.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
 <a id="io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration" href="#io.micronaut.configuration.lettuce.DefaultRedisConnectionPoolConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. Configuration Properties for <a href="../api/io/micronaut/configuration/lettuce/DefaultRedisConnectionPoolConfiguration.html">DefaultRedisConnectionPoolConfiguration</a></caption>
+<caption class="title">Table 6. Configuration Properties for <a href="../api/io/micronaut/configuration/lettuce/DefaultRedisConnectionPoolConfiguration.html">DefaultRedisConnectionPoolConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -579,7 +648,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.configuration.lettuce.NamedRedisServersConfiguration" href="#io.micronaut.configuration.lettuce.NamedRedisServersConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 6. Configuration Properties for <a href="../api/io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.html">NamedRedisServersConfiguration</a></caption>
+<caption class="title">Table 7. Configuration Properties for <a href="../api/io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.html">NamedRedisServersConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -730,6 +799,63 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the read from property by name.</p>
 <p class="tableblock"> See {@link io.lettuce.core.ReadFrom#valueOf(String)}</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.configuration.lettuce.NamedRedisServersConfiguration$NamedRedisCommandLatencyRecorderConfiguration" href="#io.micronaut.configuration.lettuce.NamedRedisServersConfiguration$NamedRedisCommandLatencyRecorderConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 8. Configuration Properties for <a href="../api/io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.NamedRedisCommandLatencyRecorderConfiguration.html">NamedRedisServersConfiguration$NamedRedisCommandLatencyRecorderConfiguration</a></caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.servers.*.metrics.command-latency-recorder.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the recorder is enabled.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.servers.*.metrics.command-latency-recorder.histogram</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether histograms are enabled.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.servers.*.metrics.command-latency-recorder.local-distinction</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether metrics are tracked per connection.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.servers.*.metrics.command-latency-recorder.min-latency</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The minimum expected latency.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.servers.*.metrics.command-latency-recorder.max-latency</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum expected latency.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.servers.*.metrics.command-latency-recorder.target-percentiles</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.List</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The target percentiles.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>

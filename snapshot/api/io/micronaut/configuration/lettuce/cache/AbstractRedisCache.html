@@ -66,6 +66,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#expireAfterWritePolicy" tabindex="0">expireAfterWritePolicy</a></li>
 <li><a href="#expireAfterAccess" tabindex="0">expireAfterAccess</a></li>
 <li><a href="#invalidateScanCount" tabindex="0">invalidateScanCount</a></li>
+<li><a href="#keyPrefix" tabindex="0">keyPrefix</a></li>
 </ol>
 </li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
@@ -83,6 +84,10 @@ loadScripts(document, 'script');</script>
 <li><a href="#getRedisKeyAsyncCommands(io.lettuce.core.api.StatefulConnection)" tabindex="0">getRedisKeyAsyncCommands(StatefulConnection)</a></li>
 <li><a href="#getRedisStringCommands(io.lettuce.core.api.StatefulConnection)" tabindex="0">getRedisStringCommands(StatefulConnection)</a></li>
 <li><a href="#getRedisKeyCommands(io.lettuce.core.api.StatefulConnection)" tabindex="0">getRedisKeyCommands(StatefulConnection)</a></li>
+<li><a href="#allKeys(io.lettuce.core.api.StatefulConnection,io.lettuce.core.api.sync.RedisKeyCommands,byte%5B%5D)" tabindex="0">allKeys(StatefulConnection, RedisKeyCommands, byte[])</a></li>
+<li><a href="#allKeys(io.lettuce.core.api.StatefulConnection,io.lettuce.core.api.async.RedisKeyAsyncCommands,byte%5B%5D)" tabindex="0">allKeys(StatefulConnection, RedisKeyAsyncCommands, byte[])</a></li>
+<li><a href="#allKeys(io.lettuce.core.api.sync.RedisKeyCommands,byte%5B%5D)" tabindex="0">allKeys(RedisKeyCommands, byte[])</a></li>
+<li><a href="#allKeys(io.lettuce.core.api.async.RedisKeyAsyncCommands,io.lettuce.core.ScanCursor,io.lettuce.core.ScanArgs)" tabindex="0">allKeys(RedisKeyAsyncCommands, ScanCursor, ScanArgs)</a></li>
 <li><a href="#getValue(io.micronaut.core.type.Argument,byte%5B%5D)" tabindex="0">getValue(Argument, byte[])</a></li>
 <li><a href="#putValue(byte%5B%5D,T)" tabindex="0">putValue(byte[], T)</a></li>
 <li><a href="#putValue(byte%5B%5D,java.util.Optional,io.micronaut.configuration.lettuce.cache.expiration.ExpirationAfterWritePolicy,io.lettuce.core.api.sync.RedisStringCommands,io.lettuce.core.api.sync.RedisKeyCommands,T)" tabindex="0">putValue(byte[], Optional, ExpirationAfterWritePolicy, RedisStringCommands, RedisKeyCommands, T)</a></li>
@@ -157,15 +162,18 @@ implements io.micronaut.cache.SyncCache&lt;C&gt;, <a href="https://docs.oracle.c
 <div class="col-first odd-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#invalidateScanCount" class="member-name-link">invalidateScanCount</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected final io.micronaut.core.serialize.ObjectSerializer</code></div>
-<div class="col-second even-row-color"><code><a href="#keySerializer" class="member-name-link">keySerializer</a></code></div>
+<div class="col-first even-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#keyPrefix" class="member-name-link">keyPrefix</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected final <a href="RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#redisCacheConfiguration" class="member-name-link">redisCacheConfiguration</a></code></div>
+<div class="col-first odd-row-color"><code>protected final io.micronaut.core.serialize.ObjectSerializer</code></div>
+<div class="col-second odd-row-color"><code><a href="#keySerializer" class="member-name-link">keySerializer</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected final io.micronaut.core.serialize.ObjectSerializer</code></div>
-<div class="col-second even-row-color"><code><a href="#valueSerializer" class="member-name-link">valueSerializer</a></code></div>
+<div class="col-first even-row-color"><code>protected final <a href="RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a></code></div>
+<div class="col-second even-row-color"><code><a href="#redisCacheConfiguration" class="member-name-link">redisCacheConfiguration</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected final io.micronaut.core.serialize.ObjectSerializer</code></div>
+<div class="col-second odd-row-color"><code><a href="#valueSerializer" class="member-name-link">valueSerializer</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -198,6 +206,33 @@ implements io.micronaut.cache.SyncCache&lt;C&gt;, <a href="https://docs.oracle.c
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;byte[]&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#allKeys(io.lettuce.core.api.async.RedisKeyAsyncCommands,io.lettuce.core.ScanCursor,io.lettuce.core.ScanArgs)" class="member-name-link">allKeys</a><wbr>(io.lettuce.core.api.async.RedisKeyAsyncCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands,
+ io.lettuce.core.ScanCursor&nbsp;initialCursor,
+ io.lettuce.core.ScanArgs&nbsp;args)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Collect the keys matching the given pattern using the provided async commands.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;byte[]&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#allKeys(io.lettuce.core.api.StatefulConnection,io.lettuce.core.api.async.RedisKeyAsyncCommands,byte%5B%5D)" class="member-name-link">allKeys</a><wbr>(io.lettuce.core.api.StatefulConnection&lt;byte[],<wbr>byte[]&gt;&nbsp;connection,
+ io.lettuce.core.api.async.RedisKeyAsyncCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands,
+ byte[]&nbsp;pattern)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Collect the keys matching the given pattern for the current connection.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;byte[]&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#allKeys(io.lettuce.core.api.StatefulConnection,io.lettuce.core.api.sync.RedisKeyCommands,byte%5B%5D)" class="member-name-link">allKeys</a><wbr>(io.lettuce.core.api.StatefulConnection&lt;byte[],<wbr>byte[]&gt;&nbsp;connection,
+ io.lettuce.core.api.sync.RedisKeyCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands,
+ byte[]&nbsp;pattern)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Collect the keys matching the given pattern for the current connection.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;byte[]&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#allKeys(io.lettuce.core.api.sync.RedisKeyCommands,byte%5B%5D)" class="member-name-link">allKeys</a><wbr>(io.lettuce.core.api.sync.RedisKeyCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands,
+ byte[]&nbsp;pattern)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Collect the keys matching the given pattern using the provided sync commands.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final &lt;T&gt;&nbsp;T</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#executeInsert(java.util.function.Supplier)" class="member-name-link">executeInsert</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;T&gt;&nbsp;supplier)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -383,6 +418,14 @@ implements io.micronaut.cache.SyncCache&lt;C&gt;, <a href="https://docs.oracle.c
 </div>
 </section>
 </li>
+<li>
+<section class="detail" id="keyPrefix">
+<h3>keyPrefix</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">keyPrefix</span></div>
+</div>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -523,6 +566,80 @@ implements io.micronaut.cache.SyncCache&lt;C&gt;, <a href="https://docs.oracle.c
 <dd><code>connection</code> - </dd>
 <dt>Returns:</dt>
 <dd>RedisKeyCommands</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="allKeys(io.lettuce.core.api.StatefulConnection,io.lettuce.core.api.sync.RedisKeyCommands,byte[])">
+<h3>allKeys</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;byte[]&gt;</span>&nbsp;<span class="element-name">allKeys</span><wbr><span class="parameters">(io.lettuce.core.api.StatefulConnection&lt;byte[],<wbr>byte[]&gt;&nbsp;connection,
+ io.lettuce.core.api.sync.RedisKeyCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands,
+ byte[]&nbsp;pattern)</span></div>
+<div class="block">Collect the keys matching the given pattern for the current connection.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>connection</code> - The connection</dd>
+<dd><code>redisKeyCommands</code> - The redis key commands</dd>
+<dd><code>pattern</code> - The pattern to match</dd>
+<dt>Returns:</dt>
+<dd>A list of matching keys</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="allKeys(io.lettuce.core.api.StatefulConnection,io.lettuce.core.api.async.RedisKeyAsyncCommands,byte[])">
+<h3>allKeys</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;byte[]&gt;&gt;</span>&nbsp;<span class="element-name">allKeys</span><wbr><span class="parameters">(io.lettuce.core.api.StatefulConnection&lt;byte[],<wbr>byte[]&gt;&nbsp;connection,
+ io.lettuce.core.api.async.RedisKeyAsyncCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands,
+ byte[]&nbsp;pattern)</span></div>
+<div class="block">Collect the keys matching the given pattern for the current connection.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>connection</code> - The connection</dd>
+<dd><code>redisKeyCommands</code> - The redis key commands</dd>
+<dd><code>pattern</code> - The pattern to match</dd>
+<dt>Returns:</dt>
+<dd>A stage that completes with the matching keys</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="allKeys(io.lettuce.core.api.sync.RedisKeyCommands,byte[])">
+<h3>allKeys</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;byte[]&gt;</span>&nbsp;<span class="element-name">allKeys</span><wbr><span class="parameters">(io.lettuce.core.api.sync.RedisKeyCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands,
+ byte[]&nbsp;pattern)</span></div>
+<div class="block">Collect the keys matching the given pattern using the provided sync commands.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>redisKeyCommands</code> - The redis key commands</dd>
+<dd><code>pattern</code> - The pattern to match</dd>
+<dt>Returns:</dt>
+<dd>A list of matching keys</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="allKeys(io.lettuce.core.api.async.RedisKeyAsyncCommands,io.lettuce.core.ScanCursor,io.lettuce.core.ScanArgs)">
+<h3>allKeys</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;byte[]&gt;&gt;</span>&nbsp;<span class="element-name">allKeys</span><wbr><span class="parameters">(io.lettuce.core.api.async.RedisKeyAsyncCommands&lt;byte[],<wbr>byte[]&gt;&nbsp;redisKeyCommands,
+ io.lettuce.core.ScanCursor&nbsp;initialCursor,
+ io.lettuce.core.ScanArgs&nbsp;args)</span></div>
+<div class="block">Collect the keys matching the given pattern using the provided async commands.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>redisKeyCommands</code> - The redis key commands</dd>
+<dd><code>initialCursor</code> - The initial cursor</dd>
+<dd><code>args</code> - The scan arguments</dd>
+<dt>Returns:</dt>
+<dd>A stage that completes with the matching keys</dd>
 </dl>
 </div>
 </section>

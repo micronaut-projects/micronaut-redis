@@ -81,12 +81,32 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructor.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
+<dd>
+<div class="block">Lettuce command latency recorder settings.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConnectionPoolConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">AbstractRedisConnectionPoolConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
 <div class="block">Allows configuration of caches stored in Redis.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConnectionPoolConfiguration.html#%3Cinit%3E()" class="member-name-link">AbstractRedisConnectionPoolConfiguration()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConnectionPoolConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#allKeys(io.lettuce.core.api.async.RedisKeyAsyncCommands,io.lettuce.core.ScanCursor,io.lettuce.core.ScanArgs)" class="member-name-link">allKeys(RedisKeyAsyncCommands, ScanCursor, ScanArgs)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
+<dd>
+<div class="block">Collect the keys matching the given pattern using the provided async commands.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#allKeys(io.lettuce.core.api.StatefulConnection,io.lettuce.core.api.async.RedisKeyAsyncCommands,byte%5B%5D)" class="member-name-link">allKeys(StatefulConnection, RedisKeyAsyncCommands, byte[])</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
+<dd>
+<div class="block">Collect the keys matching the given pattern for the current connection.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#allKeys(io.lettuce.core.api.StatefulConnection,io.lettuce.core.api.sync.RedisKeyCommands,byte%5B%5D)" class="member-name-link">allKeys(StatefulConnection, RedisKeyCommands, byte[])</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
+<dd>
+<div class="block">Collect the keys matching the given pattern for the current connection.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#allKeys(io.lettuce.core.api.sync.RedisKeyCommands,byte%5B%5D)" class="member-name-link">allKeys(RedisKeyCommands, byte[])</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
+<dd>
+<div class="block">Collect the keys matching the given pattern using the provided sync commands.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/RedisCache.html#async()" class="member-name-link">async()</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCache</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/RedisConnectionPoolCache.html#async()" class="member-name-link">async()</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisConnectionPoolCache.html" title="class in io.micronaut.configuration.lettuce.cache">RedisConnectionPoolCache</a></dt>
@@ -147,12 +167,18 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisCodecFactory.html#%3Cinit%3E()" class="member-name-link">DefaultRedisCodecFactory()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisCodecFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisCodecFactory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisConfiguration.DefaultRedisCommandLatencyRecorderConfiguration.html#%3Cinit%3E()" class="member-name-link">DefaultRedisCommandLatencyRecorderConfiguration()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisConfiguration.DefaultRedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration.DefaultRedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
 <div class="block">In the case where the <code>redis.uri</code> is not specified use the default configuration.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html#%3Cinit%3E()" class="member-name-link">DefaultRedisConfiguration()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/DefaultRedisConfiguration.DefaultRedisCommandLatencyRecorderConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration.DefaultRedisCommandLatencyRecorderConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
+<dd>
+<div class="block">Default command latency recorder configuration.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisConnectionPoolConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">DefaultRedisConnectionPoolConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
 <div class="block">Allows configuration of redis connection pool.</div>
@@ -304,9 +330,13 @@ read.</div>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConnectionPoolConfiguration.html#getMaxIdle()" class="member-name-link">getMaxIdle()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConnectionPoolConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#getMaxLatency()" class="member-name-link">getMaxLatency()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConnectionPoolConfiguration.html#getMaxTotal()" class="member-name-link">getMaxTotal()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConnectionPoolConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConnectionPoolConfiguration.html#getMinIdle()" class="member-name-link">getMinIdle()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConnectionPoolConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConnectionPoolConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#getMinLatency()" class="member-name-link">getMinLatency()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#getName()" class="member-name-link">getName()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
 <dd>&nbsp;</dd>
@@ -317,6 +347,8 @@ read.</div>
 <dt><a href="io/micronaut/configuration/lettuce/cache/RedisConnectionPoolCache.html#getName()" class="member-name-link">getName()</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisConnectionPoolCache.html" title="class in io.micronaut.configuration.lettuce.cache">RedisConnectionPoolCache</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/RedisConnectionPoolCache.RedisAsyncCache.html#getName()" class="member-name-link">getName()</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisConnectionPoolCache.RedisAsyncCache.html" title="class in io.micronaut.configuration.lettuce.cache">RedisConnectionPoolCache.RedisAsyncCache</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#getNamespace()" class="member-name-link">getNamespace()</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#getNamespace()" class="member-name-link">getNamespace()</a> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>&nbsp;</dd>
@@ -357,6 +389,8 @@ read.</div>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#getServerName()" class="member-name-link">getServerName()</a> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#getSessionCreatedTopic()" class="member-name-link">getSessionCreatedTopic()</a> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#getTargetPercentiles()" class="member-name-link">getTargetPercentiles()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#getUri()" class="member-name-link">getUri()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
 <dd>&nbsp;</dd>
@@ -455,11 +489,19 @@ read.</div>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/redis/testcontainers/package-summary.html">io.micronaut.redis.testcontainers</a> - package io.micronaut.redis.testcontainers</dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#isEnabled()" class="member-name-link">isEnabled()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#isEnableKeyspaceEvents()" class="member-name-link">isEnableKeyspaceEvents()</a> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#isHistogram()" class="member-name-link">isHistogram()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#isLocalDistinction()" class="member-name-link">isLocalDistinction()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:K">K</h2>
 <dl class="index">
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#keyPrefix" class="member-name-link">keyPrefix</a> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html#keySerializer" class="member-name-link">keySerializer</a> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#keySerializer" class="member-name-link">keySerializer</a> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
@@ -484,7 +526,7 @@ read.</div>
 <dd>
 <div class="block">Mutates a <code>ClientResources.Builder</code> adding <code>MicrometerCommandLatencyRecorder</code>.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/lettuce/MetricsClientResourceMutator.html#%3Cinit%3E(io.micrometer.core.instrument.MeterRegistry)" class="member-name-link">MetricsClientResourceMutator(MeterRegistry)</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/MetricsClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce">MetricsClientResourceMutator</a></dt>
+<dt><a href="io/micronaut/configuration/lettuce/MetricsClientResourceMutator.html#%3Cinit%3E(io.micrometer.core.instrument.MeterRegistry,io.micronaut.context.BeanLocator,io.micronaut.configuration.lettuce.AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration)" class="member-name-link">MetricsClientResourceMutator(MeterRegistry, BeanLocator, AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration)</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/MetricsClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce">MetricsClientResourceMutator</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/redis/info/MicronautRedisLettuceModuleInfo.html" class="type-name-link" title="class in io.micronaut.redis.info">MicronautRedisLettuceModuleInfo</a> - Class in <a href="io/micronaut/redis/info/package-summary.html">io.micronaut.redis.info</a></dt>
 <dd>&nbsp;</dd>
@@ -513,6 +555,8 @@ read.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html#%3Cinit%3E(io.micronaut.context.BeanLocator,io.lettuce.core.resource.ClientResources,io.lettuce.core.codec.RedisCodec)" class="member-name-link">NamedRedisClientFactory(BeanLocator, ClientResources, RedisCodec)</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/NamedRedisClientFactory.html" title="class in io.micronaut.configuration.lettuce">NamedRedisClientFactory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.NamedRedisCommandLatencyRecorderConfiguration.html#%3Cinit%3E()" class="member-name-link">NamedRedisCommandLatencyRecorderConfiguration()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.NamedRedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration.NamedRedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
 <dd>
 <div class="block">Allows the configuration of multiple redis servers.</div>
@@ -521,6 +565,12 @@ read.</div>
 <dd>
 <div class="block">Constructor.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.NamedRedisCommandLatencyRecorderConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration.NamedRedisCommandLatencyRecorderConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/package-summary.html">io.micronaut.configuration.lettuce</a></dt>
+<dd>
+<div class="block">Named command latency recorder configuration.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#namespace" class="member-name-link">namespace</a> - Variable in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisSessionStore.html#newSession()" class="member-name-link">newSession()</a> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisSessionStore.html" title="class in io.micronaut.configuration.lettuce.session">RedisSessionStore</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -678,6 +728,8 @@ read.</div>
 <dd>
 <div class="block">Exposes the pub/sub connection as the cluster-specific type.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#%3Cinit%3E()" class="member-name-link">RedisCommandLatencyRecorderConfiguration()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html#redisConnection(io.lettuce.core.cluster.RedisClusterClient)" class="member-name-link">redisConnection(RedisClusterClient)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a></dt>
 <dd>
 <div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
@@ -811,6 +863,8 @@ CPUs).</div>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.html#setDatabase(int)" class="member-name-link">setDatabase(int)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#setEnabled(java.lang.Boolean)" class="member-name-link">setEnabled(Boolean)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#setEnableKeyspaceEvents(boolean)" class="member-name-link">setEnableKeyspaceEvents(boolean)</a> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>
 <div class="block">Sets whether keyspace events should be enabled at startup.</div>
@@ -825,6 +879,8 @@ CPUs).</div>
 <dd>
 <div class="block">Sets the duration to check for expired sessions.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#setHistogram(java.lang.Boolean)" class="member-name-link">setHistogram(Boolean)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#setInsertRetries(java.lang.Integer)" class="member-name-link">setInsertRetries(Integer)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#setInvalidateScanCount(java.lang.Long)" class="member-name-link">setInvalidateScanCount(Long)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
@@ -839,9 +895,19 @@ CPUs).</div>
 <dd>
 <div class="block">Sets the <code>ObjectSerializer</code> to use for serializing keys.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#setLocalDistinction(java.lang.Boolean)" class="member-name-link">setLocalDistinction(Boolean)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#setMaxLatency(java.time.Duration)" class="member-name-link">setMaxLatency(Duration)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#setMinLatency(java.time.Duration)" class="member-name-link">setMinLatency(Duration)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html#setName(java.lang.String)" class="member-name-link">setName(String)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a></dt>
 <dd>
 <div class="block">Sets the name of the bean.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#setNamespace(java.lang.String)" class="member-name-link">setNamespace(String)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
+<dd>
+<div class="block">Sets the namespace to prefix cache keys with.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html#setNamespace(java.lang.String)" class="member-name-link">setNamespace(String)</a> - Method in class io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a></dt>
 <dd>
@@ -876,6 +942,8 @@ CPUs).</div>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html#setStartTls(boolean)" class="member-name-link">setStartTls(boolean)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.html#setStartTls(boolean)" class="member-name-link">setStartTls(boolean)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/NamedRedisServersConfiguration.html" title="class in io.micronaut.configuration.lettuce">NamedRedisServersConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#setTargetPercentiles(java.util.List)" class="member-name-link">setTargetPercentiles(List)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html#setTimeout(java.time.Duration)" class="member-name-link">setTimeout(Duration)</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisConfiguration.html" title="class in io.micronaut.configuration.lettuce">DefaultRedisConfiguration</a></dt>
 <dd>&nbsp;</dd>
@@ -921,6 +989,8 @@ CPUs).</div>
 <div class="block">Mutates a <code>ClientResources.Builder</code> adding lettuce threadpool configs.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/lettuce/ThreadPoolClientResourceMutator.html#%3Cinit%3E()" class="member-name-link">ThreadPoolClientResourceMutator()</a> - Constructor for class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/ThreadPoolClientResourceMutator.html" title="class in io.micronaut.configuration.lettuce">ThreadPoolClientResourceMutator</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#toMicrometerOptions()" class="member-name-link">toMicrometerOptions()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:V">V</h2>

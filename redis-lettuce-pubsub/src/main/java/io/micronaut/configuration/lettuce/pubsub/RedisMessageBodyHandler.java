@@ -33,7 +33,6 @@ import io.micronaut.http.simple.SimpleHttpHeaders;
 import jakarta.inject.Singleton;
 
 import java.io.ByteArrayOutputStream;
-import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,12 +85,27 @@ public final class RedisMessageBodyHandler {
      * @param value              The value
      * @return The serialized bytes
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public byte[] serialize(Argument<?> argument, AnnotationMetadata annotationMetadata, Object value) {
+        return serialize(argument, annotationMetadata, AnnotationMetadata.EMPTY_METADATA, value);
+    }
+
+    /**
+     * Serialize a Redis Pub/Sub body.
+     *
+     * @param argument              The body argument
+     * @param annotationMetadata    The method or element annotation metadata
+     * @param declaringTypeMetadata The declaring type annotation metadata
+     * @param value                 The value
+     * @return The serialized bytes
+     */
+    public byte[] serialize(Argument<?> argument,
+                            AnnotationMetadata annotationMetadata,
+                            AnnotationMetadata declaringTypeMetadata,
+                            Object value) {
         if (value == null) {
             return new byte[0];
         }
-        MediaType mediaType = resolveMediaType(annotationMetadata, Produces.class);
+        MediaType mediaType = resolveOutgoingMediaType(annotationMetadata, declaringTypeMetadata);
         return writeBody(argument, mediaType, value);
     }
 
@@ -167,11 +181,4 @@ public final class RedisMessageBodyHandler {
         return configuration.getDefaultBodyMediaType();
     }
 
-    private MediaType resolveMediaType(AnnotationMetadata annotationMetadata, Class<? extends Annotation> annotationType) {
-        String[] values = annotationMetadata.stringValues(annotationType);
-        if (values.length > 0) {
-            return new MediaType(values[0]);
-        }
-        return configuration.getDefaultBodyMediaType();
-    }
 }

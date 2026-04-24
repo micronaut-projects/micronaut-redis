@@ -170,7 +170,10 @@ class RedisConfigurationSpec extends Specification {
 
     private static String passwordOf(RedisURI redisURI) {
         RedisCredentialsProvider credentialsProvider = redisURI.getCredentialsProvider()
-        def credentials = credentialsProvider.resolveCredentials().block()
+        if (credentialsProvider == null) {
+            return null
+        }
+        def credentials = credentialsProvider.resolveCredentials().block(Duration.ofSeconds(5))
         return credentials?.hasPassword() ? new String(credentials.password) : null
     }
 }

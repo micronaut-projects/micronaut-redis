@@ -87,30 +87,34 @@ abstract class RedisConfigurationWithUriSettings extends AbstractRedisConfigurat
     @Override
     public void setAuthentication(CharSequence password) {
         super.setAuthentication(password);
-        configuredRedisUriSettings.updateAndGet(settings -> settings.withCredentialsProvider(getCredentialsProvider()));
+        updateConfiguredCredentialsProvider(getCredentialsProvider());
     }
 
     @Override
     public void setAuthentication(char[] password) {
         super.setAuthentication(password);
-        configuredRedisUriSettings.updateAndGet(settings -> settings.withCredentialsProvider(getCredentialsProvider()));
+        updateConfiguredCredentialsProvider(getCredentialsProvider());
     }
 
     @Override
     public void setAuthentication(String username, char[] password) {
         super.setAuthentication(username, password);
-        configuredRedisUriSettings.updateAndGet(settings -> settings.withCredentialsProvider(getCredentialsProvider()));
+        updateConfiguredCredentialsProvider(getCredentialsProvider());
     }
 
     @Override
     public void setAuthentication(String username, CharSequence password) {
         super.setAuthentication(username, password);
-        configuredRedisUriSettings.updateAndGet(settings -> settings.withCredentialsProvider(getCredentialsProvider()));
+        updateConfiguredCredentialsProvider(getCredentialsProvider());
     }
 
     @Override
     public void setCredentialsProvider(RedisCredentialsProvider credentialsProvider) {
         super.setCredentialsProvider(credentialsProvider);
+        updateConfiguredCredentialsProvider(credentialsProvider);
+    }
+
+    private void updateConfiguredCredentialsProvider(RedisCredentialsProvider credentialsProvider) {
         configuredRedisUriSettings.updateAndGet(settings -> settings.withCredentialsProvider(credentialsProvider));
     }
 

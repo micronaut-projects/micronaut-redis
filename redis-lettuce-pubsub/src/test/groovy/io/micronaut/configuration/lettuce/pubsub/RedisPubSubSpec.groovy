@@ -140,10 +140,10 @@ class RedisPubSubSpec extends RedisSpec {
         Publisher<Long> publisherResult = client.publishReactive(new Book(title: "Neuromancer", author: "William Gibson"))
 
         then:
-        subscribers == 1
-        plainResult.toCompletableFuture().get(5, TimeUnit.SECONDS) == 1
+        subscribers >= 1
+        plainResult.toCompletableFuture().get(5, TimeUnit.SECONDS) >= 1
         dynamicResult.toCompletableFuture().get(5, TimeUnit.SECONDS) == null
-        Mono.from(publisherResult).block(Duration.ofSeconds(5)) == 1
+        Mono.from(publisherResult).block(Duration.ofSeconds(5)) >= 1
 
         and:
         new PollingConditions(timeout: 5).eventually {

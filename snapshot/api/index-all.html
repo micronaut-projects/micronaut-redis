@@ -231,6 +231,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Utility method for establishing a redis connection.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/RedisConnectionUtil.html#findNamedOrDefaultBean(io.micronaut.context.BeanLocator,java.lang.Class,java.util.Optional)" class="member-name-link">findNamedOrDefaultBean(BeanLocator, Class, Optional)</a> - Static method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/RedisConnectionUtil.html" title="class in io.micronaut.configuration.lettuce">RedisConnectionUtil</a></dt>
+<dd>
+<div class="block">Utility method to find a named bean first and fallback to the default bean.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/lettuce/RedisConnectionUtil.html#findRedisConnection(io.micronaut.context.BeanLocator,java.util.Optional,java.lang.String)" class="member-name-link">findRedisConnection(BeanLocator, Optional, String)</a> - Static method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/RedisConnectionUtil.html" title="class in io.micronaut.configuration.lettuce">RedisConnectionUtil</a></dt>
 <dd>
 <div class="block">Utility method for establishing a redis connection.</div>
@@ -496,6 +500,8 @@ read.</div>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#isHistogram()" class="member-name-link">isHistogram()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html#isLocalDistinction()" class="member-name-link">isLocalDistinction()</a> - Method in class io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration.html" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration.RedisCommandLatencyRecorderConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/lettuce/health/RedisHealthIndicatorConfiguration.html#isReuseConnection()" class="member-name-link">isReuseConnection()</a> - Method in class io.micronaut.configuration.lettuce.health.<a href="io/micronaut/configuration/lettuce/health/RedisHealthIndicatorConfiguration.html" title="class in io.micronaut.configuration.lettuce.health">RedisHealthIndicatorConfiguration</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:K">K</h2>
@@ -795,6 +801,12 @@ multiple underlying Lettuce connections instead of a single long-lived connectio
 <dd>
 <div class="block">Constructor.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/health/RedisHealthIndicatorConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.health">RedisHealthIndicatorConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/health/package-summary.html">io.micronaut.configuration.lettuce.health</a></dt>
+<dd>
+<div class="block">Configuration for Redis health checks.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/lettuce/health/RedisHealthIndicatorConfiguration.html#%3Cinit%3E()" class="member-name-link">RedisHealthIndicatorConfiguration()</a> - Constructor for class io.micronaut.configuration.lettuce.health.<a href="io/micronaut/configuration/lettuce/health/RedisHealthIndicatorConfiguration.html" title="class in io.micronaut.configuration.lettuce.health">RedisHealthIndicatorConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.session">RedisHttpSessionConfiguration</a> - Class in <a href="io/micronaut/configuration/lettuce/session/package-summary.html">io.micronaut.configuration.lettuce.session</a></dt>
 <dd>
 <div class="block">Configuration properties for Redis session.</div>
@@ -923,6 +935,8 @@ CPUs).</div>
 <dd>
 <div class="block">Sets the Replica Redis URIs for read replica configuration.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/lettuce/health/RedisHealthIndicatorConfiguration.html#setReuseConnection(boolean)" class="member-name-link">setReuseConnection(boolean)</a> - Method in class io.micronaut.configuration.lettuce.health.<a href="io/micronaut/configuration/lettuce/health/RedisHealthIndicatorConfiguration.html" title="class in io.micronaut.configuration.lettuce.health">RedisHealthIndicatorConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html#setServer(java.lang.String)" class="member-name-link">setServer(String)</a> - Method in class io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCacheConfiguration</a></dt>
 <dd>
 <div class="block">Sets the name of the server to use.</div>

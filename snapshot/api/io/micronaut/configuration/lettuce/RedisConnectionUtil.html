@@ -65,6 +65,7 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#findClient(io.micronaut.context.BeanLocator,java.util.Optional,java.lang.String)" tabindex="0">findClient(BeanLocator, Optional, String)</a></li>
 <li><a href="#findRedisConnection(io.micronaut.context.BeanLocator,java.util.Optional,java.lang.String)" tabindex="0">findRedisConnection(BeanLocator, Optional, String)</a></li>
+<li><a href="#findNamedOrDefaultBean(io.micronaut.context.BeanLocator,java.lang.Class,java.util.Optional)" tabindex="0">findNamedOrDefaultBean(BeanLocator, Class, Optional)</a></li>
 <li><a href="#openBytesRedisConnection(io.micronaut.context.BeanLocator,java.util.Optional,java.lang.String)" tabindex="0">openBytesRedisConnection(BeanLocator, Optional, String)</a></li>
 </ol>
 </li>
@@ -126,18 +127,25 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Utility method for establishing a redis connection.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static io.lettuce.core.api.StatefulConnection</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#findRedisConnection(io.micronaut.context.BeanLocator,java.util.Optional,java.lang.String)" class="member-name-link">findRedisConnection</a><wbr>(io.micronaut.context.BeanLocator&nbsp;beanLocator,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;serverName,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;errorMessage)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#findNamedOrDefaultBean(io.micronaut.context.BeanLocator,java.lang.Class,java.util.Optional)" class="member-name-link">findNamedOrDefaultBean</a><wbr>(io.micronaut.context.BeanLocator&nbsp;beanLocator,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;beanType,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;serverName)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Utility method for establishing a redis connection.</div>
+<div class="block">Utility method to find a named bean first and fallback to the default bean.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static io.lettuce.core.api.StatefulConnection<wbr>&lt;byte[],<wbr>byte[]&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#openBytesRedisConnection(io.micronaut.context.BeanLocator,java.util.Optional,java.lang.String)" class="member-name-link">openBytesRedisConnection</a><wbr>(io.micronaut.context.BeanLocator&nbsp;beanLocator,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static io.lettuce.core.api.StatefulConnection</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#findRedisConnection(io.micronaut.context.BeanLocator,java.util.Optional,java.lang.String)" class="member-name-link">findRedisConnection</a><wbr>(io.micronaut.context.BeanLocator&nbsp;beanLocator,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;serverName,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;errorMessage)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Utility method for establishing a redis connection.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static io.lettuce.core.api.StatefulConnection<wbr>&lt;byte[],<wbr>byte[]&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#openBytesRedisConnection(io.micronaut.context.BeanLocator,java.util.Optional,java.lang.String)" class="member-name-link">openBytesRedisConnection</a><wbr>(io.micronaut.context.BeanLocator&nbsp;beanLocator,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;serverName,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;errorMessage)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Utility method for opening a new bytes redis connection.</div>
 </div>
 </div>
@@ -211,6 +219,27 @@ loadScripts(document, 'script');</script>
 <dd>The connection</dd>
 <dt>Throws:</dt>
 <dd><code>io.micronaut.context.exceptions.ConfigurationException</code> - If the connection cannot be found</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="findNamedOrDefaultBean(io.micronaut.context.BeanLocator,java.lang.Class,java.util.Optional)">
+<h3>findNamedOrDefaultBean</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;</span>&nbsp;<span class="element-name">findNamedOrDefaultBean</span><wbr><span class="parameters">(io.micronaut.context.BeanLocator&nbsp;beanLocator,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;beanType,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;serverName)</span></div>
+<div class="block">Utility method to find a named bean first and fallback to the default bean.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="findNamedOrDefaultBean(io.micronaut.context.BeanLocator,java.lang.Class,java.util.Optional)-type-param-T"><code>T</code> - Bean type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>beanLocator</code> - Bean locator</dd>
+<dd><code>beanType</code> - Bean type</dd>
+<dd><code>serverName</code> - Server name</dd>
+<dt>Returns:</dt>
+<dd>The matching bean if available</dd>
 </dl>
 </div>
 </section>

@@ -78,10 +78,12 @@ public final class RedisMessageBodyHandler {
     }
 
     /**
-     * Serialize a Redis Pub/Sub body.
+     * Serialize a Redis Pub/Sub body using only method-level annotation metadata.
+     * Equivalent to calling {@link #serialize(Argument, AnnotationMetadata, AnnotationMetadata, Object)}
+     * with {@link AnnotationMetadata#EMPTY_METADATA} as the declaring type metadata.
      *
      * @param argument           The body argument
-     * @param annotationMetadata The annotation metadata
+     * @param annotationMetadata The method or element annotation metadata
      * @param value              The value
      * @return The serialized bytes
      */

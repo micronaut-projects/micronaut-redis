@@ -1,0 +1,32 @@
+=== Redis Pub/Sub Messaging
+
+The `micronaut-redis-lettuce` module includes Redis Pub/Sub support for channel-based messaging.
+
+To consume messages, annotate a bean with ann:configuration.lettuce.pubsub.annotation.RedisListener[] and annotate executable methods with ann:configuration.lettuce.pubsub.annotation.MessageChannel[]:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookCreatedListener[tags="listener", project-base="docs-examples/pubsub"]
+
+Listener bodies are decoded through Micronaut HTTP `MessageBodyReader` implementations. JSON is used by default, so richer message payloads work out of the box as long as a matching body reader is available.
+
+To consume a different format for a particular channel, add ann:http.annotation.Consumes[]:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.PlainTextBookListener[tags="listener", project-base="docs-examples/pubsub"]
+
+To publish messages, inject api:configuration.lettuce.pubsub.RedisPubSubPublisher[] and send the payload to the target channel:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookPublisher[tags="publisher", project-base="docs-examples/pubsub"]
+
+If you want a different default media type for all Pub/Sub payloads, configure it through `redis.pubsub.default-body-media-type`:
+
+[configuration]
+----
+redis:
+  pubsub:
+    default-body-media-type: text/plain
+----
+
+Listener failures are delegated to api:configuration.lettuce.pubsub.exception.RedisListenerExceptionHandler[]. The default handler logs the error, and you can select a specific handler per message channel:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookAuditListener[tags="listener", project-base="docs-examples/pubsub"]
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookAuditExceptionHandler[tags="handler", project-base="docs-examples/pubsub"]

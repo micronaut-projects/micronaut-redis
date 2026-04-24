@@ -7,6 +7,8 @@ dependencies {
 
     api libs.managed.lettuce
     api mnCache.micronaut.cache.core
+    api mn.micronaut.http
+    api mn.micronaut.messaging
 
     implementation mn.micronaut.retry
 

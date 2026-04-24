@@ -22,6 +22,7 @@ import io.micronaut.configuration.lettuce.AbstractRedisConfiguration;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.runtime.graceful.GracefulShutdownCapable;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
 import org.jspecify.annotations.Nullable;
@@ -30,14 +31,18 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 /**
@@ -48,13 +53,16 @@ import java.util.function.Consumer;
  */
 @Singleton
 @Requires(beans = AbstractRedisConfiguration.class)
-public class RedisPubSubListenerRegistry implements AutoCloseable {
+public class RedisPubSubListenerRegistry implements AutoCloseable, GracefulShutdownCapable {
 
     private static final Logger LOG = LoggerFactory.getLogger(RedisPubSubListenerRegistry.class);
     private static final String DEFAULT_CONNECTION = "<default>";
 
     private final BeanLocator beanLocator;
     private final Map<String, ManagedConnection> managedConnections = new ConcurrentHashMap<>();
+    private final AtomicLong activeTasks = new AtomicLong();
+    private final AtomicBoolean gracefulShutdown = new AtomicBoolean();
+    private final CompletableFuture<Void> shutdownCompletion = new CompletableFuture<>();
 
     /**
      * @param beanLocator The bean locator
@@ -75,6 +83,9 @@ public class RedisPubSubListenerRegistry implements AutoCloseable {
                           Set<ChannelSubscription> subscriptions,
                           ExecutorService executor,
                           Consumer<RedisMessage> consumer) {
+        if (gracefulShutdown.get()) {
+            throw new IllegalStateException("Redis Pub/Sub listeners are shutting down");
+        }
         String key = connectionName == null ? DEFAULT_CONNECTION : connectionName;
         ManagedConnection managedConnection = managedConnections.computeIfAbsent(key, ignored ->
             new ManagedConnection(Optional.ofNullable(connectionName))
@@ -82,11 +93,26 @@ public class RedisPubSubListenerRegistry implements AutoCloseable {
         managedConnection.subscribe(subscriptions, executor, consumer);
     }
 
+    @Override
+    public CompletionStage<?> shutdownGracefully() {
+        if (gracefulShutdown.compareAndSet(false, true)) {
+            managedConnections.values().forEach(ManagedConnection::shutdownGracefully);
+            completeGracefulShutdownIfReady();
+        }
+        return shutdownCompletion;
+    }
+
+    @Override
+    public java.util.OptionalLong reportActiveTasks() {
+        return java.util.OptionalLong.of(activeTasks.get());
+    }
+
     @PreDestroy
     @Override
     public void close() {
         managedConnections.values().forEach(ManagedConnection::close);
         managedConnections.clear();
+        shutdownCompletion.complete(null);
     }
 
     /**
@@ -105,6 +131,8 @@ public class RedisPubSubListenerRegistry implements AutoCloseable {
         private final Map<String, List<ListenerRegistration>> patterns = new ConcurrentHashMap<>();
         private final Set<String> subscribedChannels = ConcurrentHashMap.newKeySet();
         private final Set<String> subscribedPatterns = ConcurrentHashMap.newKeySet();
+        private final AtomicBoolean shutdownRequested = new AtomicBoolean();
+        private final AtomicBoolean shutdownComplete = new AtomicBoolean();
 
         private ManagedConnection(Optional<String> connectionName) {
             this.connection = RedisConnectionUtil.openBytesRedisPubSubConnection(
@@ -119,6 +147,9 @@ public class RedisPubSubListenerRegistry implements AutoCloseable {
         private synchronized void subscribe(Set<ChannelSubscription> subscriptions,
                                             ExecutorService executor,
                                             Consumer<RedisMessage> consumer) {
+            if (shutdownRequested.get()) {
+                throw new IllegalStateException("Redis Pub/Sub connection is shutting down");
+            }
             List<byte[]> newChannels = new ArrayList<>();
             List<byte[]> newPatterns = new ArrayList<>();
             for (ChannelSubscription subscription : subscriptions) {
@@ -167,22 +198,71 @@ public class RedisPubSubListenerRegistry implements AutoCloseable {
             }
             RedisMessage redisMessage = new RedisMessage(message, channel, pattern);
             for (ListenerRegistration registration : listenerRegistrations) {
-                registration.executor().submit(() -> {
-                    try {
-                        registration.consumer().accept(redisMessage);
-                    } catch (Exception e) {
-                        LOG.error("Error dispatching Redis Pub/Sub message for channel [{}]", channel, e);
+                activeTasks.incrementAndGet();
+                try {
+                    registration.executor().submit(() -> {
+                        try {
+                            registration.consumer().accept(redisMessage);
+                        } catch (Exception e) {
+                            LOG.error("Error dispatching Redis Pub/Sub message for channel [{}]", channel, e);
+                        } finally {
+                            if (activeTasks.decrementAndGet() == 0L) {
+                                completeGracefulShutdownIfReady();
+                            }
+                        }
+                    });
+                } catch (RejectedExecutionException e) {
+                    if (activeTasks.decrementAndGet() == 0L) {
+                        completeGracefulShutdownIfReady();
                     }
-                });
+                    LOG.warn("Executor rejected Redis Pub/Sub message for channel [{}] during shutdown", channel, e);
+                }
             }
+        }
+
+        private synchronized void shutdownGracefully() {
+            if (!shutdownRequested.compareAndSet(false, true)) {
+                return;
+            }
+            try {
+                if (!subscribedChannels.isEmpty()) {
+                    sync.unsubscribe(subscribedChannels.stream().map(v -> v.getBytes(StandardCharsets.UTF_8)).toArray(byte[][]::new));
+                }
+                if (!subscribedPatterns.isEmpty()) {
+                    sync.punsubscribe(subscribedPatterns.stream().map(v -> v.getBytes(StandardCharsets.UTF_8)).toArray(byte[][]::new));
+                }
+            } catch (Exception e) {
+                LOG.warn("Error while unsubscribing Redis Pub/Sub listeners during graceful shutdown", e);
+            } finally {
+                shutdownComplete.set(true);
+                completeGracefulShutdownIfReady();
+            }
+        }
+
+        private boolean gracefulShutdownComplete() {
+            return shutdownComplete.get();
         }
 
         @Override
         public void close() {
+            shutdownComplete.set(true);
             connection.close();
         }
     }
 
     private record ListenerRegistration(ExecutorService executor, Consumer<RedisMessage> consumer) {
+    }
+
+    private void completeGracefulShutdownIfReady() {
+        if (!gracefulShutdown.get()) {
+            return;
+        }
+        if (activeTasks.get() != 0L) {
+            return;
+        }
+        boolean allStopped = managedConnections.values().stream().allMatch(ManagedConnection::gracefulShutdownComplete);
+        if (allStopped) {
+            shutdownCompletion.complete(null);
+        }
     }
 }

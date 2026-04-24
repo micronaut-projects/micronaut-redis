@@ -12,9 +12,17 @@ To consume a different format for a particular channel, add ann:http.annotation.
 
 snippet::io.micronaut.configuration.lettuce.docs.pubsub.PlainTextBookListener[tags="listener", project-base="docs-examples/pubsub"]
 
-To publish messages, inject api:configuration.lettuce.pubsub.RedisPubSubPublisher[] and send the payload to the target channel:
+To publish messages imperatively, inject api:configuration.lettuce.pubsub.RedisPubSubPublisher[] and send the payload to the target channel:
 
 snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookPublisher[tags="publisher", project-base="docs-examples/pubsub"]
+
+For a declarative client API similar to Kafka, define an interface with ann:configuration.lettuce.pubsub.annotation.RedisPubSubClient[] and annotate methods with ann:configuration.lettuce.pubsub.annotation.MessageChannel[]:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookClient[tags="client", project-base="docs-examples/pubsub"]
+
+Client bodies are encoded through Micronaut HTTP `MessageBodyWriter` implementations. JSON is used by default, and ann:http.annotation.Produces[] lets you override the media type for a method:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookClient[tags="clientProduces", project-base="docs-examples/pubsub"]
 
 If you want a different default media type for all Pub/Sub payloads, configure it through `redis.pubsub.default-body-media-type`:
 
@@ -30,3 +38,5 @@ Listener failures are delegated to api:configuration.lettuce.pubsub.exception.Re
 snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookAuditListener[tags="listener", project-base="docs-examples/pubsub"]
 
 snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookAuditExceptionHandler[tags="handler", project-base="docs-examples/pubsub"]
+
+Redis Pub/Sub listeners also participate in Micronaut graceful shutdown. During shutdown, the listener registry unsubscribes from Redis and waits for in-flight listener tasks to complete before finishing the graceful shutdown phase.

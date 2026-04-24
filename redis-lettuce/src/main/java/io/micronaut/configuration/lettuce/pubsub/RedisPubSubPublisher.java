@@ -22,6 +22,7 @@ import io.micronaut.configuration.lettuce.RedisConnectionUtil;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.type.Argument;
+import io.micronaut.http.MediaType;
 import io.micronaut.context.annotation.Requires;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
@@ -77,6 +78,48 @@ public class RedisPubSubPublisher implements AutoCloseable {
      * @return The Redis publish subscriber count
      */
     public long publishOnConnection(@Nullable String connectionName, String channel, Object body) {
+        return publishOnConnection(
+            connectionName,
+            channel,
+            Argument.of(body == null ? Object.class : body.getClass()),
+            AnnotationMetadata.EMPTY_METADATA,
+            body
+        );
+    }
+
+    /**
+     * Publish a message to a named Redis connection.
+     *
+     * @param connectionName    The named connection
+     * @param channel           The channel name
+     * @param argument          The body argument
+     * @param annotationMetadata The body annotation metadata
+     * @param body              The message body
+     * @return The Redis publish subscriber count
+     */
+    public long publishOnConnection(@Nullable String connectionName,
+                                    String channel,
+                                    Argument<?> argument,
+                                    AnnotationMetadata annotationMetadata,
+                                    Object body) {
+        return publishOnConnection(connectionName, channel, argument, messageBodyHandler.resolveOutgoingMediaType(annotationMetadata, AnnotationMetadata.EMPTY_METADATA), body);
+    }
+
+    /**
+     * Publish a message using an explicit media type.
+     *
+     * @param connectionName The named connection
+     * @param channel        The channel name
+     * @param argument       The body argument
+     * @param mediaType      The media type
+     * @param body           The message body
+     * @return The Redis publish subscriber count
+     */
+    public long publishOnConnection(@Nullable String connectionName,
+                                    String channel,
+                                    Argument<?> argument,
+                                    MediaType mediaType,
+                                    Object body) {
         Object connection = connections.computeIfAbsent(connectionName == null ? DEFAULT_CONNECTION : connectionName, ignored ->
             RedisConnectionUtil.openBytesRedisConnection(
                 beanLocator,
@@ -85,11 +128,7 @@ public class RedisPubSubPublisher implements AutoCloseable {
             )
         );
         byte[] channelBytes = channel.getBytes(StandardCharsets.UTF_8);
-        byte[] bodyBytes = messageBodyHandler.serialize(
-            Argument.of(body == null ? Object.class : body.getClass()),
-            AnnotationMetadata.EMPTY_METADATA,
-            body
-        );
+        byte[] bodyBytes = messageBodyHandler.serialize(argument, mediaType, body);
         if (connection instanceof StatefulRedisConnection redisConnection) {
             @SuppressWarnings("unchecked")
             StatefulRedisConnection<byte[], byte[]> typedConnection = (StatefulRedisConnection<byte[], byte[]>) redisConnection;

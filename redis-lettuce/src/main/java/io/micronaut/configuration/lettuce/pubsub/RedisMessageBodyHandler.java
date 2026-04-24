@@ -66,6 +66,21 @@ public final class RedisMessageBodyHandler {
     /**
      * Serialize a Redis Pub/Sub body.
      *
+     * @param argument  The body argument
+     * @param mediaType The media type
+     * @param value     The value
+     * @return The serialized bytes
+     */
+    public byte[] serialize(Argument<?> argument, MediaType mediaType, Object value) {
+        if (value == null) {
+            return new byte[0];
+        }
+        return writeBody(argument, mediaType, value);
+    }
+
+    /**
+     * Serialize a Redis Pub/Sub body.
+     *
      * @param argument           The body argument
      * @param annotationMetadata The annotation metadata
      * @param value              The value
@@ -78,6 +93,11 @@ public final class RedisMessageBodyHandler {
             return new byte[0];
         }
         MediaType mediaType = resolveMediaType(annotationMetadata, Produces.class);
+        return writeBody(argument, mediaType, value);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private byte[] writeBody(Argument<?> argument, MediaType mediaType, Object value) {
         MessageBodyWriter writer = messageBodyHandlerRegistry.getWriter((Argument) argument, List.of(mediaType));
         SimpleHttpHeaders headers = new SimpleHttpHeaders(conversionService);
         headers.add(HttpHeaders.CONTENT_TYPE, mediaType.toString());
@@ -118,6 +138,25 @@ public final class RedisMessageBodyHandler {
      */
     public MediaType resolveIncomingMediaType(AnnotationMetadata annotationMetadata) {
         return resolveMediaType(annotationMetadata, Consumes.class);
+    }
+
+    /**
+     * Resolve the media type to use for serializing a client method body.
+     *
+     * @param annotationMetadata    The method annotation metadata
+     * @param declaringTypeMetadata The declaring type annotation metadata
+     * @return The media type
+     */
+    public MediaType resolveOutgoingMediaType(AnnotationMetadata annotationMetadata, AnnotationMetadata declaringTypeMetadata) {
+        String[] values = annotationMetadata.stringValues(Produces.class);
+        if (values.length > 0) {
+            return new MediaType(values[0]);
+        }
+        values = declaringTypeMetadata.stringValues(Produces.class);
+        if (values.length > 0) {
+            return new MediaType(values[0]);
+        }
+        return configuration.getDefaultBodyMediaType();
     }
 
     /**

@@ -17,6 +17,8 @@ package io.micronaut.configuration.lettuce.pubsub;
 
 import org.jspecify.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -30,11 +32,15 @@ import java.util.Optional;
  */
 public record RedisMessage(byte[] body, String channel, @Nullable String pattern) {
 
+    public RedisMessage {
+        body = body.clone();
+    }
+
     /**
      * @return The raw message body
      */
     public byte[] getBody() {
-        return body;
+        return body.clone();
     }
 
     /**
@@ -49,5 +55,28 @@ public record RedisMessage(byte[] body, String channel, @Nullable String pattern
      */
     public Optional<String> getPattern() {
         return Optional.ofNullable(pattern);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof RedisMessage other)) {
+            return false;
+        }
+        return Arrays.equals(body, other.body)
+            && Objects.equals(channel, other.channel)
+            && Objects.equals(pattern, other.pattern);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(Arrays.hashCode(body), channel, pattern);
+    }
+
+    @Override
+    public String toString() {
+        return "RedisMessage[body=" + Arrays.toString(body) + ", channel=" + channel + ", pattern=" + pattern + ']';
     }
 }

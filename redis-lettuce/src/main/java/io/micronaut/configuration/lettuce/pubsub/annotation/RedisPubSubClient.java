@@ -29,6 +29,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Declarative client for publishing Redis Pub/Sub messages.
+ * Methods may return a synchronous value, {@code void}, a {@link java.util.concurrent.CompletionStage},
+ * or a reactive {@link org.reactivestreams.Publisher}. For non-void return types, Micronaut first tries
+ * to convert the Redis subscriber count to the declared return type. If that is not possible and the
+ * declared type already matches the published body type, the original body is returned.
  *
  * @author Graeme Rocher
  * @since 7.0

@@ -17,7 +17,6 @@ package io.micronaut.configuration.lettuce.pubsub.processor;
 
 import io.micronaut.configuration.lettuce.AbstractRedisConfiguration;
 import io.micronaut.configuration.lettuce.pubsub.RedisListenerMessage;
-import io.micronaut.configuration.lettuce.pubsub.RedisMessage;
 import io.micronaut.configuration.lettuce.pubsub.RedisMessageBodyHandler;
 import io.micronaut.configuration.lettuce.pubsub.RedisPubSubListenerRegistry;
 import io.micronaut.configuration.lettuce.pubsub.annotation.MessageChannel;
@@ -65,6 +64,7 @@ public class RedisListenerMethodProcessor implements ExecutableMethodProcessor<M
      * @param beanContext      The bean context
      * @param binderRegistry   The binder registry
      * @param listenerRegistry The listener registry
+     * @param messageBodyHandler The message body handler
      */
     public RedisListenerMethodProcessor(BeanContext beanContext,
                                         RedisBinderRegistry binderRegistry,
@@ -116,7 +116,7 @@ public class RedisListenerMethodProcessor implements ExecutableMethodProcessor<M
     }
 
     private ExecutorService resolveExecutor(AnnotationValue<RedisListener> listener, ExecutableMethod<?, ?> method) {
-        String executorName = listener.stringValue("executor").orElse(TaskExecutors.MESSAGE_CONSUMER);
+        String executorName = listener.stringValue("executor").orElse(TaskExecutors.BLOCKING);
         return beanContext.findBean(ExecutorService.class, Qualifiers.byName(executorName))
             .orElseThrow(() -> new ConfigurationException(
                 "Could not find executor service [" + executorName + "] specified for Redis listener method [" + method + "]"

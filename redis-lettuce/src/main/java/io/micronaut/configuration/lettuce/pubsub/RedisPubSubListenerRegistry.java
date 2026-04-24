@@ -115,6 +115,19 @@ public class RedisPubSubListenerRegistry implements AutoCloseable, GracefulShutd
         shutdownCompletion.complete(null);
     }
 
+    private void completeGracefulShutdownIfReady() {
+        if (!gracefulShutdown.get()) {
+            return;
+        }
+        if (activeTasks.get() != 0L) {
+            return;
+        }
+        boolean allStopped = managedConnections.values().stream().allMatch(ManagedConnection::gracefulShutdownComplete);
+        if (allStopped) {
+            shutdownCompletion.complete(null);
+        }
+    }
+
     /**
      * A subscription target.
      *
@@ -251,18 +264,5 @@ public class RedisPubSubListenerRegistry implements AutoCloseable, GracefulShutd
     }
 
     private record ListenerRegistration(ExecutorService executor, Consumer<RedisMessage> consumer) {
-    }
-
-    private void completeGracefulShutdownIfReady() {
-        if (!gracefulShutdown.get()) {
-            return;
-        }
-        if (activeTasks.get() != 0L) {
-            return;
-        }
-        boolean allStopped = managedConnections.values().stream().allMatch(ManagedConnection::gracefulShutdownComplete);
-        if (allStopped) {
-            shutdownCompletion.complete(null);
-        }
     }
 }

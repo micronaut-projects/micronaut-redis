@@ -84,7 +84,6 @@ public final class RedisMessageBodyHandler {
      * @param argument           The body argument
      * @param annotationMetadata The annotation metadata
      * @param value              The value
-     * @param <T>                The value type
      * @return The serialized bytes
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -128,16 +127,6 @@ public final class RedisMessageBodyHandler {
         } catch (CodecException e) {
             throw new IllegalArgumentException("Cannot deserialize Redis Pub/Sub body to type [" + context.getArgument().getType().getName() + "]", e);
         }
-    }
-
-    /**
-     * Resolve the media type to use for deserializing a listener method body.
-     *
-     * @param annotationMetadata The listener method annotation metadata
-     * @return The media type
-     */
-    public MediaType resolveIncomingMediaType(AnnotationMetadata annotationMetadata) {
-        return resolveMediaType(annotationMetadata, Consumes.class);
     }
 
     /**

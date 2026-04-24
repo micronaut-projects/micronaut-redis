@@ -55,5 +55,5 @@ public @interface RedisListener {
     /**
      * @return The executor used to invoke listener methods
      */
-    String executor() default TaskExecutors.MESSAGE_CONSUMER;
+    String executor() default TaskExecutors.BLOCKING;
 }

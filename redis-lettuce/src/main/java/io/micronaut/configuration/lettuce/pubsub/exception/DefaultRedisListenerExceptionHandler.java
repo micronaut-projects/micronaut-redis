@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 @Primary
 public class DefaultRedisListenerExceptionHandler implements RedisListenerExceptionHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RedisListenerExceptionHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultRedisListenerExceptionHandler.class);
 
     @Override
     public void handle(RedisListenerException exception) {

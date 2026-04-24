@@ -24,6 +24,8 @@ Client bodies are encoded through Micronaut HTTP `MessageBodyWriter` implementat
 
 snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookClient[tags="clientProduces", project-base="docs-examples/pubsub"]
 
+`@RedisPubSubClient` methods can return `void`, a synchronous value, `CompletionStage<T>`, or a reactive `Publisher<T>`. For non-void results, Micronaut first converts the Redis subscriber count to `T`; if that conversion is not possible and `T` already matches the published body type, the original body is returned instead.
+
 If you want a different default media type for all Pub/Sub payloads, configure it through `redis.pubsub.default-body-media-type`:
 
 [configuration]

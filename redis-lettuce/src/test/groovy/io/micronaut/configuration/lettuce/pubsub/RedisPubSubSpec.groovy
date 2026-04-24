@@ -20,10 +20,14 @@ import io.micronaut.messaging.annotation.MessageBody
 import io.micronaut.runtime.graceful.GracefulShutdownCapable
 import io.micronaut.redis.test.RedisContainerUtils
 import jakarta.inject.Singleton
+import org.opentest4j.TestAbortedException
 import org.testcontainers.DockerClientFactory
+import org.reactivestreams.Publisher
+import reactor.core.publisher.Mono
 import spock.lang.AutoCleanup
 import spock.util.concurrent.PollingConditions
 
+import java.time.Duration
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.CompletionStage
@@ -39,9 +43,7 @@ class RedisPubSubSpec extends RedisSpec {
 
     void "test redis pubsub listener receives channel messages"() {
         given:
-        if (!assumeDocker()) {
-            return
-        }
+        assumeDocker()
         applicationContext = ApplicationContext.run(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
@@ -60,9 +62,7 @@ class RedisPubSubSpec extends RedisSpec {
 
     void "test redis pubsub listener receives pattern messages"() {
         given:
-        if (!assumeDocker()) {
-            return
-        }
+        assumeDocker()
         applicationContext = ApplicationContext.run(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
@@ -81,9 +81,7 @@ class RedisPubSubSpec extends RedisSpec {
 
     void "test redis pubsub listener receives richer messages"() {
         given:
-        if (!assumeDocker()) {
-            return
-        }
+        assumeDocker()
         applicationContext = ApplicationContext.run(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
@@ -102,9 +100,7 @@ class RedisPubSubSpec extends RedisSpec {
 
     void "test redis pubsub listener uses per channel exception handlers"() {
         given:
-        if (!assumeDocker()) {
-            return
-        }
+        assumeDocker()
         applicationContext = ApplicationContext.run(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
@@ -126,9 +122,7 @@ class RedisPubSubSpec extends RedisSpec {
 
     void "test redis pubsub client publishes richer messages and alternative media types"() {
         given:
-        if (!assumeDocker()) {
-            return
-        }
+        assumeDocker()
         applicationContext = ApplicationContext.run(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
@@ -137,30 +131,32 @@ class RedisPubSubSpec extends RedisSpec {
         ClientJsonListener jsonListener = applicationContext.getBean(ClientJsonListener)
         ClientPlainTextListener plainListener = applicationContext.getBean(ClientPlainTextListener)
         ClientDynamicListener dynamicListener = applicationContext.getBean(ClientDynamicListener)
+        ClientPublisherListener publisherListener = applicationContext.getBean(ClientPublisherListener)
 
         when:
         long subscribers = client.publishCreated(new Book(title: "Dune", author: "Frank Herbert"))
         CompletionStage<Long> plainResult = client.publishPlain(new Book(title: "The Stand", author: "Stephen King"))
         CompletionStage<Void> dynamicResult = client.publishTo("books.client.dynamic", new Book(title: "Foundation", author: "Isaac Asimov"))
+        Publisher<Long> publisherResult = client.publishReactive(new Book(title: "Neuromancer", author: "William Gibson"))
 
         then:
         subscribers == 1
         plainResult.toCompletableFuture().get(5, TimeUnit.SECONDS) == 1
         dynamicResult.toCompletableFuture().get(5, TimeUnit.SECONDS) == null
+        Mono.from(publisherResult).block(Duration.ofSeconds(5)) == 1
 
         and:
         new PollingConditions(timeout: 5).eventually {
             jsonListener.messages.poll() == "books.client.created:Dune:Frank Herbert"
             plainListener.messages.poll() == "books.client.plain:The Stand:Stephen King"
             dynamicListener.messages.poll() == "books.client.dynamic:Foundation:Isaac Asimov"
+            publisherListener.messages.poll() == "books.client.publisher:Neuromancer:William Gibson"
         }
     }
 
     void "test graceful shutdown waits for active redis pubsub listeners"() {
         given:
-        if (!assumeDocker()) {
-            return
-        }
+        assumeDocker()
         applicationContext = ApplicationContext.run(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
@@ -192,8 +188,10 @@ class RedisPubSubSpec extends RedisSpec {
         }
     }
 
-    private static boolean assumeDocker() {
-        DockerClientFactory.instance().isDockerAvailable()
+    private static void assumeDocker() {
+        if (!DockerClientFactory.instance().isDockerAvailable()) {
+            throw new TestAbortedException("Docker is not available")
+        }
     }
 
     @RedisListener
@@ -265,6 +263,17 @@ class RedisPubSubSpec extends RedisSpec {
 
     @RedisListener
     @Requires(property = 'spec.name', value = SPEC_NAME)
+    static class ClientPublisherListener {
+        final BlockingQueue<String> messages = new LinkedBlockingQueue<>()
+
+        @MessageChannel("books.client.publisher")
+        void receive(@MessageBody Book book, @MessageChannel String channel) {
+            messages.add("${channel}:${book.title}:${book.author}".toString())
+        }
+    }
+
+    @RedisListener
+    @Requires(property = 'spec.name', value = SPEC_NAME)
     static class SlowListener {
         final BlockingQueue<String> messages = new LinkedBlockingQueue<>()
         final CountDownLatch started = new CountDownLatch(1)
@@ -328,6 +337,9 @@ class RedisPubSubSpec extends RedisSpec {
         CompletionStage<Long> publishPlain(@MessageBody Book book)
 
         CompletionStage<Void> publishTo(@MessageChannel String channel, Book book)
+
+        @MessageChannel("books.client.publisher")
+        Publisher<Long> publishReactive(Book book)
     }
 
     @Singleton

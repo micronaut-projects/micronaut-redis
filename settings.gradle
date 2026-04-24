@@ -16,6 +16,7 @@ include 'docs-examples:codecs-java'
 include 'docs-examples:codecs-groovy'
 include 'docs-examples:codecs-kotlin'
 include 'redis-lettuce'
+include 'redis-lettuce-pubsub'
 include 'test-suite-graal'
 include 'test-suite-utils'
 

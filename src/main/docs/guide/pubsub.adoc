@@ -1,6 +1,10 @@
 === Redis Pub/Sub Messaging
 
-The `micronaut-redis-lettuce` module includes Redis Pub/Sub support for channel-based messaging.
+Micronaut Redis Pub/Sub messaging is published as a dedicated module on top of the Lettuce integration.
+
+The high-level Pub/Sub messaging integration is published in a dedicated module. Add it to your application alongside the base Lettuce module:
+
+dependency:micronaut-redis-lettuce-pubsub[groupId="io.micronaut.redis"]
 
 To consume messages, annotate a bean with ann:configuration.lettuce.pubsub.annotation.RedisListener[] and annotate executable methods with ann:configuration.lettuce.pubsub.annotation.MessageChannel[]:
 

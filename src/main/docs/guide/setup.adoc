@@ -12,6 +12,10 @@ To configure the Lettuce driver you should first add the `redis-lettuce` module 
 
 dependency:micronaut-redis-lettuce[groupId="io.micronaut.redis"]
 
+If you want Micronaut Pub/Sub listeners, publishers, and `@RedisPubSubClient`, add the dedicated Pub/Sub module as well:
+
+dependency:micronaut-redis-lettuce-pubsub[groupId="io.micronaut.redis"]
+
 You should then configure the URI of the Redis server you wish to communicate with in the application configuration file:
 
 .Configuring `redis.uri`

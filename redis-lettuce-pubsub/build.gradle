@@ -31,3 +31,7 @@ micronautBuild {
         parentModuleId = "io.micronaut.redis:micronaut-redis-lettuce-pubsub"
     }
 }
+
+tasks.named("findBaseline") {
+    enabled = false
+}

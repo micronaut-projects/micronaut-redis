@@ -44,7 +44,7 @@ class RedisPubSubSpec extends RedisSpec {
     void "test redis pubsub listener receives channel messages"() {
         given:
         assumeDocker()
-        applicationContext = ApplicationContext.run(
+        applicationContext = runApplicationContext(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
         )
@@ -63,7 +63,7 @@ class RedisPubSubSpec extends RedisSpec {
     void "test redis pubsub listener receives pattern messages"() {
         given:
         assumeDocker()
-        applicationContext = ApplicationContext.run(
+        applicationContext = runApplicationContext(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
         )
@@ -82,7 +82,7 @@ class RedisPubSubSpec extends RedisSpec {
     void "test redis pubsub listener receives richer messages"() {
         given:
         assumeDocker()
-        applicationContext = ApplicationContext.run(
+        applicationContext = runApplicationContext(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
         )
@@ -101,7 +101,7 @@ class RedisPubSubSpec extends RedisSpec {
     void "test redis pubsub listener uses per channel exception handlers"() {
         given:
         assumeDocker()
-        applicationContext = ApplicationContext.run(
+        applicationContext = runApplicationContext(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
         )
@@ -123,7 +123,7 @@ class RedisPubSubSpec extends RedisSpec {
     void "test redis pubsub client publishes richer messages and alternative media types"() {
         given:
         assumeDocker()
-        applicationContext = ApplicationContext.run(
+        applicationContext = runApplicationContext(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
         )
@@ -157,7 +157,7 @@ class RedisPubSubSpec extends RedisSpec {
     void "test graceful shutdown waits for active redis pubsub listeners"() {
         given:
         assumeDocker()
-        applicationContext = ApplicationContext.run(
+        applicationContext = runApplicationContext(
             'redis.port': RedisContainerUtils.getRedisPort(),
             'spec.name': SPEC_NAME
         )
@@ -192,6 +192,11 @@ class RedisPubSubSpec extends RedisSpec {
         if (!DockerClientFactory.instance().isDockerAvailable()) {
             throw new TestAbortedException("Docker is not available")
         }
+    }
+
+    private ApplicationContext runApplicationContext(Map<String, Object> properties) {
+        applicationContext?.close()
+        return ApplicationContext.run(properties)
     }
 
     @RedisListener

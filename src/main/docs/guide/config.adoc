@@ -108,6 +108,15 @@ redis:
     enabled: false
 ----
 
+By default, each health check opens a fresh Redis connection so the probe verifies new connections can still be established. If you prefer to reuse an existing managed Lettuce connection bean when available, enable `redis.health.reuse-connection`:
+
+[configuration]
+----
+redis:
+   health:
+      reuse-connection: true
+----
+
 See the section on the https://docs.micronaut.io/latest/guide/index.html#healthEndpoint[Health Endpoint] for more information.
 
 == Disabling Redis

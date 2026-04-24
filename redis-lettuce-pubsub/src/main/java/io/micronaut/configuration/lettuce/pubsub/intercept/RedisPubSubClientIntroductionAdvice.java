@@ -35,6 +35,7 @@ import io.micronaut.http.MediaType;
 import io.micronaut.inject.qualifiers.Qualifiers;
 import io.micronaut.messaging.annotation.MessageBody;
 import io.micronaut.messaging.exceptions.MessagingClientException;
+import io.micronaut.scheduling.TaskExecutors;
 import jakarta.inject.Singleton;
 
 import java.util.Objects;
@@ -90,7 +91,7 @@ class RedisPubSubClientIntroductionAdvice implements MethodInterceptor<Object, O
     private CompletableFuture<Object> publishAsync(MethodInvocationContext<Object, Object> context,
                                                    PublishInvocation invocation,
                                                    Argument<?> returnType) {
-        String executorName = context.stringValue(RedisPubSubClient.class, "executor").orElseThrow();
+        String executorName = context.stringValue(RedisPubSubClient.class, "executor").orElse(TaskExecutors.BLOCKING);
         ExecutorService executor = beanContext.findBean(ExecutorService.class, Qualifiers.byName(executorName))
             .orElseThrow(() -> new ConfigurationException("No executor named [" + executorName + "] configured for Redis Pub/Sub client: " + context));
         return CompletableFuture.supplyAsync(() -> convertResult(returnType, publish(invocation), invocation.bodyValue()), executor);

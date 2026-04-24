@@ -11,6 +11,8 @@ redis:
     timeout: 30s
 ----
 
+When `redis.uri` is present, you can still provide password authentication separately with `redis.authentication`, or embed credentials directly in the URI. Use `redis.authentication` instead of a non-existent `redis.password` property.
+
 === Configuring Lettuce Command Latency Metrics
 
 If Micrometer is on the classpath, the Lettuce command latency recorder is enabled automatically. Histogram metrics remain enabled by default for compatibility, but you can now customize them in configuration:

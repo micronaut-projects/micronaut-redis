@@ -27,6 +27,8 @@ redis:
 
 TIP: The `redis.uri` setting should be in the format as described in the https://github.com/lettuce-io/lettuce-core/wiki/Redis-URI-and-connection-details[Connection URIs] section of the Lettuce wiki
 
+IMPORTANT: If Redis requires authentication, you can either include credentials directly in `redis.uri`, for example `redis://:secret@localhost` or `redis://username:secret@localhost`, or provide a password separately with `redis.authentication` alongside `redis.uri`. There is no separate `redis.password` property.
+
 You can also specify multiple Redis URIs using `redis.uris` in which case a `RedisClusterClient` is created instead.
 
 === Configuring Lettuce ClientResources and threads

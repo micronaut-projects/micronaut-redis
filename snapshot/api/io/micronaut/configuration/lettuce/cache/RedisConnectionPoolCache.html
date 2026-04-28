@@ -100,10 +100,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="annotations">@EachBean(<a href="RedisCacheConfiguration.html" title="class in io.micronaut.configuration.lettuce.cache">RedisCacheConfiguration</a>.class)
-@Requires(classes=io.micronaut.cache.SyncCache.class,
-          property="redis.pool.enabled",
-          defaultValue="false",
-          notEquals="false")
+@Requires(property="redis.enabled",notEquals="false") @Requires(classes=io.micronaut.cache.SyncCache.class,property="redis.pool.enabled",defaultValue="false",notEquals="false")
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">RedisConnectionPoolCache</span>
 <span class="extends-implements">extends <a href="AbstractRedisCache.html" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a>&lt;io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.api.StatefulConnection&lt;byte[],<wbr>byte[]&gt;&gt;&gt;</span></div>
 <div class="block">An implementation of <code>SyncCache</code> for Lettuce / Redis using connection pooling.</div>

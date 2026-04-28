@@ -106,6 +106,22 @@ class RedisMessageBodyHandlerSpec extends Specification {
         decoded.author == "Frank Herbert"
     }
 
+    void "test serialize null values returns empty bytes for all overloads"() {
+        given:
+        def bodyHandler = applicationContext.getBean(RedisMessageBodyHandler)
+
+        expect:
+        bodyHandler.serialize(null).length == 0
+        bodyHandler.serialize(Argument.of(Book), MediaType.APPLICATION_JSON_TYPE, null).length == 0
+        bodyHandler.serialize(Argument.of(Book), AnnotationMetadata.EMPTY_METADATA, null).length == 0
+        bodyHandler.serialize(
+            Argument.of(Book),
+            AnnotationMetadata.EMPTY_METADATA,
+            AnnotationMetadata.EMPTY_METADATA,
+            null
+        ).length == 0
+    }
+
     @Singleton
     @Requires(property = 'spec.name', value = SPEC_NAME)
     static class TextPlainTarget {

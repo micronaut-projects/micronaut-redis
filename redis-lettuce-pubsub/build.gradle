@@ -1,0 +1,37 @@
+plugins {
+    id("io.micronaut.build.internal.redis-module")
+}
+
+dependencies {
+    annotationProcessor mn.micronaut.graal
+
+    api mn.micronaut.aop
+    api mn.micronaut.http
+    api mn.micronaut.messaging
+
+    implementation project(":micronaut-redis-lettuce")
+
+    testImplementation(platform(mnTest.boms.testcontainers))
+    testImplementation(libs.testcontainers)
+    testAnnotationProcessor mn.micronaut.inject.java
+
+    testImplementation mn.reactor
+    testImplementation mnSerde.micronaut.serde.jackson
+    testImplementation mn.micronaut.jackson.databind
+    testImplementation mn.micronaut.function.web
+    testImplementation mn.micronaut.http.client
+    testImplementation mn.snakeyaml
+    testRuntimeOnly mn.micronaut.http.server.netty
+    testRuntimeOnly libs.junit.platform.launcher
+    testRuntimeOnly mnLogging.logback.classic
+}
+
+micronautBuild {
+    descriptor {
+        parentModuleId = "io.micronaut.redis:micronaut-redis-lettuce-pubsub"
+    }
+}
+
+tasks.named("findBaseline") {
+    enabled = false
+}

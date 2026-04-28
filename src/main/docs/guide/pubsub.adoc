@@ -1,0 +1,48 @@
+=== Redis Pub/Sub Messaging
+
+Micronaut Redis Pub/Sub messaging is published as a dedicated module on top of the Lettuce integration.
+
+The high-level Pub/Sub messaging integration is published in a dedicated module. Add it to your application alongside the base Lettuce module:
+
+dependency:micronaut-redis-lettuce-pubsub[groupId="io.micronaut.redis"]
+
+To consume messages, annotate a bean with ann:configuration.lettuce.pubsub.annotation.RedisListener[] and annotate executable methods with ann:configuration.lettuce.pubsub.annotation.MessageChannel[]:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookCreatedListener[tags="listener", project-base="docs-examples/pubsub"]
+
+Listener bodies are decoded through Micronaut HTTP `MessageBodyReader` implementations. JSON is used by default, so richer message payloads work out of the box as long as a matching body reader is available.
+
+To consume a different format for a particular channel, add ann:http.annotation.Consumes[]:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.PlainTextBookListener[tags="listener", project-base="docs-examples/pubsub"]
+
+To publish messages imperatively, inject api:configuration.lettuce.pubsub.RedisPubSubPublisher[] and send the payload to the target channel:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookPublisher[tags="publisher", project-base="docs-examples/pubsub"]
+
+For a declarative client API similar to Kafka, define an interface with ann:configuration.lettuce.pubsub.annotation.RedisPubSubClient[] and annotate methods with ann:configuration.lettuce.pubsub.annotation.MessageChannel[]:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookClient[tags="client", project-base="docs-examples/pubsub"]
+
+Client bodies are encoded through Micronaut HTTP `MessageBodyWriter` implementations. JSON is used by default, and ann:http.annotation.Produces[] lets you override the media type for a method:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookClient[tags="clientProduces", project-base="docs-examples/pubsub"]
+
+`@RedisPubSubClient` methods can return `void`, a synchronous value, `CompletionStage<T>`, or a reactive `Publisher<T>`. For non-void results, Micronaut first converts the Redis subscriber count to `T`; if that conversion is not possible and `T` already matches the published body type, the original body is returned instead.
+
+If you want a different default media type for all Pub/Sub payloads, configure it through `redis.pubsub.default-body-media-type`:
+
+[configuration]
+----
+redis:
+  pubsub:
+    default-body-media-type: text/plain
+----
+
+Listener failures are delegated to api:configuration.lettuce.pubsub.exception.RedisListenerExceptionHandler[]. The default handler logs the error, and you can select a specific handler per message channel:
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookAuditListener[tags="listener", project-base="docs-examples/pubsub"]
+
+snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookAuditExceptionHandler[tags="handler", project-base="docs-examples/pubsub"]
+
+Redis Pub/Sub listeners also participate in Micronaut graceful shutdown. During shutdown, the listener registry unsubscribes from Redis and waits for in-flight listener tasks to complete before finishing the graceful shutdown phase.

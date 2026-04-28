@@ -53,6 +53,7 @@ import java.util.function.Supplier;
  * @since 5.3.0
  */
 @EachBean(RedisCacheConfiguration.class)
+@Requires(property = RedisSetting.PREFIX + ".enabled", notEquals = StringUtils.FALSE)
 @Requires(classes = SyncCache.class, property = RedisSetting.REDIS_POOL + ".enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
 public class RedisConnectionPoolCache extends AbstractRedisCache<AsyncPool<StatefulConnection<byte[], byte[]>>> {
     private static final Logger LOG = LoggerFactory.getLogger(RedisConnectionPoolCache.class);

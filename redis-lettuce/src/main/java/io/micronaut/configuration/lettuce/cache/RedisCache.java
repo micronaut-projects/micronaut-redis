@@ -50,6 +50,7 @@ import java.util.function.Supplier;
  * @since 1.0
  */
 @EachBean(RedisCacheConfiguration.class)
+@Requires(property = RedisSetting.PREFIX + ".enabled", notEquals = StringUtils.FALSE)
 @Requires(classes = SyncCache.class, property = RedisSetting.REDIS_POOL + ".enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.TRUE)
 public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], byte[]>> {
     private final RedisAsyncCache asyncCache;

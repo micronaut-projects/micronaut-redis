@@ -11,7 +11,7 @@ redis:
     timeout: 30s
 ----
 
-When `redis.uri` is present, you can still provide password authentication separately with `redis.authentication`, or embed credentials directly in the URI. Use `redis.authentication` instead of a non-existent `redis.password` property.
+When `redis.uri` is present, you can still provide password authentication separately with either `redis.authentication` or `redis.password`, or embed credentials directly in the URI.
 
 === Configuring Lettuce Command Latency Metrics
 

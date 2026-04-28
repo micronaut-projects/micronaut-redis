@@ -94,6 +94,26 @@ class RedisConfigurationSpec extends Specification {
         client.shutdown()
     }
 
+    void "test uri password configuration is applied when bound from properties"() {
+        given:
+        applicationContext = ApplicationContext.run([
+                'redis.uri'     : 'redis://localhost:6379',
+                'redis.password': 's3cret'
+        ])
+
+        when:
+        DefaultRedisConfiguration configuration = applicationContext.getBean(DefaultRedisConfiguration)
+        RedisClient client = applicationContext.getBean(RedisClient)
+
+        then:
+        passwordOf(configuration) == 's3cret'
+        passwordOf(configuration.getUri().orElseThrow()) == 's3cret'
+        passwordOf(client.@redisURI) == 's3cret'
+
+        cleanup:
+        client.shutdown()
+    }
+
     void "test uri configuration applies separately bound RedisURI settings"() {
         given:
         DefaultRedisConfiguration configuration = new DefaultRedisConfiguration()
@@ -162,6 +182,26 @@ class RedisConfigurationSpec extends Specification {
         replicaUris*.ssl == [true]
         replicaUris*.startTls == [true]
         replicaUris*.verifyMode == [SslVerifyMode.CA]
+    }
+
+    void "test named uri password configuration is applied when bound from properties"() {
+        given:
+        applicationContext = ApplicationContext.run([
+                'redis.servers.reports.uri'     : 'redis://localhost:6379',
+                'redis.servers.reports.password': 'named-secret'
+        ])
+
+        when:
+        NamedRedisServersConfiguration configuration = applicationContext.getBean(NamedRedisServersConfiguration, Qualifiers.byName("reports"))
+        RedisClient client = applicationContext.getBean(RedisClient, Qualifiers.byName("reports"))
+
+        then:
+        passwordOf(configuration) == 'named-secret'
+        passwordOf(configuration.getUri().orElseThrow()) == 'named-secret'
+        passwordOf(client.@redisURI) == 'named-secret'
+
+        cleanup:
+        client.shutdown()
     }
 
     private static String passwordOf(AbstractRedisConfiguration configuration) {

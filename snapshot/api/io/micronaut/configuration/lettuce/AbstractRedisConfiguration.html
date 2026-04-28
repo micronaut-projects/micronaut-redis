@@ -71,6 +71,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#setUris(java.net.URI...)" tabindex="0">setUris(URI...)</a></li>
 <li><a href="#getReplicaUris()" tabindex="0">getReplicaUris()</a></li>
 <li><a href="#setReplicaUris(java.net.URI...)" tabindex="0">setReplicaUris(URI...)</a></li>
+<li><a href="#setPassword(java.lang.String)" tabindex="0">setPassword(String)</a></li>
 <li><a href="#getIoThreadPoolSize()" tabindex="0">getIoThreadPoolSize()</a></li>
 <li><a href="#setIoThreadPoolSize(java.lang.Integer)" tabindex="0">setIoThreadPoolSize(Integer)</a></li>
 <li><a href="#getComputationThreadPoolSize()" tabindex="0">getComputationThreadPoolSize()</a></li>
@@ -221,23 +222,28 @@ CPUs).</div>
 <div class="block">Sets the name of the bean.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setReadFrom(java.lang.String)" class="member-name-link">setReadFrom</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;readFrom)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPassword(java.lang.String)" class="member-name-link">setPassword</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;password)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the Redis password as an alias for <code>RedisURI.setAuthentication(CharSequence)</code>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setReadFrom(java.lang.String)" class="member-name-link">setReadFrom</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;readFrom)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the read from property by name.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setReplicaUris(java.net.URI...)" class="member-name-link">setReplicaUris</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>...&nbsp;uris)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setReplicaUris(java.net.URI...)" class="member-name-link">setReplicaUris</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>...&nbsp;uris)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the Replica Redis URIs for read replica configuration.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setUri(java.net.URI)" class="member-name-link">setUri</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&nbsp;uri)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setUri(java.net.URI)" class="member-name-link">setUri</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&nbsp;uri)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the Redis URI for configuration by string.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setUris(java.net.URI...)" class="member-name-link">setUris</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>...&nbsp;uris)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setUris(java.net.URI...)" class="member-name-link">setUris</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>...&nbsp;uris)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the Redis URIs for cluster configuration.</div>
 </div>
 </div>
@@ -355,6 +361,21 @@ CPUs).</div>
 <dd><code>uris</code> - The URI</dd>
 <dt>Since:</dt>
 <dd>6.5.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setPassword(java.lang.String)">
+<h3>setPassword</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPassword</span><wbr><span class="parameters">(@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;password)</span></div>
+<div class="block">Sets the Redis password as an alias for <code>RedisURI.setAuthentication(CharSequence)</code>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>password</code> - The Redis password</dd>
+<dt>Since:</dt>
+<dd>7.0.0</dd>
 </dl>
 </div>
 </section>

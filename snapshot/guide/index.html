@@ -292,6 +292,18 @@ The <code>redis.uri</code> setting should be in the format as described in the <
 </tr>
 </table>
 </div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+If Redis requires authentication, you can either include credentials directly in <code>redis.uri</code>, for example <code>redis://:secret@localhost</code> or <code>redis://username:secret@localhost</code>, or provide a password separately with either <code>redis.authentication</code> or <code>redis.password</code> alongside <code>redis.uri</code>.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>You can also specify multiple Redis URIs using <code>redis.uris</code> in which case a <code>RedisClusterClient</code> is created instead.</p>
 </div>
@@ -659,6 +671,9 @@ redis.timeout=30s</code></pre>
 </div>
 </div>
 </div>
+</div>
+<div class="paragraph">
+<p>When <code>redis.uri</code> is present, you can still provide password authentication separately with either <code>redis.authentication</code> or <code>redis.password</code>, or embed credentials directly in the URI.</p>
 </div>
 </div>
 <div class="sect2">

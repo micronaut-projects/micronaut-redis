@@ -79,6 +79,33 @@ class RedisMessageBodyHandlerSpec extends Specification {
         decoded.author == "Frank Herbert"
     }
 
+    void "test declaring type annotations select alternative media type"() {
+        given:
+        def bodyHandler = applicationContext.getBean(RedisMessageBodyHandler)
+        def beanDefinition = applicationContext.getBeanDefinition(TypeLevelTextPlainTarget)
+        def writeMethod = beanDefinition.executableMethods.find { it.methodName == 'write' }
+        def readMethod = beanDefinition.executableMethods.find { it.methodName == 'read' }
+        def book = new Book(title: "Dune", author: "Frank Herbert")
+
+        when:
+        byte[] bytes = bodyHandler.serialize(
+            Argument.of(Book),
+            writeMethod.annotationMetadata,
+            beanDefinition.annotationMetadata,
+            book
+        )
+        def decoded = bodyHandler.deserialize(
+            bytes,
+            ConversionContext.of(Argument.of(Book)),
+            bodyHandler.resolveIncomingMediaType(readMethod.annotationMetadata, beanDefinition.annotationMetadata)
+        ).orElseThrow()
+
+        then:
+        new String(bytes, StandardCharsets.UTF_8) == "Dune|Frank Herbert"
+        decoded.title == "Dune"
+        decoded.author == "Frank Herbert"
+    }
+
     @Singleton
     @Requires(property = 'spec.name', value = SPEC_NAME)
     static class TextPlainTarget {
@@ -89,6 +116,21 @@ class RedisMessageBodyHandlerSpec extends Specification {
         }
 
         @Consumes(MediaType.TEXT_PLAIN)
+        @Executable
+        void read(Book book) {
+        }
+    }
+
+    @Singleton
+    @Requires(property = 'spec.name', value = SPEC_NAME)
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    static class TypeLevelTextPlainTarget {
+
+        @Executable
+        void write(Book book) {
+        }
+
         @Executable
         void read(Book book) {
         }

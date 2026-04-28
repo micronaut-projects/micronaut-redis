@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,12 @@ public final class RedisMessageBodyHandler {
     }
 
     public byte[] serialize(Object value) {
-        return serialize((Argument<?>) Argument.of(value == null ? Object.class : value.getClass()), AnnotationMetadata.EMPTY_METADATA, value);
+        return serialize(
+            (Argument<?>) Argument.of(value == null ? Object.class : value.getClass()),
+            AnnotationMetadata.EMPTY_METADATA,
+            AnnotationMetadata.EMPTY_METADATA,
+            value
+        );
     }
 
     /**

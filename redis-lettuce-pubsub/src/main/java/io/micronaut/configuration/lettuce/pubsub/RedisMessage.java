@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,11 +36,16 @@ public record RedisMessage(byte[] body, String channel, @Nullable String pattern
         body = body.clone();
     }
 
+    @Override
+    public byte[] body() {
+        return body.clone();
+    }
+
     /**
      * @return The raw message body
      */
     public byte[] getBody() {
-        return body.clone();
+        return body();
     }
 
     /**

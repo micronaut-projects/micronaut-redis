@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,10 +103,10 @@ public class RedisListenerMethodProcessor implements ExecutableMethodProcessor<M
                     new RedisListenerMessage(message, mediaType)
                 );
                 boundExecutable.invoke((B) bean);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 exceptionHandler.handle(new RedisListenerException(
                     "Error invoking Redis Pub/Sub listener method [" + method + "]",
-                    e instanceof Exception exception ? exception : new RuntimeException(e),
+                    e,
                     bean,
                     message,
                     resolveChannelName(messageChannel)

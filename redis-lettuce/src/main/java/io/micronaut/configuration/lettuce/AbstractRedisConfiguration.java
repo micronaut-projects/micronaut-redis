@@ -107,6 +107,16 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
     }
 
     /**
+     * Sets the Redis password as an alias for {@link #setAuthentication(CharSequence)}.
+     *
+     * @param password The Redis password
+     * @since 7.0.0
+     */
+    public void setPassword(@Nullable String password) {
+        setAuthentication(password);
+    }
+
+    /**
      * Returns the pool size (number of threads) for IO threads. The indicated size does not reflect the number for all IO
      * threads. TCP and socket connections (epoll) require different IO pool.
      *

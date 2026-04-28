@@ -1,5 +1,7 @@
 package io.micronaut.configuration.lettuce
 
+import io.micronaut.cache.DefaultCacheManager
+import io.micronaut.cache.SyncCache
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisCredentialsProvider
@@ -51,6 +53,43 @@ class RedisConfigurationSpec extends Specification {
 
         then:
         thrown(NoSuchBeanException)
+    }
+
+    void "test DefaultCacheManager available when redis disabled and caches configured"() {
+        given:
+        applicationContext = ApplicationContext.run([
+                'redis.enabled'                     : false,
+                'redis.host'                        : 'localhost',
+                'redis.port'                        : 6379,
+                'redis.caches.test.enabled'         : true,
+                'redis.caches.test.expire-after-write': '24h'
+        ])
+
+        when:
+        DefaultCacheManager cacheManager = applicationContext.getBean(DefaultCacheManager)
+
+        then:
+        cacheManager != null
+        applicationContext.getBeansOfType(SyncCache).isEmpty()
+    }
+
+    void "test DefaultCacheManager available when redis disabled and pooled caches configured"() {
+        given:
+        applicationContext = ApplicationContext.run([
+                'redis.enabled'                     : false,
+                'redis.host'                        : 'localhost',
+                'redis.port'                        : 6379,
+                'redis.pool.enabled'                : true,
+                'redis.caches.test.enabled'         : true,
+                'redis.caches.test.expire-after-write': '24h'
+        ])
+
+        when:
+        DefaultCacheManager cacheManager = applicationContext.getBean(DefaultCacheManager)
+
+        then:
+        cacheManager != null
+        applicationContext.getBeansOfType(SyncCache).isEmpty()
     }
 
     void "test redis metrics configuration binds command latency recorder settings"() {

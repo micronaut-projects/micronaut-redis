@@ -2,6 +2,7 @@ package io.micronaut.configuration.lettuce
 
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.RedisClient
+import io.lettuce.core.RedisCredentialsProvider
 import io.lettuce.core.RedisURI
 import io.lettuce.core.SslVerifyMode
 import io.lettuce.core.codec.StringCodec
@@ -73,10 +74,31 @@ class RedisConfigurationSpec extends Specification {
         namedConfig.isHistogram()
     }
 
+    void "test uri authentication configuration is applied when bound from properties"() {
+        given:
+        applicationContext = ApplicationContext.run([
+                'redis.uri'           : 'redis://localhost:6379',
+                'redis.authentication': 's3cret'
+        ])
+
+        when:
+        DefaultRedisConfiguration configuration = applicationContext.getBean(DefaultRedisConfiguration)
+        RedisClient client = applicationContext.getBean(RedisClient)
+
+        then:
+        passwordOf(configuration) == 's3cret'
+        passwordOf(configuration.getUri().orElseThrow()) == 's3cret'
+        passwordOf(client.@redisURI) == 's3cret'
+
+        cleanup:
+        client.shutdown()
+    }
+
     void "test uri configuration applies separately bound RedisURI settings"() {
         given:
         DefaultRedisConfiguration configuration = new DefaultRedisConfiguration()
         configuration.setUri(URI.create("redis://localhost:6379"))
+        configuration.setAuthentication("s3cret")
         configuration.setTimeout(Duration.ofSeconds(1))
         configuration.setDatabase(4)
         configuration.setClientName("default-client")
@@ -89,12 +111,14 @@ class RedisConfigurationSpec extends Specification {
         RedisClient client = new DefaultRedisClientFactory<String, String>(StringCodec.UTF8).redisClient(configuration)
 
         then:
+        passwordOf(mergedUri) == 's3cret'
         mergedUri.timeout == Duration.ofSeconds(1)
         mergedUri.database == 4
         mergedUri.clientName == "default-client"
         mergedUri.ssl
         mergedUri.startTls
         !mergedUri.verifyPeer
+        passwordOf(client.@redisURI) == 's3cret'
         client.@redisURI.timeout == Duration.ofSeconds(1)
         client.@redisURI.database == 4
         client.@redisURI.clientName == "default-client"
@@ -114,6 +138,7 @@ class RedisConfigurationSpec extends Specification {
         configuration.setTimeout(Duration.ofSeconds(5))
         configuration.setDatabase(7)
         configuration.setClientName("named-client")
+        configuration.setAuthentication("named-secret")
         configuration.setSsl(true)
         configuration.setStartTls(true)
         configuration.setVerifyPeer(SslVerifyMode.CA)
@@ -123,17 +148,32 @@ class RedisConfigurationSpec extends Specification {
         List<RedisURI> replicaUris = configuration.getReplicaUris()
 
         then:
+        clusterUris.collect(this::passwordOf) == ['named-secret', 'named-secret']
         clusterUris*.timeout == [Duration.ofSeconds(5), Duration.ofSeconds(5)]
         clusterUris*.database == [7, 7]
         clusterUris*.clientName == ["named-client", "named-client"]
         clusterUris*.ssl == [true, true]
         clusterUris*.startTls == [true, true]
         clusterUris*.verifyMode == [SslVerifyMode.CA, SslVerifyMode.CA]
+        replicaUris.collect(this::passwordOf) == ['named-secret']
         replicaUris*.timeout == [Duration.ofSeconds(5)]
         replicaUris*.database == [7]
         replicaUris*.clientName == ["named-client"]
         replicaUris*.ssl == [true]
         replicaUris*.startTls == [true]
         replicaUris*.verifyMode == [SslVerifyMode.CA]
+    }
+
+    private static String passwordOf(AbstractRedisConfiguration configuration) {
+        return passwordOf((RedisURI) configuration)
+    }
+
+    private static String passwordOf(RedisURI redisURI) {
+        RedisCredentialsProvider credentialsProvider = redisURI.getCredentialsProvider()
+        if (credentialsProvider == null) {
+            return null
+        }
+        def credentials = credentialsProvider.resolveCredentials().block(Duration.ofSeconds(5))
+        return credentials?.hasPassword() ? new String(credentials.password) : null
     }
 }

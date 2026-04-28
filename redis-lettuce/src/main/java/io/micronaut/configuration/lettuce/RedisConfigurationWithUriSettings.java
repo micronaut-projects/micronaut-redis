@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce;
 
+import io.lettuce.core.RedisCredentialsProvider;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.SslVerifyMode;
 
@@ -83,6 +84,40 @@ abstract class RedisConfigurationWithUriSettings extends AbstractRedisConfigurat
         configuredRedisUriSettings.updateAndGet(settings -> settings.withVerifyMode(verifyMode));
     }
 
+    @Override
+    public void setAuthentication(CharSequence password) {
+        super.setAuthentication(password);
+        updateConfiguredCredentialsProvider(getCredentialsProvider());
+    }
+
+    @Override
+    public void setAuthentication(char[] password) {
+        super.setAuthentication(password);
+        updateConfiguredCredentialsProvider(getCredentialsProvider());
+    }
+
+    @Override
+    public void setAuthentication(String username, char[] password) {
+        super.setAuthentication(username, password);
+        updateConfiguredCredentialsProvider(getCredentialsProvider());
+    }
+
+    @Override
+    public void setAuthentication(String username, CharSequence password) {
+        super.setAuthentication(username, password);
+        updateConfiguredCredentialsProvider(getCredentialsProvider());
+    }
+
+    @Override
+    public void setCredentialsProvider(RedisCredentialsProvider credentialsProvider) {
+        super.setCredentialsProvider(credentialsProvider);
+        updateConfiguredCredentialsProvider(credentialsProvider);
+    }
+
+    private void updateConfiguredCredentialsProvider(RedisCredentialsProvider credentialsProvider) {
+        configuredRedisUriSettings.updateAndGet(settings -> settings.withCredentialsProvider(credentialsProvider));
+    }
+
     private RedisURI applyConfiguredRedisUriSettings(RedisURI redisURI) {
         return configuredRedisUriSettings.get().apply(redisURI, getClientName());
     }
@@ -92,32 +127,40 @@ abstract class RedisConfigurationWithUriSettings extends AbstractRedisConfigurat
         Integer database,
         Boolean ssl,
         Boolean startTls,
-        SslVerifyMode verifyMode
+        SslVerifyMode verifyMode,
+        RedisCredentialsProvider credentialsProvider
     ) {
-        private static final ConfiguredRedisUriSettings EMPTY = new ConfiguredRedisUriSettings(null, null, null, null, null);
+        private static final ConfiguredRedisUriSettings EMPTY = new ConfiguredRedisUriSettings(null, null, null, null, null, null);
 
         private ConfiguredRedisUriSettings withTimeout(Duration newTimeout) {
-            return new ConfiguredRedisUriSettings(newTimeout, database, ssl, startTls, verifyMode);
+            return new ConfiguredRedisUriSettings(newTimeout, database, ssl, startTls, verifyMode, credentialsProvider);
         }
 
         private ConfiguredRedisUriSettings withDatabase(Integer newDatabase) {
-            return new ConfiguredRedisUriSettings(timeout, newDatabase, ssl, startTls, verifyMode);
+            return new ConfiguredRedisUriSettings(timeout, newDatabase, ssl, startTls, verifyMode, credentialsProvider);
         }
 
         private ConfiguredRedisUriSettings withSsl(Boolean newSsl) {
-            return new ConfiguredRedisUriSettings(timeout, database, newSsl, startTls, verifyMode);
+            return new ConfiguredRedisUriSettings(timeout, database, newSsl, startTls, verifyMode, credentialsProvider);
         }
 
         private ConfiguredRedisUriSettings withStartTls(Boolean newStartTls) {
-            return new ConfiguredRedisUriSettings(timeout, database, ssl, newStartTls, verifyMode);
+            return new ConfiguredRedisUriSettings(timeout, database, ssl, newStartTls, verifyMode, credentialsProvider);
         }
 
         private ConfiguredRedisUriSettings withVerifyMode(SslVerifyMode newVerifyMode) {
-            return new ConfiguredRedisUriSettings(timeout, database, ssl, startTls, newVerifyMode);
+            return new ConfiguredRedisUriSettings(timeout, database, ssl, startTls, newVerifyMode, credentialsProvider);
+        }
+
+        private ConfiguredRedisUriSettings withCredentialsProvider(RedisCredentialsProvider newCredentialsProvider) {
+            return new ConfiguredRedisUriSettings(timeout, database, ssl, startTls, verifyMode, newCredentialsProvider);
         }
 
         private RedisURI apply(RedisURI redisURI, String clientName) {
             RedisURI.Builder builder = RedisURI.builder(redisURI);
+            if (credentialsProvider != null) {
+                builder.withAuthentication(credentialsProvider);
+            }
             if (timeout != null) {
                 builder.withTimeout(timeout);
             }

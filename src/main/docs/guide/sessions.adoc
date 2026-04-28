@@ -1,5 +1,11 @@
 Storing https://docs.micronaut.io/latest/api/io/micronaut/session/Session.html[Session] instances in Redis requires special considerations.
 
+Add the dedicated session module to enable Redis-backed session storage:
+
+dependency:micronaut-redis-lettuce-session[groupId="io.micronaut.redis"]
+
+The `micronaut-redis-lettuce` compatibility module also includes this functionality transitively.
+
 You can configure how sessions are stored in Redis using api:configuration.lettuce.session.RedisHttpSessionConfiguration[].
 
 The following represents an example configuration in the application configuration file:

@@ -16,7 +16,6 @@
 package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.support.BoundedPoolConfig;
-import io.micronaut.cache.SyncCache;
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
@@ -30,7 +29,7 @@ import io.micronaut.runtime.ApplicationConfiguration;
  * @since 5.3.0
  */
 @ConfigurationProperties(RedisSetting.REDIS_POOL)
-@Requires(classes = SyncCache.class, property = RedisSetting.REDIS_POOL + ".enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
+@Requires(property = RedisSetting.REDIS_POOL + ".enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
 @Primary
 public class DefaultRedisConnectionPoolConfiguration extends AbstractRedisConnectionPoolConfiguration {
     /**

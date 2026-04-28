@@ -3,35 +3,9 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor mn.micronaut.graal
-
-    api libs.managed.lettuce
-    api mnCache.micronaut.cache.core
-
-    implementation mn.micronaut.retry
-
-    compileOnly mnSession.micronaut.session
-    compileOnly mn.micronaut.management
-    compileOnly mnMicrometer.micronaut.micrometer.core
-    testImplementation(platform(mnTest.boms.testcontainers))
-    testImplementation(libs.testcontainers)
-    testAnnotationProcessor mn.micronaut.inject.java
-
-    testImplementation mn.reactor
-
-    testImplementation mn.micronaut.inject.java
-    testImplementation mn.micronaut.management
-    testImplementation mnMicrometer.micronaut.micrometer.core
-    testImplementation mnSerde.micronaut.serde.jackson
-    testImplementation mn.micronaut.jackson.databind
-    testImplementation mn.micronaut.function.web
-
-    testImplementation mnSession.micronaut.session
-    testRuntimeOnly mn.micronaut.http.server.netty
-    testRuntimeOnly(libs.junit.platform.launcher)
-    testImplementation mn.micronaut.http.client
-    testRuntimeOnly(mnLogging.logback.classic)
-    testImplementation mn.snakeyaml
+    api project(":micronaut-redis-lettuce-core")
+    api project(":micronaut-redis-lettuce-cache")
+    api project(":micronaut-redis-lettuce-session")
 }
 
 micronautBuild {

@@ -5,33 +5,33 @@ plugins {
 dependencies {
     annotationProcessor mn.micronaut.graal
 
-    api mn.micronaut.aop
-    api mn.micronaut.http
-    api mn.micronaut.messaging
+    api libs.managed.lettuce
 
-    implementation project(":micronaut-redis-lettuce-core")
+    compileOnly mn.micronaut.management
+    compileOnly mnMicrometer.micronaut.micrometer.core
 
     testImplementation(platform(mnTest.boms.testcontainers))
     testImplementation(libs.testcontainers)
     testAnnotationProcessor mn.micronaut.inject.java
 
     testImplementation mn.reactor
+    testImplementation project(":micronaut-redis-lettuce-cache")
+    testImplementation mn.micronaut.inject.java
+    testImplementation mn.micronaut.management
+    testImplementation mnMicrometer.micronaut.micrometer.core
     testImplementation mnSerde.micronaut.serde.jackson
     testImplementation mn.micronaut.jackson.databind
     testImplementation mn.micronaut.function.web
     testImplementation mn.micronaut.http.client
     testImplementation mn.snakeyaml
+
     testRuntimeOnly mn.micronaut.http.server.netty
-    testRuntimeOnly libs.junit.platform.launcher
-    testRuntimeOnly mnLogging.logback.classic
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly(mnLogging.logback.classic)
 }
 
 micronautBuild {
     descriptor {
-        parentModuleId = "io.micronaut.redis:micronaut-redis-lettuce-pubsub"
+        parentModuleId = "io.micronaut.redis:micronaut-redis-lettuce"
     }
-}
-
-tasks.named("findBaseline") {
-    enabled = false
 }

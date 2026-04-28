@@ -100,7 +100,7 @@ snippet::io.micronaut.configuration.lettuce.docs.NamedCodecFactory[tags="namedCo
 
 == Redis Health Checks
 
-When the `redis-lettuce` module is activated a api:configuration.lettuce.health.RedisHealthIndicator[] is activated resulting in the `/health` endpoint and https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html[CurrentHealthStatus] interface resolving the health of the Redis connection or connections.
+When the `redis-lettuce` compatibility module or the focused `redis-lettuce-core` module is activated a api:configuration.lettuce.health.RedisHealthIndicator[] is activated resulting in the `/health` endpoint and https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html[CurrentHealthStatus] interface resolving the health of the Redis connection or connections.
 
 The health indicator is enabled by default. To disable the health endpoint, you can do so via the config. 
 [configuration]

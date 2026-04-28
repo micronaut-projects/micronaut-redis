@@ -56,15 +56,17 @@
                                 
                                 <div class="toc-item" style="margin-left:0"><a href="#testing"><strong>5</strong><span>Redis and Testing</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#cache"><strong>6</strong><span>Redis for Caching</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#pubsub"><strong>6</strong><span>Redis Pub/Sub Messaging</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#sessions"><strong>7</strong><span>Session State with Redis</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#cache"><strong>7</strong><span>Redis for Caching</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#graalvm"><strong>8</strong><span>GraalVM support</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#sessions"><strong>8</strong><span>Session State with Redis</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#graalvm"><strong>9</strong><span>GraalVM support</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#appendix"><strong>10</strong><span>Appendices</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>10</strong><span>Repository</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#appendix"><strong>11</strong><span>Appendices</span></a></div>
                                 
                             </div>
                         </div>
@@ -105,17 +107,19 @@
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-testing"><a href="#testing"><strong>5</strong><span>Redis and Testing</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-cache"><a href="#cache"><strong>6</strong><span>Redis for Caching</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-pubsub"><a href="#pubsub"><strong>6</strong><span>Redis Pub/Sub Messaging</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-sessions"><a href="#sessions"><strong>7</strong><span>Session State with Redis</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-cache"><a href="#cache"><strong>7</strong><span>Redis for Caching</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-graalvm"><a href="#graalvm"><strong>8</strong><span>GraalVM support</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-sessions"><a href="#sessions"><strong>8</strong><span>Session State with Redis</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-graalvm"><a href="#graalvm"><strong>9</strong><span>GraalVM support</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-appendix"><a href="#appendix"><strong>10</strong><span>Appendices</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>10</strong><span>Repository</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-breaks"><a href="#breaks"><strong>10.1</strong><span>Breaking Changes</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-appendix"><a href="#appendix"><strong>11</strong><span>Appendices</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-breaks"><a href="#breaks"><strong>11.1</strong><span>Breaking Changes</span></a></div>
         
         </div>
     </div>
@@ -201,6 +205,26 @@
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
     &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-redis-lettuce&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>If you want Micronaut Pub/Sub listeners, publishers, and <code>@RedisPubSubClient</code>, add the dedicated Pub/Sub module as well:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-pubsub")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-redis-lettuce-pubsub&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
@@ -1153,7 +1177,285 @@ redisContainer.start();</code></pre>
 <p>The embedded redis container we used to recommend has been deprecated as of 5.3.0 and will be removed at a later date.</p>
 </div>
 
-<h1 id="cache"><a class="anchor" href="#cache"></a>6 Redis for Caching</h1>
+<h1 id="pubsub"><a class="anchor" href="#pubsub"></a>6 Redis Pub/Sub Messaging</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/7.0.x/src/main/docs/guide/pubsub.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect2">
+<h3 id="_redis_pubsub_messaging">Redis Pub/Sub Messaging</h3>
+<div class="paragraph">
+<p>Micronaut Redis Pub/Sub messaging is published as a dedicated module on top of the Lettuce integration.</p>
+</div>
+<div class="paragraph">
+<p>The high-level Pub/Sub messaging integration is published in a dedicated module. Add it to your application alongside the base Lettuce module:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-pubsub")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-redis-lettuce-pubsub&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>To consume messages, annotate a bean with <a href="../api/io/micronaut/configuration/lettuce/pubsub/annotation/RedisListener.html">@RedisListener</a> and annotate executable methods with <a href="../api/io/micronaut/configuration/lettuce/pubsub/annotation/MessageChannel.html">@MessageChannel</a>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @MessageChannel("books.created")
+    void receive(@MessageBody BookCreated event, @MessageChannel String channel) {
+        System.out.println("Received " + event.getTitle() + " from " + channel);
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @MessageChannel("books.created")
+    fun receive(@MessageBody event: BookCreated, @MessageChannel channel: String) {
+        println("Received ${event.title} from $channel")
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @MessageChannel("books.created")
+    void receive(@MessageBody BookCreated event, @MessageChannel String channel) {
+        println "Received ${event.title} from ${channel}"
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Listener bodies are decoded through Micronaut HTTP <code>MessageBodyReader</code> implementations. JSON is used by default, so richer message payloads work out of the box as long as a matching body reader is available.</p>
+</div>
+<div class="paragraph">
+<p>To consume a different format for a particular channel, add <a href="../api/io/micronaut/http/annotation/Consumes.html">@Consumes</a>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @Consumes(MediaType.TEXT_PLAIN)
+    @MessageChannel("books.plain-text")
+    void receive(@MessageBody String title) {
+        System.out.println("Received plain text title " + title);
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @Consumes(MediaType.TEXT_PLAIN)
+    @MessageChannel("books.plain-text")
+    fun receive(@MessageBody title: String) {
+        println("Received plain text title $title")
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @Consumes(MediaType.TEXT_PLAIN)
+    @MessageChannel("books.plain-text")
+    void receive(@MessageBody String title) {
+        println "Received plain text title ${title}"
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To publish messages imperatively, inject <a href="../api/io/micronaut/configuration/lettuce/pubsub/RedisPubSubPublisher.html">RedisPubSubPublisher</a> and send the payload to the target channel:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    void publish(BookCreated event) {
+        publisher.publish("books.created", event);
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    fun publish(event: BookCreated) {
+        publisher.publish("books.created", event)
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    void publish(BookCreated event) {
+        publisher.publish("books.created", event)
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For a declarative client API similar to Kafka, define an interface with <a href="../api/io/micronaut/configuration/lettuce/pubsub/annotation/RedisPubSubClient.html">@RedisPubSubClient</a> and annotate methods with <a href="../api/io/micronaut/configuration/lettuce/pubsub/annotation/MessageChannel.html">@MessageChannel</a>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @MessageChannel("books.created")
+    void publish(BookCreated event);</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @MessageChannel("books.created")
+    fun publish(event: BookCreated)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @MessageChannel("books.created")
+    void publish(BookCreated event)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Client bodies are encoded through Micronaut HTTP <code>MessageBodyWriter</code> implementations. JSON is used by default, and <a href="../api/io/micronaut/http/annotation/Produces.html">@Produces</a> lets you override the media type for a method:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @MessageChannel("books.created.plain")
+    @Produces(MediaType.TEXT_PLAIN)
+    void publishPlain(BookCreated event);</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @MessageChannel("books.created.plain")
+    @Produces(MediaType.TEXT_PLAIN)
+    fun publishPlain(event: BookCreated)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @MessageChannel("books.created.plain")
+    @Produces(MediaType.TEXT_PLAIN)
+    void publishPlain(BookCreated event)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>@RedisPubSubClient</code> methods can return <code>void</code>, a synchronous value, <code>CompletionStage&lt;T&gt;</code>, or a reactive <code>Publisher&lt;T&gt;</code>. For non-void results, Micronaut first converts the Redis subscriber count to <code>T</code>; if that conversion is not possible and <code>T</code> already matches the published body type, the original body is returned instead.</p>
+</div>
+<div class="paragraph">
+<p>If you want a different default media type for all Pub/Sub payloads, configure it through <code>redis.pubsub.default-body-media-type</code>:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">redis.pubsub.default-body-media-type=text/plain</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+  pubsub:
+    default-body-media-type: text/plain</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+  [redis.pubsub]
+    default-body-media-type="text/plain"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">redis {
+  pubsub {
+    defaultBodyMediaType = "text/plain"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  redis {
+    pubsub {
+      default-body-media-type = "text/plain"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "redis": {
+    "pubsub": {
+      "default-body-media-type": "text/plain"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Listener failures are delegated to <a href="../api/io/micronaut/configuration/lettuce/pubsub/exception/RedisListenerExceptionHandler.html">RedisListenerExceptionHandler</a>. The default handler logs the error, and you can select a specific handler per message channel:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @MessageChannel(value = "books.audit", exceptionHandler = BookAuditExceptionHandler.class)
+    void receive(@MessageBody BookCreated event) {
+        throw new IllegalStateException("Could not audit " + event.getTitle());
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @MessageChannel(value = "books.audit", exceptionHandler = BookAuditExceptionHandler::class)
+    fun receive(@MessageBody event: BookCreated) {
+        throw IllegalStateException("Could not audit ${event.title}")
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @MessageChannel(value = "books.audit", exceptionHandler = BookAuditExceptionHandler)
+    void receive(@MessageBody BookCreated event) {
+        throw new IllegalStateException("Could not audit ${event.title}")
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @Override
+    public void handle(RedisListenerException exception) {
+        System.err.println("Redis listener failure on " + exception.getMessageChannel() + ": " + exception.getMessage());
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    override fun handle(exception: RedisListenerException) {
+        System.err.println("Redis listener failure on ${exception.messageChannel}: ${exception.message}")
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @Override
+    void handle(RedisListenerException exception) {
+        System.err.println("Redis listener failure on ${exception.messageChannel}: ${exception.message}")
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Redis Pub/Sub listeners also participate in Micronaut graceful shutdown. During shutdown, the listener registry unsubscribes from Redis and waits for in-flight listener tasks to complete before finishing the graceful shutdown phase.</p>
+</div>
+</div>
+
+<h1 id="cache"><a class="anchor" href="#cache"></a>7 Redis for Caching</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/7.0.x/src/main/docs/guide/cache.adoc"'>
@@ -1441,7 +1743,7 @@ redis.caches.my-cache.expiration-after-write-policy=&lt;class path of class impl
 </tbody>
 </table>
 
-<h1 id="sessions"><a class="anchor" href="#sessions"></a>7 Session State with Redis</h1>
+<h1 id="sessions"><a class="anchor" href="#sessions"></a>8 Session State with Redis</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/7.0.x/src/main/docs/guide/sessions.adoc"'>
@@ -1654,7 +1956,7 @@ micronaut.session.http.redis.valueSerializer=io.micronaut.jackson.serialize.Jack
 </div>
 </div>
 
-<h1 id="graalvm"><a class="anchor" href="#graalvm"></a>8 GraalVM support</h1>
+<h1 id="graalvm"><a class="anchor" href="#graalvm"></a>9 GraalVM support</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/7.0.x/src/main/docs/guide/graalvm.adoc"'>
@@ -1684,7 +1986,7 @@ information.
 </table>
 </div>
 
-<h1 id="repository"><a class="anchor" href="#repository"></a>9 Repository</h1>
+<h1 id="repository"><a class="anchor" href="#repository"></a>10 Repository</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/7.0.x/src/main/docs/guide/repository.adoc"'>
@@ -1700,7 +2002,7 @@ information.
 <p><a href="https://github.com/micronaut-projects/micronaut-redis">https://github.com/micronaut-projects/micronaut-redis</a></p>
 </div>
 
-<h1 id="appendix"><a class="anchor" href="#appendix"></a>10 Appendices</h1>
+<h1 id="appendix"><a class="anchor" href="#appendix"></a>11 Appendices</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/7.0.x/src/main/docs/guide/appendix.adoc"'>
@@ -1711,7 +2013,7 @@ information.
 
 
 
-<h2 id="breaks"><a class="anchor" href="#breaks"></a>10.1 Breaking Changes</h2>
+<h2 id="breaks"><a class="anchor" href="#breaks"></a>11.1 Breaking Changes</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-redis/edit/7.0.x/src/main/docs/guide/appendix/breaks.adoc"'>

@@ -2,6 +2,11 @@ io.micronaut.configuration.lettuce
 io.micronaut.configuration.lettuce.cache
 io.micronaut.configuration.lettuce.cache.expiration
 io.micronaut.configuration.lettuce.health
+io.micronaut.configuration.lettuce.pubsub
+io.micronaut.configuration.lettuce.pubsub.annotation
+io.micronaut.configuration.lettuce.pubsub.bind
+io.micronaut.configuration.lettuce.pubsub.exception
+io.micronaut.configuration.lettuce.pubsub.processor
 io.micronaut.configuration.lettuce.session
 io.micronaut.redis.info
 io.micronaut.redis.testcontainers

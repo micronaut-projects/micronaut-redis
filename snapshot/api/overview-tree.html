@@ -56,6 +56,11 @@ loadScripts(document, 'script');</script>
 <li><a href="io/micronaut/configuration/lettuce/cache/package-tree.html">io.micronaut.configuration.lettuce.cache</a>, </li>
 <li><a href="io/micronaut/configuration/lettuce/cache/expiration/package-tree.html">io.micronaut.configuration.lettuce.cache.expiration</a>, </li>
 <li><a href="io/micronaut/configuration/lettuce/health/package-tree.html">io.micronaut.configuration.lettuce.health</a>, </li>
+<li><a href="io/micronaut/configuration/lettuce/pubsub/package-tree.html">io.micronaut.configuration.lettuce.pubsub</a>, </li>
+<li><a href="io/micronaut/configuration/lettuce/pubsub/annotation/package-tree.html">io.micronaut.configuration.lettuce.pubsub.annotation</a>, </li>
+<li><a href="io/micronaut/configuration/lettuce/pubsub/bind/package-tree.html">io.micronaut.configuration.lettuce.pubsub.bind</a>, </li>
+<li><a href="io/micronaut/configuration/lettuce/pubsub/exception/package-tree.html">io.micronaut.configuration.lettuce.pubsub.exception</a>, </li>
+<li><a href="io/micronaut/configuration/lettuce/pubsub/processor/package-tree.html">io.micronaut.configuration.lettuce.pubsub.processor</a>, </li>
 <li><a href="io/micronaut/configuration/lettuce/session/package-tree.html">io.micronaut.configuration.lettuce.session</a>, </li>
 <li><a href="io/micronaut/redis/info/package-tree.html">io.micronaut.redis.info</a>, </li>
 <li><a href="io/micronaut/redis/testcontainers/package-tree.html">io.micronaut.redis.testcontainers</a></li>
@@ -68,6 +73,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">io.micronaut.module.info.AbstractMicronautModuleInfo (implements io.micronaut.module.info.MicronautModuleInfo)
 <ul>
 <li class="circle">io.micronaut.redis.info.<a href="io/micronaut/redis/info/MicronautRedisLettuceModuleInfo.html" class="type-name-link" title="class in io.micronaut.redis.info">MicronautRedisLettuceModuleInfo</a></li>
+<li class="circle">io.micronaut.redis.info.<a href="io/micronaut/redis/info/MicronautRedisLettucePubsubModuleInfo.html" class="type-name-link" title="class in io.micronaut.redis.info">MicronautRedisLettucePubsubModuleInfo</a></li>
 </ul>
 </li>
 <li class="circle">io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/AbstractRedisCache.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.cache">AbstractRedisCache</a>&lt;C&gt; (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, io.micronaut.cache.SyncCache&lt;C&gt;)
@@ -102,20 +108,30 @@ loadScripts(document, 'script');</script>
 <li class="circle">io.micronaut.configuration.lettuce.cache.expiration.<a href="io/micronaut/configuration/lettuce/cache/expiration/ConstantExpirationAfterWritePolicy.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.cache.expiration">ConstantExpirationAfterWritePolicy</a> (implements io.micronaut.configuration.lettuce.cache.expiration.<a href="io/micronaut/configuration/lettuce/cache/expiration/ExpirationAfterWritePolicy.html" title="interface in io.micronaut.configuration.lettuce.cache.expiration">ExpirationAfterWritePolicy</a>)</li>
 <li class="circle">io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisClusterClientFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">DefaultRedisClusterClientFactory</a>&lt;K,<wbr>V&gt;</li>
 <li class="circle">io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/DefaultRedisCodecFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">DefaultRedisCodecFactory</a></li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.exception.<a href="io/micronaut/configuration/lettuce/pubsub/exception/DefaultRedisListenerExceptionHandler.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub.exception">DefaultRedisListenerExceptionHandler</a> (implements io.micronaut.configuration.lettuce.pubsub.exception.<a href="io/micronaut/configuration/lettuce/pubsub/exception/RedisListenerExceptionHandler.html" title="interface in io.micronaut.configuration.lettuce.pubsub.exception">RedisListenerExceptionHandler</a>)</li>
 <li class="circle">io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/MetricsClientResourceMutator.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">MetricsClientResourceMutator</a> (implements io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/ClientResourcesMutator.html" title="interface in io.micronaut.configuration.lettuce">ClientResourcesMutator</a>)</li>
 <li class="circle">io.micronaut.redis.testcontainers.<a href="io/micronaut/redis/testcontainers/Redis.html" class="type-name-link" title="class in io.micronaut.redis.testcontainers">Redis</a></li>
 <li class="circle">io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisAsyncConnectionPoolFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.cache">RedisAsyncConnectionPoolFactory</a></li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.bind.<a href="io/micronaut/configuration/lettuce/pubsub/bind/RedisBinderRegistry.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub.bind">RedisBinderRegistry</a> (implements io.micronaut.core.bind.ArgumentBinderRegistry&lt;S&gt;)</li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.bind.<a href="io/micronaut/configuration/lettuce/pubsub/bind/RedisBodyBinder.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub.bind">RedisBodyBinder</a> (implements io.micronaut.core.bind.ArgumentBinder&lt;T,<wbr>S&gt;)</li>
 <li class="circle">io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisCache.RedisAsyncCache.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.cache">RedisCache.RedisAsyncCache</a> (implements io.micronaut.cache.AsyncCache&lt;C&gt;)</li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.bind.<a href="io/micronaut/configuration/lettuce/pubsub/bind/RedisChannelBinder.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub.bind">RedisChannelBinder</a> (implements io.micronaut.core.bind.ArgumentBinder&lt;T,<wbr>S&gt;)</li>
 <li class="circle">io.micronaut.configuration.lettuce.cache.<a href="io/micronaut/configuration/lettuce/cache/RedisConnectionPoolCache.RedisAsyncCache.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.cache">RedisConnectionPoolCache.RedisAsyncCache</a> (implements io.micronaut.cache.AsyncCache&lt;C&gt;)</li>
 <li class="circle">io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/RedisConnectionPoolFactory.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">RedisConnectionPoolFactory</a>&lt;K,<wbr>V&gt;</li>
 <li class="circle">io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/RedisConnectionUtil.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">RedisConnectionUtil</a></li>
 <li class="circle">io.micronaut.configuration.lettuce.health.<a href="io/micronaut/configuration/lettuce/health/RedisHealthIndicator.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.health">RedisHealthIndicator</a> (implements io.micronaut.management.health.indicator.HealthIndicator)</li>
 <li class="circle">io.micronaut.configuration.lettuce.health.<a href="io/micronaut/configuration/lettuce/health/RedisHealthIndicatorConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.health">RedisHealthIndicatorConfiguration</a></li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.processor.<a href="io/micronaut/configuration/lettuce/pubsub/processor/RedisListenerMethodProcessor.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub.processor">RedisListenerMethodProcessor</a> (implements io.micronaut.context.processor.ExecutableMethodProcessor&lt;A&gt;)</li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.bind.<a href="io/micronaut/configuration/lettuce/pubsub/bind/RedisMessageBinder.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub.bind">RedisMessageBinder</a> (implements io.micronaut.core.bind.ArgumentBinder&lt;T,<wbr>S&gt;)</li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.<a href="io/micronaut/configuration/lettuce/pubsub/RedisMessageBodyHandler.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub">RedisMessageBodyHandler</a></li>
 <li class="circle">io.lettuce.core.pubsub.RedisPubSubAdapter&lt;K,<wbr>V&gt; (implements io.lettuce.core.pubsub.RedisPubSubListener&lt;K,<wbr>V&gt;)
 <ul>
 <li class="circle">io.micronaut.configuration.lettuce.session.<a href="io/micronaut/configuration/lettuce/session/RedisSessionStore.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.session">RedisSessionStore</a> (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, io.micronaut.session.SessionStore&lt;S&gt;)</li>
 </ul>
 </li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.<a href="io/micronaut/configuration/lettuce/pubsub/RedisPubSubConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub">RedisPubSubConfiguration</a></li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.<a href="io/micronaut/configuration/lettuce/pubsub/RedisPubSubListenerRegistry.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub">RedisPubSubListenerRegistry</a> (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, io.micronaut.runtime.graceful.GracefulShutdownCapable)</li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.<a href="io/micronaut/configuration/lettuce/pubsub/RedisPubSubPublisher.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub">RedisPubSubPublisher</a> (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>)</li>
 <li class="circle">io.lettuce.core.RedisURI (implements io.lettuce.core.ConnectionPoint, java.io.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/Serializable.html" title="class or interface in java.io" class="external-link">Serializable</a>)
 <ul>
 <li class="circle">io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/AbstractRedisConfiguration.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">AbstractRedisConfiguration</a> (implements io.micronaut.core.naming.Named, io.micronaut.core.util.Toggleable)
@@ -136,6 +152,27 @@ loadScripts(document, 'script');</script>
 </ul>
 </li>
 <li class="circle">io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/ThreadPoolClientResourceMutator.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce">ThreadPoolClientResourceMutator</a> (implements io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/ClientResourcesMutator.html" title="interface in io.micronaut.configuration.lettuce">ClientResourcesMutator</a>)</li>
+<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Throwable.html" class="type-name-link external-link" title="class or interface in java.lang">Throwable</a> (implements java.io.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/Serializable.html" title="class or interface in java.io" class="external-link">Serializable</a>)
+<ul>
+<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Exception.html" class="type-name-link external-link" title="class or interface in java.lang">Exception</a>
+<ul>
+<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/RuntimeException.html" class="type-name-link external-link" title="class or interface in java.lang">RuntimeException</a>
+<ul>
+<li class="circle">io.micronaut.messaging.exceptions.MessagingException
+<ul>
+<li class="circle">io.micronaut.messaging.exceptions.MessageListenerException
+<ul>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.exception.<a href="io/micronaut/configuration/lettuce/pubsub/exception/RedisListenerException.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub.exception">RedisListenerException</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -144,8 +181,37 @@ loadScripts(document, 'script');</script>
 <h2 title="Interface Hierarchy">Interface Hierarchy</h2>
 <ul>
 <li class="circle">io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/ClientResourcesMutator.html" class="type-name-link" title="interface in io.micronaut.configuration.lettuce">ClientResourcesMutator</a></li>
+<li class="circle">io.micronaut.core.exceptions.ExceptionHandler&lt;T&gt;
+<ul>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.exception.<a href="io/micronaut/configuration/lettuce/pubsub/exception/RedisListenerExceptionHandler.html" class="type-name-link" title="interface in io.micronaut.configuration.lettuce.pubsub.exception">RedisListenerExceptionHandler</a></li>
+</ul>
+</li>
 <li class="circle">io.micronaut.configuration.lettuce.cache.expiration.<a href="io/micronaut/configuration/lettuce/cache/expiration/ExpirationAfterWritePolicy.html" class="type-name-link" title="interface in io.micronaut.configuration.lettuce.cache.expiration">ExpirationAfterWritePolicy</a></li>
 <li class="circle">io.micronaut.configuration.lettuce.<a href="io/micronaut/configuration/lettuce/RedisSetting.html" class="type-name-link" title="interface in io.micronaut.configuration.lettuce">RedisSetting</a></li>
+</ul>
+</section>
+<section class="hierarchy">
+<h2 title="Annotation Interface Hierarchy">Annotation Interface Hierarchy</h2>
+<ul>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.annotation.<a href="io/micronaut/configuration/lettuce/pubsub/annotation/MessageChannel.html" class="type-name-link" title="annotation interface in io.micronaut.configuration.lettuce.pubsub.annotation">MessageChannel</a> (implements java.lang.annotation.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>)</li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.annotation.<a href="io/micronaut/configuration/lettuce/pubsub/annotation/RedisListener.html" class="type-name-link" title="annotation interface in io.micronaut.configuration.lettuce.pubsub.annotation">RedisListener</a> (implements java.lang.annotation.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>)</li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.annotation.<a href="io/micronaut/configuration/lettuce/pubsub/annotation/RedisPubSubClient.html" class="type-name-link" title="annotation interface in io.micronaut.configuration.lettuce.pubsub.annotation">RedisPubSubClient</a> (implements java.lang.annotation.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>)</li>
+</ul>
+</section>
+<section class="hierarchy">
+<h2 title="Record Class Hierarchy">Record Class Hierarchy</h2>
+<ul>
+<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" class="type-name-link external-link" title="class or interface in java.lang">Object</a>
+<ul>
+<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" class="type-name-link external-link" title="class or interface in java.lang">Record</a>
+<ul>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.<a href="io/micronaut/configuration/lettuce/pubsub/RedisListenerMessage.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub">RedisListenerMessage</a></li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.<a href="io/micronaut/configuration/lettuce/pubsub/RedisMessage.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub">RedisMessage</a></li>
+<li class="circle">io.micronaut.configuration.lettuce.pubsub.<a href="io/micronaut/configuration/lettuce/pubsub/RedisPubSubListenerRegistry.ChannelSubscription.html" class="type-name-link" title="class in io.micronaut.configuration.lettuce.pubsub">RedisPubSubListenerRegistry.ChannelSubscription</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </section>
 </main>

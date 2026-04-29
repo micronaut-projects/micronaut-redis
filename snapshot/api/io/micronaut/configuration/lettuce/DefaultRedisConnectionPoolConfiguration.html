@@ -83,8 +83,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="annotations">@ConfigurationProperties("redis.pool")
-@Requires(classes=io.micronaut.cache.SyncCache.class,
-          property="redis.pool.enabled",
+@Requires(property="redis.pool.enabled",
           defaultValue="false",
           notEquals="false")
 @Primary

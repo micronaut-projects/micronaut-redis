@@ -142,7 +142,7 @@
 
 
 <div class="paragraph">
-<p>Micronaut features automatic configuration of the <a href="https://lettuce.io">Lettuce</a> driver for <a href="https://redis.io">Redis</a> via the <code>redis-lettuce</code> module.</p>
+<p>Micronaut features automatic configuration of the <a href="https://lettuce.io">Lettuce</a> driver for <a href="https://redis.io">Redis</a> via the <code>redis-lettuce</code> compatibility module and the more focused <code>redis-lettuce-core</code>, <code>redis-lettuce-cache</code>, and <code>redis-lettuce-session</code> modules.</p>
 </div>
 
 <h1 id="releaseHistory"><a class="anchor" href="#releaseHistory"></a>2 Release History</h1>
@@ -191,7 +191,7 @@
 </table>
 </div>
 <div class="paragraph">
-<p>To configure the Lettuce driver you should first add the <code>redis-lettuce</code> module to your classpath:</p>
+<p>To configure the Lettuce driver you should first add the <code>redis-lettuce</code> compatibility module to your classpath:</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -205,6 +205,60 @@
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
     &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-redis-lettuce&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>If you only need part of the integration, dedicated modules are also available:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-core")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-redis-lettuce-core&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-cache")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-redis-lettuce-cache&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-session")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-redis-lettuce-session&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
@@ -989,7 +1043,7 @@ class NamedCodecFactory {
 <h2 id="_redis_health_checks">Redis Health Checks</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>When the <code>redis-lettuce</code> module is activated a <a href="../api/io/micronaut/configuration/lettuce/health/RedisHealthIndicator.html">RedisHealthIndicator</a> is activated resulting in the <code>/health</code> endpoint and <a href="https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html">CurrentHealthStatus</a> interface resolving the health of the Redis connection or connections.</p>
+<p>When the <code>redis-lettuce</code> compatibility module or the focused <code>redis-lettuce-core</code> module is activated a <a href="../api/io/micronaut/configuration/lettuce/health/RedisHealthIndicator.html">RedisHealthIndicator</a> is activated resulting in the <code>/health</code> endpoint and <a href="https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html">CurrentHealthStatus</a> interface resolving the health of the Redis connection or connections.</p>
 </div>
 <div class="paragraph">
 <p>The health indicator is enabled by default. To disable the health endpoint, you can do so via the config.</p>
@@ -1480,8 +1534,30 @@ redisContainer.start();</code></pre>
 
 
 <div class="paragraph">
-<p>If you wish to use Redis to cache results then you need to have the Lettuce configuration dependency on your classpath.
-Lettuce is a non-blocking, reactive Redis client implementation and Micronaut provides an implementation that allows cached results to be read reactively.</p>
+<p>If you wish to use Redis to cache results then add the dedicated cache module to your classpath:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-cache")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-redis-lettuce-cache&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>The <code>micronaut-redis-lettuce</code> compatibility module also includes this functionality transitively.</p>
+</div>
+<div class="paragraph">
+<p>Lettuce is a non-blocking, reactive Redis client implementation and Micronaut provides an implementation that allows cached results to be read reactively.</p>
 </div>
 <div class="paragraph">
 <p>Within your application configuration configure the Redis URL and Redis caches:</p>
@@ -1769,6 +1845,29 @@ redis.caches.my-cache.expiration-after-write-policy=&lt;class path of class impl
 
 <div class="paragraph">
 <p>Storing <a href="https://docs.micronaut.io/latest/api/io/micronaut/session/Session.html">Session</a> instances in Redis requires special considerations.</p>
+</div>
+<div class="paragraph">
+<p>Add the dedicated session module to enable Redis-backed session storage:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-session")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-redis-lettuce-session&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>The <code>micronaut-redis-lettuce</code> compatibility module also includes this functionality transitively.</p>
 </div>
 <div class="paragraph">
 <p>You can configure how sessions are stored in Redis using <a href="../api/io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html">RedisHttpSessionConfiguration</a>.</p>

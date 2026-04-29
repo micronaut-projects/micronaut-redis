@@ -7,7 +7,7 @@ dependencies {
 
     api project(":micronaut-redis-lettuce-core")
 
-    compileOnly mnSession.micronaut.session
+    api mnSession.micronaut.session
 
     testImplementation(platform(mnTest.boms.testcontainers))
     testImplementation(libs.testcontainers)

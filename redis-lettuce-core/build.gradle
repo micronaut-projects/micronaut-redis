@@ -34,8 +34,5 @@ micronautBuild {
     descriptor {
         parentModuleId = "io.micronaut.redis:micronaut-redis-lettuce"
     }
-}
-
-tasks.named("findBaseline") {
-    enabled = false
+    binaryCompatibility.enabledAfter("7.0.0")
 }

@@ -8,9 +8,17 @@ $ mn create-app my-app --features redis-lettuce
 ====
 
 
-To configure the Lettuce driver you should first add the `redis-lettuce` module to your classpath:
+To configure the Lettuce driver you should first add the `redis-lettuce` compatibility module to your classpath:
 
 dependency:micronaut-redis-lettuce[groupId="io.micronaut.redis"]
+
+If you only need part of the integration, dedicated modules are also available:
+
+dependency:micronaut-redis-lettuce-core[groupId="io.micronaut.redis"]
+
+dependency:micronaut-redis-lettuce-cache[groupId="io.micronaut.redis"]
+
+dependency:micronaut-redis-lettuce-session[groupId="io.micronaut.redis"]
 
 If you want Micronaut Pub/Sub listeners, publishers, and `@RedisPubSubClient`, add the dedicated Pub/Sub module as well:
 
@@ -85,7 +93,7 @@ Then inject `io.lettuce.core.support.AsyncPool<io.lettuce.core.api.StatefulRedis
 
 [source,groovy]
 ----
-include::redis-lettuce/src/test/groovy/io/micronaut/configuration/lettuce/RedisClientFactorySpec.groovy[tags=pooled-connections, indent=0]
+include::redis-lettuce-core/src/test/groovy/io/micronaut/configuration/lettuce/RedisClientFactorySpec.groovy[tags=pooled-connections, indent=0]
 ----
 
 If you configure Redis as a cluster with `redis.uris`, Micronaut instead exposes `io.lettuce.core.support.AsyncPool<io.lettuce.core.cluster.api.StatefulRedisClusterConnection<K, V>>` so you can borrow pooled cluster connections for the same pattern.

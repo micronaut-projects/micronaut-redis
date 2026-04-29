@@ -1,4 +1,9 @@
-If you wish to use Redis to cache results then you need to have the Lettuce configuration dependency on your classpath.
+If you wish to use Redis to cache results then add the dedicated cache module to your classpath:
+
+dependency:micronaut-redis-lettuce-cache[groupId="io.micronaut.redis"]
+
+The `micronaut-redis-lettuce` compatibility module also includes this functionality transitively.
+
 Lettuce is a non-blocking, reactive Redis client implementation and Micronaut provides an implementation that allows cached results to be read reactively.
 
 Within your application configuration configure the Redis URL and Redis caches:

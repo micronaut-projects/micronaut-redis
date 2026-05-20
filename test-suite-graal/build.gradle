@@ -3,7 +3,7 @@ plugins {
 }
 
 micronaut {
-    version "4.10.14"
+    version "5.0.0"
     testRuntime "junit5"
     enableNativeImage false
     processing {
@@ -29,12 +29,4 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(platform(mnTest.boms.testcontainers))
     testImplementation(libs.testcontainers)
-}
-
-graalvmNative {
-    binaries {
-        test {
-            buildArgs.add("-H:+SharedArenaSupport")
-        }
-    }
 }

@@ -1,5 +1,5 @@
 [versions]
-managed-lettuce = "7.5.1.RELEASE"
+managed-lettuce = "7.5.2.RELEASE"
 micronaut = "5.0.0"
 micronaut-test = "5.0.0"
 micronaut-cache = "6.0.0"

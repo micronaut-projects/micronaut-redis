@@ -1,13 +1,13 @@
 [versions]
 managed-lettuce = "7.5.2.RELEASE"
-micronaut = "5.0.0"
-micronaut-test = "5.0.0"
-micronaut-cache = "6.0.0"
-micronaut-micrometer = "6.0.0"
-micronaut-serde = "3.0.0"
+micronaut = "5.1.4"
+micronaut-test = "5.0.1"
+micronaut-cache = "6.1.0"
+micronaut-micrometer = "6.0.1"
+micronaut-serde = "3.1.0"
 micronaut-logging = "2.0.0"
-micronaut-session = "5.0.0"
-micronaut-gradle-plugin = "5.0.0"
+micronaut-session = "5.1.0"
+micronaut-gradle-plugin = "5.0.2"
 testcontainers-redis = "1.6.4"
 
 [libraries]

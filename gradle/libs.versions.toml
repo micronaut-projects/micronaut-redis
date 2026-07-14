@@ -1,6 +1,6 @@
 [versions]
 managed-lettuce = "7.6.0.RELEASE"
-micronaut = "5.1.5"
+micronaut = "5.1.6"
 micronaut-test = "5.0.1"
 micronaut-cache = "6.1.0"
 micronaut-micrometer = "6.0.1"

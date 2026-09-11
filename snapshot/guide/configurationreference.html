@@ -46,7 +46,7 @@
         <div class="docs-content">
             <div class="project">
                 <h1>Configuration Reference</h1>
-                <p><strong>Version:</strong>7.1.1-SNAPSHOT</p>
+                <p><strong>Version:</strong>7.2.0-SNAPSHOT</p>
                 <p></p>
             </div>
 <div class="sect2">
@@ -323,6 +323,12 @@
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.verify-peer</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.verify-mode</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">io.lettuce.core.SslVerifyMode</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
@@ -616,6 +622,12 @@
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.servers.*.verify-peer</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis.servers.*.verify-mode</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">io.lettuce.core.SslVerifyMode</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
@@ -931,6 +943,12 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.session.http.redis.expired-session-check</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the duration to check for expired sessions.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.session.http.same-site</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/cookie/SameSite.html">SameSite</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>

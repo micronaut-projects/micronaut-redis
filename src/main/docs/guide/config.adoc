@@ -55,10 +55,7 @@ redis:
 In which case the same beans will be created for each entry under `redis.servers` but exposed as `@Named` beans.
 
 .Using StatefulRedisConnection
-[source,groovy]
-----
-@Inject @Named("foo") StatefulRedisConnection<String, String> connection;
-----
+snippet::io.micronaut.configuration.lettuce.docs.NamedConnectionCommands[tags="namedConnection", project-base="docs-examples/codecs"]
 
 The above example will inject the connection named `foo`.
 

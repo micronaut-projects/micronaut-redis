@@ -6,7 +6,7 @@ pluginManagement {
 }
 
 plugins {
-    id("io.micronaut.build.shared.settings") version "8.0.2"
+    id("io.micronaut.build.shared.settings") version "8.1.1"
 }
 
 rootProject.name = 'redis-parent'
@@ -15,9 +15,11 @@ include 'redis-bom'
 include 'docs-examples:codecs-java'
 include 'docs-examples:codecs-groovy'
 include 'docs-examples:codecs-kotlin'
+include 'docs-examples:codecs-python'
 include 'docs-examples:pubsub-java'
 include 'docs-examples:pubsub-groovy'
 include 'docs-examples:pubsub-kotlin'
+include 'docs-examples:pubsub-python'
 include 'redis-lettuce'
 include 'redis-lettuce-core'
 include 'redis-lettuce-cache'

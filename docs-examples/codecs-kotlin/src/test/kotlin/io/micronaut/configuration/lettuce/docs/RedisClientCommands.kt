@@ -3,7 +3,9 @@ package io.micronaut.configuration.lettuce.docs
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.sync.RedisCommands
 import jakarta.inject.Inject
+import jakarta.inject.Singleton
 
+@Singleton
 class RedisClientCommands {
 
     // tag::commands[]

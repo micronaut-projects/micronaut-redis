@@ -4,8 +4,10 @@ import groovy.transform.CompileStatic
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.sync.RedisCommands
 import jakarta.inject.Inject
+import jakarta.inject.Singleton
 
 @CompileStatic
+@Singleton
 final class RedisClientCommands {
 
     // tag::commands[]

@@ -1,0 +1,17 @@
+plugins {
+    id 'micronaut-redis.docs-examples-conventions'
+    id 'io.micronaut.build.internal.python'
+}
+
+dependencies {
+    // The Java test helpers (src/test/java) are processed by javac
+    testAnnotationProcessor mn.micronaut.inject.java
+    // Annotation processors of the Python sources MUST be testImplementation (not testAnnotationProcessor):
+    // the Python compiler takes the (jar-resolved) compile classpath as its annotation processor path.
+    testImplementation mn.micronaut.inject.python.test
+    testImplementation mn.micronaut.context.python
+}
+
+tasks.withType(Test).configureEach {
+    systemProperty "micronaut.python.pool.enabled", "false"
+}

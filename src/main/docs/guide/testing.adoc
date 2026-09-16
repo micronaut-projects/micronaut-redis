@@ -1,14 +1,11 @@
 
 For testing purposes, we recommend running a real version of Redis inside a Docker container https://www.testcontainers.org/features/creating_container/#examples[via TestContainers].
 
-[source,java]
-----
-GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse(REDIS_DOCKER_NAME))
-    .withExposedPorts(REDIS_PORT)
-    .waitingFor(
-            Wait.forLogMessage(".*Ready to accept connections.*\\n", 1)
-    );
-redisContainer.start();
-----
+For example, a test base class can start the container once and expose its address through `redis.uri` with a Micronaut Test `TestPropertyProvider`:
+
+snippet::io.micronaut.configuration.lettuce.docs.AbstractRedisTest[tags="container", project-base="docs-examples/codecs", languages="java,kotlin,groovy"]
+
+[.lang-python]
+NOTE: Micronaut Test calls `TestPropertyProvider` before the application context, and with it the GraalPy runtime, exists, so a Python test class cannot start the container itself. Start it from a Java `@ContextConfigurer` (an `ApplicationContextConfigurer` that adds `redis.uri` to the properties of every test application context) and keep the Python tests plain `@MicronautTest` classes.
 
 The embedded redis container we used to recommend has been deprecated as of 5.3.0 and will be removed at a later date.

@@ -24,6 +24,9 @@ For a declarative client API similar to Kafka, define an interface with ann:conf
 
 snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookClient[tags="client", project-base="docs-examples/pubsub"]
 
+[.lang-python]
+NOTE: In Python the client is an abstract class (`ABC`) whose ann:configuration.lettuce.pubsub.annotation.MessageChannel[] methods are declared with `@abstractmethod`; Micronaut generates the implementation.
+
 Client bodies are encoded through Micronaut HTTP `MessageBodyWriter` implementations. JSON is used by default, and ann:http.annotation.Produces[] lets you override the media type for a method:
 
 snippet::io.micronaut.configuration.lettuce.docs.pubsub.BookClient[tags="clientProduces", project-base="docs-examples/pubsub"]

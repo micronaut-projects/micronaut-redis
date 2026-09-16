@@ -1,5 +1,5 @@
 plugins {
-    id("micronaut-redis.docs-examples-conventions")
+    id("micronaut-redis.docs-examples-kotlin-conventions")
 }
 
 dependencies {

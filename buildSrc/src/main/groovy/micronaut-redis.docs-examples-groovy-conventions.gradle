@@ -1,0 +1,9 @@
+plugins {
+    id 'micronaut-redis.docs-examples-conventions'
+    id 'groovy'
+}
+
+dependencies {
+    testCompileOnly mn.micronaut.inject.groovy
+    testImplementation mnTest.micronaut.test.spock
+}

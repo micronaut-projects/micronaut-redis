@@ -1,10 +1,6 @@
+from io.lettuce.core.codec import ByteArrayCodec, RedisCodec, StringCodec
 from jakarta.inject import Named, Singleton
 from micronaut.context.annotation import Factory, Requires
-
-try:
-    from io.lettuce.core.codec import ByteArrayCodec, RedisCodec, StringCodec
-except ImportError:  # TODO(python): packages under `io.` other than `io.micronaut` cannot be imported at runtime
-    from lettuce.core.codec import ByteArrayCodec, RedisCodec, StringCodec
 
 
 @Requires(property="spec.name", value="NamedCodecTest")

@@ -1,12 +1,8 @@
 from typing import Annotated
 
+from io.lettuce.core.api import StatefulRedisConnection
 from jakarta.inject import Inject, Named, Singleton
 from micronaut.context.annotation import Requires
-
-try:
-    from io.lettuce.core.api import StatefulRedisConnection
-except ImportError:  # TODO(python): packages under `io.` other than `io.micronaut` cannot be imported at runtime
-    from lettuce.core.api import StatefulRedisConnection
 
 
 @Requires(property="spec.name", value="NamedConnectionTest")

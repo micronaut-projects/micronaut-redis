@@ -1,15 +1,10 @@
 from typing import Annotated
 
+from io.lettuce.core.api import StatefulRedisConnection
+from io.lettuce.core.support import AsyncPool
 from jakarta.inject import Inject, Singleton
 from java.util.concurrent import TimeUnit
 from micronaut.context.annotation import Requires
-
-try:
-    from io.lettuce.core.api import StatefulRedisConnection
-    from io.lettuce.core.support import AsyncPool
-except ImportError:  # TODO(python): packages under `io.` other than `io.micronaut` cannot be imported at runtime
-    from lettuce.core.api import StatefulRedisConnection
-    from lettuce.core.support import AsyncPool
 
 
 @Requires(property="redis.pool.enabled", value="true")

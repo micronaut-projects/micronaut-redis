@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets
 
 @Property(name = "spec.name", value = "ByteArrayCodecTest")
 @MicronautTest
-class ByteArrayCodecSpec extends AbstractRedisTest {
+class ByteArrayCodecTest extends AbstractRedisTest {
 
     @Inject
     RedisCodec<byte[], byte[]> codec

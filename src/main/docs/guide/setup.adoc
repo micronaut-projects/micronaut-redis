@@ -44,6 +44,8 @@ You can also specify multiple Redis URIs using `redis.uris` in which case a `Red
 You can provide a custom instance of `io.lettuce.core.resource.ClientResources` it will be used to create `io.lettuce.core.RedisClient`.
 
 It's possible to configure thread pool size without providing custom `io.lettuce.core.resource.ClientResources`:
+
+[configuration]
 ----
 redis:
     uri: redis://localhost

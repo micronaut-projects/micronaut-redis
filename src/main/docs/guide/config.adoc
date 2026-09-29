@@ -66,7 +66,7 @@ The above example will inject the connection named `foo`.
 You can configure a standalone redis instance with replicas by supplying the `redis.replica-uris` setting to list out the location of all replicas.
 
 .MasterReplica Redis Configuration
-[source,yaml]
+[configuration]
 ----
 redis:
     uri: redis://localhost
@@ -80,7 +80,7 @@ redis:
 For MasterReplica and Cluster configurations the https://github.com/redis/lettuce/wiki/ReadFrom-Settings[ReadFrom Setting] can be configured using the `redis.read-from` setting.
 
 .ReadFrom Redis Configuration
-[source,yaml]
+[configuration]
 ----
 redis:
     uris:

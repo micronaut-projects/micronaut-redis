@@ -24,7 +24,6 @@ import io.lettuce.core.masterreplica.MasterReplica;
 import io.lettuce.core.masterreplica.StatefulRedisMasterReplicaConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.micronaut.context.BeanContext;
-import io.micronaut.context.RuntimeBeanDefinition;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.type.Argument;
@@ -73,9 +72,7 @@ final class TopLevelRedisConnectionRegistrar {
         @SuppressWarnings({"unchecked", "rawtypes"})
         Argument<StatefulRedisConnection> beanType = (Argument) Argument.of(StatefulRedisConnection.class, keyType, valueType);
         beanContext.registerBeanDefinition(
-            RuntimeBeanDefinition.builder(beanType, () -> createConnection(keyType, valueType))
-                .singleton(true)
-                .build()
+            TypedRedisConnectionBeanDefinition.of(beanType, () -> createConnection(keyType, valueType))
         );
     }
 
@@ -83,9 +80,7 @@ final class TopLevelRedisConnectionRegistrar {
         @SuppressWarnings({"unchecked", "rawtypes"})
         Argument<StatefulRedisPubSubConnection> beanType = (Argument) Argument.of(StatefulRedisPubSubConnection.class, keyType, valueType);
         beanContext.registerBeanDefinition(
-            RuntimeBeanDefinition.builder(beanType, () -> createPubSubConnection(keyType, valueType))
-                .singleton(true)
-                .build()
+            TypedRedisConnectionBeanDefinition.of(beanType, () -> createPubSubConnection(keyType, valueType))
         );
     }
 

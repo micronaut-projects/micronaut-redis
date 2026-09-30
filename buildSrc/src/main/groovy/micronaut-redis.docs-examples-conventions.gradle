@@ -1,3 +1,6 @@
+// Shared setup of the docs-examples projects backing the snippet:: macros of the user guide.
+// Each language has its own convention plugin (micronaut-redis.docs-examples-<language>-conventions)
+// which adds the Micronaut annotation processing / compiler of that language.
 plugins {
     id 'java-library'
 }
@@ -7,9 +10,16 @@ repositories {
 }
 
 dependencies {
-    testImplementation project(':micronaut-redis-lettuce')
+    testImplementation project(":micronaut-redis-lettuce")
+    testImplementation platform(mnTest.boms.testcontainers)
+    testImplementation project(":test-suite-utils")
+    testImplementation mn.micronaut.jackson.databind
+    testImplementation mnTest.micronaut.test.junit5
+    testRuntimeOnly mnLogging.logback.classic
+    testRuntimeOnly mnTest.junit.jupiter.engine
+    testRuntimeOnly libs.junit.platform.launcher
 }
 
 tasks.withType(Test).configureEach {
-    failOnNoDiscoveredTests = false
+    useJUnitPlatform()
 }

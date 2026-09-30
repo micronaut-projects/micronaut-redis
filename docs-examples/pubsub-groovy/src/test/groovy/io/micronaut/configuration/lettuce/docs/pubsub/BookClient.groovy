@@ -14,8 +14,8 @@ interface BookClient {
     // end::client[]
 
     // tag::clientProduces[]
-    @MessageChannel("books.created.plain")
+    @MessageChannel("books.plain-text")
     @Produces(MediaType.TEXT_PLAIN)
-    void publishPlain(BookCreated event)
+    void publishPlain(String title)
     // end::clientProduces[]
 }

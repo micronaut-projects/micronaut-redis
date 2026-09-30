@@ -55,7 +55,9 @@ class RedisCodecFactorySpec extends RedisSpec {
         then:
         applicationContext.getBean(Argument.of(RedisCodec, byte[].class, byte[].class)) == ByteArrayCodec.INSTANCE
         applicationContext.getBean(RedisCodec) instanceof StringCodec
-        applicationContext.findBeanDefinition(Argument.of(StatefulRedisConnection, byte[].class, byte[].class)).present
+        applicationContext.getBeanDefinition(Argument.of(StatefulRedisConnection, byte[].class, byte[].class)) instanceof TypedRedisConnectionBeanDefinition
+        !(applicationContext.getBeanDefinition(Argument.of(StatefulRedisConnection, String, String)) instanceof TypedRedisConnectionBeanDefinition)
+        !(applicationContext.getBeanDefinition(StatefulRedisConnection) instanceof TypedRedisConnectionBeanDefinition)
 
         cleanup:
         applicationContext.stop()
@@ -70,7 +72,9 @@ class RedisCodecFactorySpec extends RedisSpec {
 
         then:
         applicationContext.getBean(Argument.of(RedisCodec, byte[].class, byte[].class)) == ByteArrayCodec.INSTANCE
-        applicationContext.findBeanDefinition(Argument.of(StatefulRedisClusterConnection, byte[].class, byte[].class)).present
+        applicationContext.getBeanDefinition(Argument.of(StatefulRedisClusterConnection, byte[].class, byte[].class)) instanceof TypedRedisConnectionBeanDefinition
+        !(applicationContext.getBeanDefinition(Argument.of(StatefulRedisClusterConnection, String, String)) instanceof TypedRedisConnectionBeanDefinition)
+        !(applicationContext.getBeanDefinition(StatefulRedisClusterConnection) instanceof TypedRedisConnectionBeanDefinition)
 
         cleanup:
         applicationContext.stop()

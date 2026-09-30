@@ -1,0 +1,11 @@
+plugins {
+    id 'micronaut-redis.docs-examples-conventions'
+    id 'io.micronaut.build.internal.kotlin-ksp'
+}
+
+dependencies {
+    kspTest mn.micronaut.inject.kotlin
+    testImplementation mn.micronaut.inject.kotlin
+    // Jackson needs the Kotlin module to create the Kotlin data classes of the examples
+    testRuntimeOnly mn.jackson.module.kotlin
+}

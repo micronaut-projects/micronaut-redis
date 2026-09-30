@@ -1,0 +1,7 @@
+plugins {
+    id 'micronaut-redis.docs-examples-conventions'
+}
+
+dependencies {
+    testAnnotationProcessor mn.micronaut.inject.java
+}

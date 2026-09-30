@@ -21,7 +21,6 @@ import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.micronaut.context.BeanContext;
-import io.micronaut.context.RuntimeBeanDefinition;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.type.Argument;
@@ -68,9 +67,7 @@ final class TopLevelRedisClusterConnectionRegistrar {
         @SuppressWarnings({"unchecked", "rawtypes"})
         Argument<StatefulRedisClusterConnection> beanType = (Argument) Argument.of(StatefulRedisClusterConnection.class, keyType, valueType);
         beanContext.registerBeanDefinition(
-            RuntimeBeanDefinition.builder(beanType, () -> createConnection(keyType, valueType))
-                .singleton(true)
-                .build()
+            TypedRedisConnectionBeanDefinition.of(beanType, () -> createConnection(keyType, valueType))
         );
     }
 
@@ -78,9 +75,7 @@ final class TopLevelRedisClusterConnectionRegistrar {
         @SuppressWarnings({"unchecked", "rawtypes"})
         Argument<StatefulRedisPubSubConnection> beanType = (Argument) Argument.of(StatefulRedisPubSubConnection.class, keyType, valueType);
         beanContext.registerBeanDefinition(
-            RuntimeBeanDefinition.builder(beanType, () -> createPubSubConnection(keyType, valueType))
-                .singleton(true)
-                .build()
+            TypedRedisConnectionBeanDefinition.of(beanType, () -> createPubSubConnection(keyType, valueType))
         );
     }
 

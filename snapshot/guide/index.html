@@ -208,6 +208,15 @@
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -228,6 +237,15 @@
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-core"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -245,6 +263,15 @@
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-cache"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -260,6 +287,15 @@
     &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-redis-lettuce-session&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-session"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -280,6 +316,15 @@
     &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-redis-lettuce-pubsub&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-pubsub"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -559,10 +604,59 @@ redis.pool.min-idle=4</code></pre>
 <div class="paragraph">
 <p>Then inject <code>io.lettuce.core.support.AsyncPool&lt;io.lettuce.core.api.StatefulRedisConnection&lt;K, V&gt;&gt;</code> and release each acquired connection after use:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">first.sync().set("first", "one")
-second.sync().set("second", "two")</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @Inject AsyncPool&lt;StatefulRedisConnection&lt;String, String&gt;&gt; pool;
+
+    void commands() throws Exception {
+        StatefulRedisConnection&lt;String, String&gt; connection = pool.acquire().get(5, TimeUnit.SECONDS);
+        try {
+            connection.sync().set("first", "one");
+        } finally {
+            pool.release(connection).get(5, TimeUnit.SECONDS);
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">    pool: Annotated[AsyncPool[StatefulRedisConnection[str, str]], Inject]
+
+    def commands(self) -&gt; None:
+        connection = self.pool.acquire().get(5, TimeUnit.SECONDS)
+        try:
+            connection.sync().set("first", "one")
+        finally:
+            self.pool.release(connection).get(5, TimeUnit.SECONDS)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @Inject
+    lateinit var pool: AsyncPool&lt;StatefulRedisConnection&lt;String, String&gt;&gt;
+
+    fun commands() {
+        val connection = pool.acquire().get(5, TimeUnit.SECONDS)
+        try {
+            connection.sync().set("first", "one")
+        } finally {
+            pool.release(connection).get(5, TimeUnit.SECONDS)
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @Inject AsyncPool&lt;StatefulRedisConnection&lt;String, String&gt;&gt; pool
+
+    void commands() {
+        StatefulRedisConnection&lt;String, String&gt; connection = pool.acquire().get(5, TimeUnit.SECONDS)
+        try {
+            connection.sync().set("first", "one")
+        } finally {
+            pool.release(connection).get(5, TimeUnit.SECONDS)
+        }
+    }</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -608,6 +702,17 @@ second.sync().set("second", "two")</code></pre>
         commands.set("foo", "bar");
         commands.get("foo");
     }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Using StatefulRedisConnection</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">    connection: Annotated[StatefulRedisConnection[str, str], Inject]
+
+    def commands(self) -&gt; None:
+        commands = self.connection.sync()
+        commands.set("foo", "bar")
+        commands.get("foo")</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -670,6 +775,17 @@ public class ByteArrayCodecFactory {
 <div class="listingblock multi-language-sample">
 <div class="title">Configuring a custom RedisCodec</div>
 <div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">@Factory
+class ByteArrayCodecFactory:
+
+    @Singleton
+    def redis_codec(self) -&gt; RedisCodec[bytes, bytes]:
+        return ByteArrayCodec.INSTANCE</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Configuring a custom RedisCodec</div>
+<div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Factory
 class ByteArrayCodecFactory {
 
@@ -690,6 +806,36 @@ class ByteArrayCodecFactory {
         ByteArrayCodec.INSTANCE
     }
 }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A <code>RedisCodec</code> bean that is neither <code>@Primary</code> nor <code>@Named</code> does not replace the default <code>StringCodec</code>. Instead, <code>StatefulRedisConnection</code> and <code>StatefulRedisPubSubConnection</code> beans (or their cluster equivalents when <code>redis.uris</code> is configured) are registered for the codec&#8217;s key and value types, and can be injected by those type arguments:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Injecting a connection for a custom RedisCodec</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @Inject
+    StatefulRedisConnection&lt;byte[], byte[]&gt; connection;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Injecting a connection for a custom RedisCodec</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">    connection: Annotated[StatefulRedisConnection[bytes, bytes], Inject]</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Injecting a connection for a custom RedisCodec</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @Inject
+    lateinit var connection: StatefulRedisConnection&lt;ByteArray, ByteArray&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Injecting a connection for a custom RedisCodec</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @Inject
+    StatefulRedisConnection&lt;byte[], byte[]&gt; connection</code></pre>
 </div>
 </div>
 </div>
@@ -951,10 +1097,30 @@ redis.servers.bar.uri=redis://bar</code></pre>
 <div class="paragraph">
 <p>In which case the same beans will be created for each entry under <code>redis.servers</code> but exposed as <code>@Named</code> beans.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
 <div class="title">Using StatefulRedisConnection</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Inject @Named("foo") StatefulRedisConnection&lt;String, String&gt; connection;</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @Inject @Named("foo") StatefulRedisConnection&lt;String, String&gt; connection;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Using StatefulRedisConnection</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">    connection: Annotated[StatefulRedisConnection[str, str], Inject, Named("foo")]</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Using StatefulRedisConnection</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @Inject
+    @field:Named("foo")
+    lateinit var connection: StatefulRedisConnection&lt;String, String&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Using StatefulRedisConnection</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @Inject @Named("foo") StatefulRedisConnection&lt;String, String&gt; connection</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1114,6 +1280,23 @@ public class NamedCodecFactory {
         return StringCodec.ASCII;
     }
 }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Supply different codecs for named connections</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">@Factory
+class NamedCodecFactory:
+
+    @Singleton
+    @Named("foo")
+    def foo_codec(self) -&gt; RedisCodec[bytes, bytes]:
+        return ByteArrayCodec.INSTANCE
+
+    @Singleton
+    @Named("bar")
+    def bar_codec(self) -&gt; RedisCodec[str, str]:
+        return StringCodec.ASCII</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1342,15 +1525,72 @@ class NamedCodecFactory {
 <div class="paragraph">
 <p>For testing purposes, we recommend running a real version of Redis inside a Docker container <a href="https://www.testcontainers.org/features/creating_container/#examples">via TestContainers</a>.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">GenericContainer&lt;?&gt; redisContainer = new GenericContainer&lt;&gt;(DockerImageName.parse(REDIS_DOCKER_NAME))
-    .withExposedPorts(REDIS_PORT)
-    .waitingFor(
-            Wait.forLogMessage(".*Ready to accept connections.*\\n", 1)
-    );
-redisContainer.start();</code></pre>
+<div class="paragraph">
+<p>For example, a test base class can start the container once and expose its address through <code>redis.uri</code> with a Micronaut Test <code>TestPropertyProvider</code>:</p>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    static final String REDIS_DOCKER_NAME = "redis:6.2.6";
+    static final int REDIS_PORT = 6379;
+    static final GenericContainer&lt;?&gt; REDIS_CONTAINER = new GenericContainer&lt;&gt;(DockerImageName.parse(REDIS_DOCKER_NAME))
+        .withExposedPorts(REDIS_PORT)
+        .waitingFor(Wait.forLogMessage(".*Ready to accept connections.*\\n", 1));
+
+    @Override
+    public Map&lt;String, String&gt; getProperties() {
+        if (!REDIS_CONTAINER.isRunning()) {
+            REDIS_CONTAINER.start();
+        }
+        return Map.of("redis.uri", "redis://" + REDIS_CONTAINER.getHost() + ":" + REDIS_CONTAINER.getMappedPort(REDIS_PORT));
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    companion object {
+        const val REDIS_DOCKER_NAME = "redis:6.2.6"
+        const val REDIS_PORT = 6379
+        val REDIS_CONTAINER: GenericContainer&lt;*&gt; = GenericContainer(DockerImageName.parse(REDIS_DOCKER_NAME))
+            .withExposedPorts(REDIS_PORT)
+            .waitingFor(Wait.forLogMessage(".*Ready to accept connections.*\\n", 1))
+    }
+
+    override fun getProperties(): Map&lt;String, String&gt; {
+        if (!REDIS_CONTAINER.isRunning) {
+            REDIS_CONTAINER.start()
+        }
+        return mapOf("redis.uri" to "redis://${REDIS_CONTAINER.host}:${REDIS_CONTAINER.getMappedPort(REDIS_PORT)}")
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    static final String REDIS_DOCKER_NAME = "redis:6.2.6"
+    static final int REDIS_PORT = 6379
+    static final GenericContainer&lt;?&gt; REDIS_CONTAINER = new GenericContainer&lt;&gt;(DockerImageName.parse(REDIS_DOCKER_NAME))
+        .withExposedPorts(REDIS_PORT)
+        .waitingFor(Wait.forLogMessage(".*Ready to accept connections.*\\n", 1))
+
+    @Override
+    Map&lt;String, String&gt; getProperties() {
+        if (!REDIS_CONTAINER.running) {
+            REDIS_CONTAINER.start()
+        }
+        ['redis.uri': "redis://${REDIS_CONTAINER.host}:${REDIS_CONTAINER.getMappedPort(REDIS_PORT)}".toString()]
+    }</code></pre>
+</div>
+</div>
+<div class="admonitionblock note lang-python">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Micronaut Test calls <code>TestPropertyProvider</code> before the application context, and with it the GraalPy runtime, exists, so a Python test class cannot start the container itself. Start it from a Java <code>@ContextConfigurer</code> (an <code>ApplicationContextConfigurer</code> that adds <code>redis.uri</code> to the properties of every test application context) and keep the Python tests plain <code>@MicronautTest</code> classes.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>The embedded redis container we used to recommend has been deprecated as of 5.3.0 and will be removed at a later date.</p>
@@ -1388,6 +1628,15 @@ redisContainer.start();</code></pre>
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-pubsub"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -1399,6 +1648,13 @@ redisContainer.start();</code></pre>
     void receive(@MessageBody BookCreated event, @MessageChannel String channel) {
         System.out.println("Received " + event.getTitle() + " from " + channel);
     }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">    @MessageChannel("books.created")
+    def receive(self, event: Annotated[BookCreated, MessageBody], channel: Annotated[str, MessageChannel]) -&gt; None:
+        print(f"Received {event.title} from {channel}")</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1434,6 +1690,14 @@ redisContainer.start();</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">    @Consumes(MediaType.TEXT_PLAIN)
+    @MessageChannel("books.plain-text")
+    def receive(self, title: Annotated[str, MessageBody]) -&gt; None:
+        print(f"Received plain text title {title}")</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @Consumes(MediaType.TEXT_PLAIN)
     @MessageChannel("books.plain-text")
     fun receive(@MessageBody title: String) {
@@ -1462,6 +1726,12 @@ redisContainer.start();</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">    def publish(self, event: BookCreated) -&gt; None:
+        self.publisher.publish("books.created", event)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    fun publish(event: BookCreated) {
         publisher.publish("books.created", event)
     }</code></pre>
@@ -1485,6 +1755,14 @@ redisContainer.start();</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">    @MessageChannel("books.created")
+    @abstractmethod
+    def publish(self, event: BookCreated) -&gt; None:
+        ...</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @MessageChannel("books.created")
     fun publish(event: BookCreated)</code></pre>
 </div>
@@ -1495,28 +1773,49 @@ redisContainer.start();</code></pre>
     void publish(BookCreated event)</code></pre>
 </div>
 </div>
+<div class="admonitionblock note lang-python">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+In Python the client is an abstract class (<code>ABC</code>) whose <a href="../api/io/micronaut/configuration/lettuce/pubsub/annotation/MessageChannel.html">@MessageChannel</a> methods are declared with <code>@abstractmethod</code>; Micronaut generates the implementation.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Client bodies are encoded through Micronaut HTTP <code>MessageBodyWriter</code> implementations. JSON is used by default, and <a href="../api/io/micronaut/http/annotation/Produces.html">@Produces</a> lets you override the media type for a method:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @MessageChannel("books.created.plain")
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @MessageChannel("books.plain-text")
     @Produces(MediaType.TEXT_PLAIN)
-    void publishPlain(BookCreated event);</code></pre>
+    void publishPlain(String title);</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @MessageChannel("books.created.plain")
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">    @MessageChannel("books.plain-text")
     @Produces(MediaType.TEXT_PLAIN)
-    fun publishPlain(event: BookCreated)</code></pre>
+    @abstractmethod
+    def publish_plain(self, title: str) -&gt; None:
+        ...</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @MessageChannel("books.created.plain")
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @MessageChannel("books.plain-text")
     @Produces(MediaType.TEXT_PLAIN)
-    void publishPlain(BookCreated event)</code></pre>
+    fun publishPlain(title: String)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @MessageChannel("books.plain-text")
+    @Produces(MediaType.TEXT_PLAIN)
+    void publishPlain(String title)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1590,6 +1889,13 @@ redisContainer.start();</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">    @MessageChannel(value="books.audit", exceptionHandler=BookAuditExceptionHandler)
+    def receive(self, event: Annotated[BookCreated, MessageBody]) -&gt; None:
+        raise RuntimeError(f"Could not audit {event.title}")</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    @MessageChannel(value = "books.audit", exceptionHandler = BookAuditExceptionHandler::class)
     fun receive(@MessageBody event: BookCreated) {
         throw IllegalStateException("Could not audit ${event.title}")
@@ -1610,6 +1916,12 @@ redisContainer.start();</code></pre>
     public void handle(RedisListenerException exception) {
         System.err.println("Redis listener failure on " + exception.getMessageChannel() + ": " + exception.getMessage());
     }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">    def handle(self, exception: RedisListenerException) -&gt; None:
+        print(f"Redis listener failure on {exception.getMessageChannel()}: {exception.getMessage()}", file=sys.stderr)</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1657,6 +1969,15 @@ redisContainer.start();</code></pre>
     &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-redis-lettuce-cache&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-cache"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -1958,6 +2279,15 @@ redis.caches.my-cache.expiration-after-write-policy=&lt;class path of class impl
     &lt;groupId&gt;io.micronaut.redis&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-redis-lettuce-session&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.redis:micronaut-redis-lettuce-session"</span>,
+]</code></pre>
 </div>
 </div>
 </p>

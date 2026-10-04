@@ -348,7 +348,8 @@ runtime = [
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {uri = "redis://localhost"}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+uri = "redis://localhost"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -432,7 +433,10 @@ redis.computation-thread-pool-size=4</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {uri = "redis://localhost", io-thread-pool-size = 5, computation-thread-pool-size = 4}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+uri = "redis://localhost"
+io-thread-pool-size = 5
+computation-thread-pool-size = 4</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -556,7 +560,13 @@ redis.pool.min-idle=4</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {uri = "redis://localhost", pool = {enabled = true, max-total = 16, min-idle = 4}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+uri = "redis://localhost"
+
+[redis.pool]
+enabled = true
+max-total = 16
+min-idle = 4</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -874,7 +884,10 @@ redis.timeout=30s</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {uri = "redis://localhost", ssl = true, timeout = "30s"}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+uri = "redis://localhost"
+ssl = true
+timeout = "30s"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -952,7 +965,16 @@ redis.metrics.command-latency-recorder.target-percentiles[1]=0.75</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {uri = "redis://localhost", metrics = {command-latency-recorder = {enabled = true, histogram = false, local-distinction = false, min-latency = "2ms", max-latency = "3m", target-percentiles = [0.25, 0.75]}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+uri = "redis://localhost"
+
+[redis.metrics.command-latency-recorder]
+enabled = true
+histogram = false
+local-distinction = false
+min-latency = "2ms"
+max-latency = "3m"
+target-percentiles = [0.25, 0.75]</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1043,7 +1065,11 @@ redis.servers.bar.uri=redis://bar</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {servers = {foo = {uri = "redis://foo"}, bar = {uri = "redis://bar"}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis.servers.foo]
+uri = "redis://foo"
+
+[redis.servers.bar]
+uri = "redis://bar"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1155,7 +1181,11 @@ redis.timeout=30s</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {uri = "redis://localhost", replica-uris = ["redis://localhost:6578"], ssl = true, timeout = "30s"}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+uri = "redis://localhost"
+replica-uris = ["redis://localhost:6578"]
+ssl = true
+timeout = "30s"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1219,7 +1249,9 @@ redis.read-from=replicaPreferred</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {uris = ["redis://localhost"], read-from = "replicaPreferred"}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+uris = ["redis://localhost"]
+read-from = "replicaPreferred"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1362,7 +1394,8 @@ class NamedCodecFactory {
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {health = {enabled = false}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis.health]
+enabled = false</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1417,7 +1450,8 @@ class NamedCodecFactory {
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {health = {reuse-connection = true}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis.health]
+reuse-connection = true</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1480,7 +1514,8 @@ class NamedCodecFactory {
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {enabled = false}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+enabled = false</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1840,7 +1875,8 @@ In Python the client is an abstract class (<code>ABC</code>) whose <a href="../a
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {pubsub = {default-body-media-type = "text/plain"}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis.pubsub]
+default-body-media-type = "text/plain"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2018,7 +2054,16 @@ redis.caches.my-cache.insert-retries=2</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {uri = "redis://localhost", cache = {namespace = "${micronaut.application.name}"}, caches = {my-cache = {expire-after-write = "1h", read-retries = 2, insert-retries = 2}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+uri = "redis://localhost"
+
+[redis.cache]
+namespace = "${micronaut.application.name}"
+
+[redis.caches.my-cache]
+expire-after-write = "1h"
+read-retries = 2
+insert-retries = 2</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2111,7 +2156,11 @@ redis.caches.my-cache.expiration-after-write-policy=&lt;class path of class impl
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {uri = "redis://localhost", caches = {my-cache = {expiration-after-write-policy = "&lt;class path of class implementing ExpirationAfterWritePolicy&gt;"}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis]
+uri = "redis://localhost"
+
+[redis.caches.my-cache]
+expiration-after-write-policy = "&lt;class path of class implementing ExpirationAfterWritePolicy&gt;"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2326,7 +2375,11 @@ micronaut.session.http.redis.enable-keyspace-events=false</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {session = {http = {redis = {enabled = true, namespace = "myapp:sessions", write-mode = "BACKGROUND", enable-keyspace-events = false}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.session.http.redis]
+enabled = true
+namespace = "myapp:sessions"
+write-mode = "BACKGROUND"
+enable-keyspace-events = false</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2432,7 +2485,9 @@ micronaut.session.http.redis.valueSerializer=io.micronaut.jackson.serialize.Jack
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {session = {http = {redis = {enabled = true, valueSerializer = "io.micronaut.jackson.serialize.JacksonObjectSerializer"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.session.http.redis]
+enabled = true
+valueSerializer = "io.micronaut.jackson.serialize.JacksonObjectSerializer"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2608,7 +2663,8 @@ It is replaced with <code>redisClient(AbstractRedisConfiguration, ClientResource
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">redis = {embedded = {config-file = "/full/path/to/embedded-redis.conf"}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[redis.embedded]
+config-file = "/full/path/to/embedded-redis.conf"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">

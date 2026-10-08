@@ -6,6 +6,7 @@ testing: Redis and Testing
 pubsub: Redis Pub/Sub Messaging
 cache: Redis for Caching
 sessions: Session State with Redis
+devmode: Development Mode Reloading
 graalvm: GraalVM support
 repository: Repository
 appendix:

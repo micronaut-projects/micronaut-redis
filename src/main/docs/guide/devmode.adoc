@@ -1,0 +1,17 @@
+In development mode, when the application restarts after a change, the Redis clients are kept for the next generation, along with their `ClientResources` (event loops, computation threads and timer) and their connections. The beans kept are:
+
+* The `RedisClient` or `RedisClusterClient` beans, including the clients of named servers (`redis.servers.*`).
+* The `StatefulRedisConnection` and `StatefulRedisPubSubConnection` beans (or their cluster equivalents), including those of named servers.
+* The connections the modules open for themselves: the connection of each Redis cache, of the session store, of the Pub/Sub publisher and of the Pub/Sub listeners.
+
+A change of configuration under `redis` releases them: the next generation creates them again from the new configuration, and the clients shut down the resources they were built on.
+
+The Pub/Sub listeners belong to the application. As a generation stops, the listeners it added to the Pub/Sub connection beans are removed and their channels unsubscribed. The next generation adds its own and subscribes again on the same connection, so each message is received once. Listeners added in any other way, such as to a client or for push messages, are not removed: a bean that adds them should remove them as it is destroyed.
+
+A bean is not kept when its connection, or what the connection was built from, belongs to the application, and is created again on each restart instead. This applies to:
+
+* A connection created with a `RedisCodec` of the application, including the typed connections registered for an unqualified codec.
+* A client built on `ClientResources`, or with a `ClientResourcesMutator`, of the application.
+* A client built while Micrometer is present: its command latency recorder records into the `MeterRegistry` of the generation that created it.
+
+The Redis caches are created again in each generation, from its serializers, on the connection that was kept. In place of a restart, a change of a serializer or an expiration policy recreates them, and a change of a `@RedisListener` bean re-registers the listeners on the same connection.

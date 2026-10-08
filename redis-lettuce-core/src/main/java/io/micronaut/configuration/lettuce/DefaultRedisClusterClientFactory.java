@@ -26,6 +26,7 @@ import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Retain;
 import io.micronaut.context.exceptions.ConfigurationException;
 import org.jspecify.annotations.Nullable;
 import io.micronaut.core.util.CollectionUtils;
@@ -61,6 +62,7 @@ public class DefaultRedisClusterClientFactory<K, V> {
      * @since 6.1.0
      */
     @Bean(preDestroy = "shutdown")
+    @Retain(invalidatedBy = RedisSetting.PREFIX)
     @Singleton
     @Primary
     public RedisClusterClient redisClient(@Primary AbstractRedisConfiguration config,
@@ -76,7 +78,7 @@ public class DefaultRedisClusterClientFactory<K, V> {
         if (mutators != null) {
             mutators.forEach(m -> m.mutate(builder, config));
         }
-        return RedisClusterClient.create(builder.build(), uris);
+        return ResourceOwningClients.redisClusterClient(ResourceOwningClients.build(builder), uris);
     }
 
     /**
@@ -87,6 +89,7 @@ public class DefaultRedisClusterClientFactory<K, V> {
      * @since 6.5.0
      */
     @Bean(preDestroy = "close")
+    @Retain(invalidatedBy = RedisSetting.PREFIX)
     @Singleton
     @Primary
     public StatefulRedisClusterConnection<K, V> redisConnection(
@@ -117,6 +120,7 @@ public class DefaultRedisClusterClientFactory<K, V> {
      * @return connection
      */
     @Bean(preDestroy = "close")
+    @Retain(invalidatedBy = RedisSetting.PREFIX)
     @Singleton
     public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClusterClient redisClient) {
         return redisClient.connectPubSub(defaultCodec);

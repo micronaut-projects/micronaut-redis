@@ -127,7 +127,7 @@ class RedisConfigurationSpec extends Specification {
         then:
         passwordOf(configuration) == 's3cret'
         passwordOf(configuration.getUri().orElseThrow()) == 's3cret'
-        passwordOf(client.@redisURI) == 's3cret'
+        passwordOf(redisUriOf(client)) == 's3cret'
 
         cleanup:
         client.shutdown()
@@ -147,7 +147,7 @@ class RedisConfigurationSpec extends Specification {
         then:
         passwordOf(configuration) == 's3cret'
         passwordOf(configuration.getUri().orElseThrow()) == 's3cret'
-        passwordOf(client.@redisURI) == 's3cret'
+        passwordOf(redisUriOf(client)) == 's3cret'
 
         cleanup:
         client.shutdown()
@@ -177,13 +177,13 @@ class RedisConfigurationSpec extends Specification {
         mergedUri.ssl
         mergedUri.startTls
         !mergedUri.verifyPeer
-        passwordOf(client.@redisURI) == 's3cret'
-        client.@redisURI.timeout == Duration.ofSeconds(1)
-        client.@redisURI.database == 4
-        client.@redisURI.clientName == "default-client"
-        client.@redisURI.ssl
-        client.@redisURI.startTls
-        !client.@redisURI.verifyPeer
+        passwordOf(redisUriOf(client)) == 's3cret'
+        redisUriOf(client).timeout == Duration.ofSeconds(1)
+        redisUriOf(client).database == 4
+        redisUriOf(client).clientName == "default-client"
+        redisUriOf(client).ssl
+        redisUriOf(client).startTls
+        !redisUriOf(client).verifyPeer
 
         cleanup:
         client.shutdown()
@@ -237,7 +237,7 @@ class RedisConfigurationSpec extends Specification {
         then:
         passwordOf(configuration) == 'named-secret'
         passwordOf(configuration.getUri().orElseThrow()) == 'named-secret'
-        passwordOf(client.@redisURI) == 'named-secret'
+        passwordOf(redisUriOf(client)) == 'named-secret'
 
         cleanup:
         client.shutdown()
@@ -254,5 +254,15 @@ class RedisConfigurationSpec extends Specification {
         }
         def credentials = credentialsProvider.resolveCredentials().block(Duration.ofSeconds(5))
         return credentials?.hasPassword() ? new String(credentials.password) : null
+    }
+
+    /**
+     * The URI a client connects to, read from the field of {@link io.lettuce.core.RedisClient}: the factories create
+     * a subclass of it, which owns its resources.
+     */
+    private static io.lettuce.core.RedisURI redisUriOf(io.lettuce.core.RedisClient client) {
+        def field = io.lettuce.core.RedisClient.getDeclaredField('redisURI')
+        field.accessible = true
+        return (io.lettuce.core.RedisURI) field.get(client)
     }
 }

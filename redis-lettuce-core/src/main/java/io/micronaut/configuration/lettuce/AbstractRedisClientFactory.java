@@ -58,7 +58,9 @@ public abstract class AbstractRedisClientFactory<K, V> {
     }
 
     /**
-     * Creates the {@link RedisClient} from the configuration.
+     * Creates the {@link RedisClient} from the configuration, on {@link ClientResources} built for it from the given
+     * ones and the mutators. The client owns the resources it is built on, and shuts them down with itself, but for
+     * what they share with the given resources. It copies the URI it connects to rather than keep the configuration.
      *
      * @param config The configuration
      * @param optionalClientResources The ClientResources
@@ -73,8 +75,7 @@ public abstract class AbstractRedisClientFactory<K, V> {
             return redisClient(config);
         }
         Optional<RedisURI> uri = config.getUri();
-        return uri.map(redisURI -> RedisClient.create(clientResources, redisURI))
-            .orElseGet(() -> RedisClient.create(clientResources, config));
+        return ResourceOwningClients.redisClient(clientResources, uri.orElse(config));
     }
 
     /**
@@ -105,6 +106,6 @@ public abstract class AbstractRedisClientFactory<K, V> {
         if (mutators != null) {
             mutators.forEach(clientResourcesMutator -> clientResourcesMutator.mutate(clientResourcesBuilder, config));
         }
-        return clientResourcesBuilder.build();
+        return ResourceOwningClients.build(clientResourcesBuilder);
     }
 }

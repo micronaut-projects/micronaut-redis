@@ -157,6 +157,23 @@ class RedisClientFactorySpec extends RedisSpec {
         applicationContext.stop()
     }
 
+    void "the client keeps the library name and version of the URI"() {
+        given:
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.uri': RedisContainerUtils.getRedisPort("redis://localhost") + "?libraryName=test-lib&libraryVersion=9.9.9"
+        ])
+
+        when:
+        RedisURI innerRedisURI = redisUriOf(applicationContext.getBean(RedisClient))
+
+        then:
+        innerRedisURI.libraryName == "test-lib"
+        innerRedisURI.libraryVersion == "9.9.9"
+
+        cleanup:
+        applicationContext.stop()
+    }
+
     void "test redis metrics settings"() {
         given:
         ApplicationContext applicationContext = ApplicationContext.run([

@@ -144,6 +144,10 @@ final class ResourceOwningClients {
         if (uri.getDriverInfo() != null) {
             copy.setDriverInfo(uri.getDriverInfo());
         }
+        // kept apart from the driver information
+        if (uri.getLibraryVersion() != null) {
+            copy.setLibraryVersion(uri.getLibraryVersion());
+        }
         if (uri.getTimeout() != null) {
             copy.setTimeout(uri.getTimeout());
         }

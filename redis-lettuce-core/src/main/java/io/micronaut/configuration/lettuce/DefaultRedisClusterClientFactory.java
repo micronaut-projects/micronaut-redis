@@ -27,9 +27,7 @@ import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Retain;
-import io.micronaut.context.annotation.Property;
-import io.micronaut.context.env.DevelopmentMode;
-import io.micronaut.core.util.StringUtils;
+import io.micronaut.context.env.DevelopmentActive;
 import io.micronaut.context.exceptions.ConfigurationException;
 import org.jspecify.annotations.Nullable;
 import io.micronaut.core.util.CollectionUtils;
@@ -52,23 +50,22 @@ import java.util.Optional;
 @Factory
 public class DefaultRedisClusterClientFactory<K, V> {
     private final RedisCodec<K, V> defaultCodec;
-    private boolean developmentMode;
+    private @Nullable ResourceOwningClients resourceOwningClients;
 
     public DefaultRedisClusterClientFactory(@Primary RedisCodec<K, V> codec) {
         this.defaultCodec = codec;
     }
 
     /**
-     * Records whether the application runs in {@link DevelopmentMode development mode}, as the factory is created,
-     * with the test of {@link DevelopmentMode#isEnabled(io.micronaut.core.value.PropertyResolver)}. The value of the
-     * property is injected rather than the environment, which would bind the factory, and the clients development
-     * mode keeps across a restart, to the context.
+     * Receives the clients of {@link DevelopmentActive development mode}, a bean that is present in development mode
+     * only and holds no state, so that the factory, and the clients development mode keeps across a restart, are not
+     * bound to the context.
      *
-     * @param developmentMode The value of {@value DevelopmentMode#PROPERTY}, if set
+     * @param resourceOwningClients The clients of development mode, null outside it
      */
     @Inject
-    void developmentMode(@Property(name = DevelopmentMode.PROPERTY) @Nullable String developmentMode) {
-        this.developmentMode = StringUtils.TRUE.equalsIgnoreCase(developmentMode);
+    void resourceOwningClients(@Nullable ResourceOwningClients resourceOwningClients) {
+        this.resourceOwningClients = resourceOwningClients;
     }
 
     /**
@@ -96,9 +93,9 @@ public class DefaultRedisClusterClientFactory<K, V> {
         if (mutators != null) {
             mutators.forEach(m -> m.mutate(builder, config));
         }
-        if (developmentMode) {
+        if (resourceOwningClients != null) {
             // kept across a restart: the client owns the resources built for it, and copies the URIs
-            return ResourceOwningClients.redisClusterClient(ResourceOwningClients.build(builder), uris);
+            return resourceOwningClients.redisClusterClient(resourceOwningClients.build(builder), uris);
         }
         return RedisClusterClient.create(builder.build(), uris);
     }

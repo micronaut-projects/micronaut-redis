@@ -19,7 +19,9 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.resource.ClientResources;
+import io.micronaut.context.env.DevelopmentActive;
 import io.micronaut.core.annotation.Internal;
+import jakarta.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +30,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The Redis clients the factories create in development mode on the {@link ClientResources} they build for them.
- * Outside development mode the factories build the resources on the calling thread and create plain Lettuce clients,
- * which leave the resources running, as they always did. Lettuce leaves the
+ * The Redis clients the factories create in development mode on the {@link ClientResources} they build for them. A bean
+ * of development mode only, whose presence tells the factories that it is on: it holds no state, so neither a factory
+ * that receives it nor the clients development mode keeps across a restart are bound to the context. Outside
+ * development mode the bean is absent, and the factories build the resources on the calling thread and create plain
+ * Lettuce clients, which leave the resources running, as they always did. Lettuce leaves the
  * resources it was given running when a client shuts down, as they may be shared; the factories build these for
  * the one client, so the client shuts them down with itself: their event executors and timer would otherwise keep
  * running after the client is gone. What the built resources share with resources they were mutated from, such as
@@ -44,10 +48,9 @@ import java.util.concurrent.TimeUnit;
  * @since 7.3.0
  */
 @Internal
+@Singleton
+@DevelopmentActive
 final class ResourceOwningClients {
-
-    private ResourceOwningClients() {
-    }
 
     /**
      * Creates a standalone client that owns the resources.
@@ -56,7 +59,7 @@ final class ResourceOwningClients {
      * @param uri The URI, copied
      * @return The client
      */
-    static RedisClient redisClient(ClientResources resources, RedisURI uri) {
+    RedisClient redisClient(ClientResources resources, RedisURI uri) {
         return new OwningRedisClient(resources, copy(uri));
     }
 
@@ -67,7 +70,7 @@ final class ResourceOwningClients {
      * @param uris The URIs, copied
      * @return The client
      */
-    static RedisClusterClient redisClusterClient(ClientResources resources, Iterable<RedisURI> uris) {
+    RedisClusterClient redisClusterClient(ClientResources resources, Iterable<RedisURI> uris) {
         List<RedisURI> copies = new ArrayList<>();
         for (RedisURI uri : uris) {
             copies.add(copy(uri));
@@ -87,7 +90,7 @@ final class ResourceOwningClients {
      * @param builder The builder
      * @return The resources
      */
-    static ClientResources build(ClientResources.Builder builder) {
+    ClientResources build(ClientResources.Builder builder) {
         ClassLoader library = ResourceOwningClients.class.getClassLoader();
         if (Thread.currentThread().getContextClassLoader() == library) {
             return builder.build();

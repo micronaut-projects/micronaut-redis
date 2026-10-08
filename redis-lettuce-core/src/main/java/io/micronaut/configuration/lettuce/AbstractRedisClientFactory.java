@@ -21,9 +21,7 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
-import io.micronaut.context.annotation.Property;
-import io.micronaut.context.env.DevelopmentMode;
-import io.micronaut.core.util.StringUtils;
+import io.micronaut.context.env.DevelopmentActive;
 import jakarta.inject.Inject;
 import org.jspecify.annotations.Nullable;
 
@@ -42,7 +40,7 @@ public abstract class AbstractRedisClientFactory<K, V> {
 
     protected final RedisCodec<K, V> defaultCodec;
 
-    private boolean developmentMode;
+    private @Nullable ResourceOwningClients resourceOwningClients;
 
     /**
      * @param defaultCodec The default codec
@@ -52,16 +50,15 @@ public abstract class AbstractRedisClientFactory<K, V> {
     }
 
     /**
-     * Records whether the application runs in {@link DevelopmentMode development mode}, as the factory is created,
-     * with the test of {@link DevelopmentMode#isEnabled(io.micronaut.core.value.PropertyResolver)}. The value of the
-     * property is injected rather than the environment, which would bind the factory, and the clients development
-     * mode keeps across a restart, to the context.
+     * Receives the clients of {@link DevelopmentActive development mode}, a bean that is present in development mode
+     * only and holds no state, so that the factory, and the clients development mode keeps across a restart, are not
+     * bound to the context.
      *
-     * @param developmentMode The value of {@value DevelopmentMode#PROPERTY}, if set
+     * @param resourceOwningClients The clients of development mode, null outside it
      */
     @Inject
-    void developmentMode(@Property(name = DevelopmentMode.PROPERTY) @Nullable String developmentMode) {
-        this.developmentMode = StringUtils.TRUE.equalsIgnoreCase(developmentMode);
+    void resourceOwningClients(@Nullable ResourceOwningClients resourceOwningClients) {
+        this.resourceOwningClients = resourceOwningClients;
     }
 
     /**
@@ -95,8 +92,8 @@ public abstract class AbstractRedisClientFactory<K, V> {
             return redisClient(config);
         }
         Optional<RedisURI> uri = config.getUri();
-        if (developmentMode) {
-            return ResourceOwningClients.redisClient(clientResources, uri.orElse(config));
+        if (resourceOwningClients != null) {
+            return resourceOwningClients.redisClient(clientResources, uri.orElse(config));
         }
         return uri.map(redisURI -> RedisClient.create(clientResources, redisURI))
             .orElseGet(() -> RedisClient.create(clientResources, config));
@@ -130,6 +127,6 @@ public abstract class AbstractRedisClientFactory<K, V> {
         if (mutators != null) {
             mutators.forEach(clientResourcesMutator -> clientResourcesMutator.mutate(clientResourcesBuilder, config));
         }
-        return developmentMode ? ResourceOwningClients.build(clientResourcesBuilder) : clientResourcesBuilder.build();
+        return resourceOwningClients != null ? resourceOwningClients.build(clientResourcesBuilder) : clientResourcesBuilder.build();
     }
 }

@@ -28,7 +28,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The Redis clients the factories create on the {@link ClientResources} they build for them. Lettuce leaves the
+ * The Redis clients the factories create in development mode on the {@link ClientResources} they build for them.
+ * Outside development mode the factories build the resources on the calling thread and create plain Lettuce clients,
+ * which leave the resources running, as they always did. Lettuce leaves the
  * resources it was given running when a client shuts down, as they may be shared; the factories build these for
  * the one client, so the client shuts them down with itself: their event executors and timer would otherwise keep
  * running after the client is gone. What the built resources share with resources they were mutated from, such as

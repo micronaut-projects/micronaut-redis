@@ -27,9 +27,13 @@ import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Retain;
+import io.micronaut.context.annotation.Property;
+import io.micronaut.context.env.DevelopmentMode;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.context.exceptions.ConfigurationException;
 import org.jspecify.annotations.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 import java.util.List;
@@ -48,9 +52,23 @@ import java.util.Optional;
 @Factory
 public class DefaultRedisClusterClientFactory<K, V> {
     private final RedisCodec<K, V> defaultCodec;
+    private boolean developmentMode;
 
     public DefaultRedisClusterClientFactory(@Primary RedisCodec<K, V> codec) {
         this.defaultCodec = codec;
+    }
+
+    /**
+     * Records whether the application runs in {@link DevelopmentMode development mode}, as the factory is created,
+     * with the test of {@link DevelopmentMode#isEnabled(io.micronaut.core.value.PropertyResolver)}. The value of the
+     * property is injected rather than the environment, which would bind the factory, and the clients development
+     * mode keeps across a restart, to the context.
+     *
+     * @param developmentMode The value of {@value DevelopmentMode#PROPERTY}, if set
+     */
+    @Inject
+    void developmentMode(@Property(name = DevelopmentMode.PROPERTY) @Nullable String developmentMode) {
+        this.developmentMode = StringUtils.TRUE.equalsIgnoreCase(developmentMode);
     }
 
     /**
@@ -78,7 +96,11 @@ public class DefaultRedisClusterClientFactory<K, V> {
         if (mutators != null) {
             mutators.forEach(m -> m.mutate(builder, config));
         }
-        return ResourceOwningClients.redisClusterClient(ResourceOwningClients.build(builder), uris);
+        if (developmentMode) {
+            // kept across a restart: the client owns the resources built for it, and copies the URIs
+            return ResourceOwningClients.redisClusterClient(ResourceOwningClients.build(builder), uris);
+        }
+        return RedisClusterClient.create(builder.build(), uris);
     }
 
     /**

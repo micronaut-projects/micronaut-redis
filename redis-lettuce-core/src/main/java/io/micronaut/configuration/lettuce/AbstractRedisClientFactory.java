@@ -21,8 +21,12 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.resource.ClientResources;
-
+import io.micronaut.context.annotation.Property;
+import io.micronaut.context.env.DevelopmentMode;
+import io.micronaut.core.util.StringUtils;
+import jakarta.inject.Inject;
 import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -38,11 +42,26 @@ public abstract class AbstractRedisClientFactory<K, V> {
 
     protected final RedisCodec<K, V> defaultCodec;
 
+    private boolean developmentMode;
+
     /**
      * @param defaultCodec The default codec
      */
     protected AbstractRedisClientFactory(RedisCodec<K, V> defaultCodec) {
         this.defaultCodec = defaultCodec;
+    }
+
+    /**
+     * Records whether the application runs in {@link DevelopmentMode development mode}, as the factory is created,
+     * with the test of {@link DevelopmentMode#isEnabled(io.micronaut.core.value.PropertyResolver)}. The value of the
+     * property is injected rather than the environment, which would bind the factory, and the clients development
+     * mode keeps across a restart, to the context.
+     *
+     * @param developmentMode The value of {@value DevelopmentMode#PROPERTY}, if set
+     */
+    @Inject
+    void developmentMode(@Property(name = DevelopmentMode.PROPERTY) @Nullable String developmentMode) {
+        this.developmentMode = StringUtils.TRUE.equalsIgnoreCase(developmentMode);
     }
 
     /**
@@ -59,8 +78,9 @@ public abstract class AbstractRedisClientFactory<K, V> {
 
     /**
      * Creates the {@link RedisClient} from the configuration, on {@link ClientResources} built for it from the given
-     * ones and the mutators. The client owns the resources it is built on, and shuts them down with itself, but for
-     * what they share with the given resources. It copies the URI it connects to rather than keep the configuration.
+     * ones and the mutators. In development mode, which keeps the client across a restart, the client owns the
+     * resources it is built on, and shuts them down with itself, but for what they share with the given resources,
+     * and it copies the URI it connects to rather than keep the configuration.
      *
      * @param config The configuration
      * @param optionalClientResources The ClientResources
@@ -75,7 +95,11 @@ public abstract class AbstractRedisClientFactory<K, V> {
             return redisClient(config);
         }
         Optional<RedisURI> uri = config.getUri();
-        return ResourceOwningClients.redisClient(clientResources, uri.orElse(config));
+        if (developmentMode) {
+            return ResourceOwningClients.redisClient(clientResources, uri.orElse(config));
+        }
+        return uri.map(redisURI -> RedisClient.create(clientResources, redisURI))
+            .orElseGet(() -> RedisClient.create(clientResources, config));
     }
 
     /**
@@ -106,6 +130,6 @@ public abstract class AbstractRedisClientFactory<K, V> {
         if (mutators != null) {
             mutators.forEach(clientResourcesMutator -> clientResourcesMutator.mutate(clientResourcesBuilder, config));
         }
-        return ResourceOwningClients.build(clientResourcesBuilder);
+        return developmentMode ? ResourceOwningClients.build(clientResourcesBuilder) : clientResourcesBuilder.build();
     }
 }

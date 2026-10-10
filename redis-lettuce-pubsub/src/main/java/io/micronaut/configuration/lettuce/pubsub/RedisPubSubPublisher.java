@@ -19,6 +19,7 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.micronaut.configuration.lettuce.AbstractRedisConfiguration;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
+import io.micronaut.configuration.lettuce.RedisModuleConnections;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.type.Argument;
@@ -34,7 +35,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Publishes messages to Redis Pub/Sub channels.
+ * Publishes messages to Redis Pub/Sub channels, on a connection that {@link RedisModuleConnections} holds, so that
+ * development mode can keep it across a restart.
  *
  * @author Graeme Rocher
  * @since 7.0
@@ -48,6 +50,7 @@ public class RedisPubSubPublisher implements AutoCloseable {
     private final BeanLocator beanLocator;
     private final RedisMessageBodyHandler messageBodyHandler;
     private final Map<String, Object> connections = new ConcurrentHashMap<>();
+    private final Map<String, Object> ownedConnections = new ConcurrentHashMap<>();
 
     /**
      * @param beanLocator        The bean locator
@@ -120,13 +123,7 @@ public class RedisPubSubPublisher implements AutoCloseable {
                                     Argument<?> argument,
                                     MediaType mediaType,
                                     Object body) {
-        Object connection = connections.computeIfAbsent(connectionName == null ? DEFAULT_CONNECTION : connectionName, ignored ->
-            RedisConnectionUtil.openBytesRedisConnection(
-                beanLocator,
-                Optional.ofNullable(connectionName),
-                "No Redis server configured for Pub/Sub publishing."
-            )
-        );
+        Object connection = connections.computeIfAbsent(connectionName == null ? DEFAULT_CONNECTION : connectionName, this::openConnection);
         byte[] channelBytes = channel.getBytes(StandardCharsets.UTF_8);
         byte[] bodyBytes = messageBodyHandler.serialize(argument, mediaType, body);
         if (connection instanceof StatefulRedisConnection redisConnection) {
@@ -142,10 +139,25 @@ public class RedisPubSubPublisher implements AutoCloseable {
         throw new IllegalStateException("Unsupported Redis connection type [" + connection.getClass().getName() + "]");
     }
 
+    private Object openConnection(String key) {
+        Optional<String> serverName = DEFAULT_CONNECTION.equals(key) ? Optional.empty() : Optional.of(key);
+        String errorMessage = "No Redis server configured for Pub/Sub publishing.";
+        Optional<RedisModuleConnections> moduleConnections = beanLocator.findBean(RedisModuleConnections.class);
+        if (moduleConnections.isPresent()) {
+            return moduleConnections.get().connection("publisher:" + key, beanLocator, serverName, errorMessage);
+        }
+        Object connection = RedisConnectionUtil.openBytesRedisConnection(beanLocator, serverName, errorMessage);
+        ownedConnections.put(key, connection);
+        return connection;
+    }
+
+    /**
+     * Closes the connections the publisher opened itself; the module connections close those they hold.
+     */
     @PreDestroy
     @Override
     public void close() {
-        connections.values().forEach(connection -> {
+        ownedConnections.values().forEach(connection -> {
             if (connection instanceof AutoCloseable autoCloseable) {
                 try {
                     autoCloseable.close();
@@ -154,6 +166,7 @@ public class RedisPubSubPublisher implements AutoCloseable {
                 }
             }
         });
+        ownedConnections.clear();
         connections.clear();
     }
 }

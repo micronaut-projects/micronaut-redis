@@ -26,9 +26,12 @@ import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Retain;
+import io.micronaut.context.env.DevelopmentActive;
 import io.micronaut.context.exceptions.ConfigurationException;
 import org.jspecify.annotations.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 import java.util.List;
@@ -47,9 +50,22 @@ import java.util.Optional;
 @Factory
 public class DefaultRedisClusterClientFactory<K, V> {
     private final RedisCodec<K, V> defaultCodec;
+    private @Nullable ResourceOwningClients resourceOwningClients;
 
     public DefaultRedisClusterClientFactory(@Primary RedisCodec<K, V> codec) {
         this.defaultCodec = codec;
+    }
+
+    /**
+     * Receives the clients of {@link DevelopmentActive development mode}, a bean that is present in development mode
+     * only and holds no state, so that the factory, and the clients development mode keeps across a restart, are not
+     * bound to the context.
+     *
+     * @param resourceOwningClients The clients of development mode, null outside it
+     */
+    @Inject
+    void resourceOwningClients(@Nullable ResourceOwningClients resourceOwningClients) {
+        this.resourceOwningClients = resourceOwningClients;
     }
 
     /**
@@ -61,6 +77,7 @@ public class DefaultRedisClusterClientFactory<K, V> {
      * @since 6.1.0
      */
     @Bean(preDestroy = "shutdown")
+    @Retain(invalidatedBy = RedisSetting.PREFIX)
     @Singleton
     @Primary
     public RedisClusterClient redisClient(@Primary AbstractRedisConfiguration config,
@@ -76,6 +93,10 @@ public class DefaultRedisClusterClientFactory<K, V> {
         if (mutators != null) {
             mutators.forEach(m -> m.mutate(builder, config));
         }
+        if (resourceOwningClients != null) {
+            // kept across a restart: the client owns the resources built for it, and copies the URIs
+            return resourceOwningClients.redisClusterClient(resourceOwningClients.build(builder), uris);
+        }
         return RedisClusterClient.create(builder.build(), uris);
     }
 
@@ -87,6 +108,7 @@ public class DefaultRedisClusterClientFactory<K, V> {
      * @since 6.5.0
      */
     @Bean(preDestroy = "close")
+    @Retain(invalidatedBy = RedisSetting.PREFIX)
     @Singleton
     @Primary
     public StatefulRedisClusterConnection<K, V> redisConnection(
@@ -117,6 +139,7 @@ public class DefaultRedisClusterClientFactory<K, V> {
      * @return connection
      */
     @Bean(preDestroy = "close")
+    @Retain(invalidatedBy = RedisSetting.PREFIX)
     @Singleton
     public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClusterClient redisClient) {
         return redisClient.connectPubSub(defaultCodec);

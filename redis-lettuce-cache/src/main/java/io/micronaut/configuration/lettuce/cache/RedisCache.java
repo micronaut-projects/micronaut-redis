@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.lettuce.cache;
 
-import io.lettuce.core.*;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.async.RedisKeyAsyncCommands;
 import io.lettuce.core.api.async.RedisStringAsyncCommands;
@@ -24,6 +23,7 @@ import io.lettuce.core.api.sync.RedisStringCommands;
 import io.micronaut.cache.AsyncCache;
 import io.micronaut.cache.SyncCache;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
+import io.micronaut.configuration.lettuce.RedisModuleConnections;
 import io.micronaut.configuration.lettuce.RedisSetting;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.EachBean;
@@ -55,6 +55,7 @@ import java.util.function.Supplier;
 public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], byte[]>> {
     private final RedisAsyncCache asyncCache;
     private final StatefulConnection<byte[], byte[]> connection;
+    private final boolean ownsConnection;
     private final RedisKeyCommands<byte[], byte[]> redisKeyCommands;
     private final RedisStringCommands<byte[], byte[]> redisStringCommands;
     private final RedisKeyAsyncCommands<byte[], byte[]> redisKeyAsyncCommands;
@@ -82,7 +83,14 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
                         .orElse(defaultRedisCacheConfiguration.getServer().orElse(null))
         );
 
-        this.connection = RedisConnectionUtil.openBytesRedisConnection(beanLocator, server, "No Redis server configured to allow caching");
+        String errorMessage = "No Redis server configured to allow caching";
+        // the module connections hold the connection, so that development mode can keep it across a restart, while
+        // the cache, built from the serializers of the application, is created again
+        Optional<RedisModuleConnections> moduleConnections = beanLocator.findBean(RedisModuleConnections.class);
+        this.ownsConnection = moduleConnections.isEmpty();
+        this.connection = moduleConnections
+                .map(connections -> connections.connection("cache:" + redisCacheConfiguration.getCacheName(), beanLocator, server, errorMessage))
+                .orElseGet(() -> RedisConnectionUtil.openBytesRedisConnection(beanLocator, server, errorMessage));
         this.asyncCache = new RedisAsyncCache();
 
         redisKeyCommands = getRedisKeyCommands(connection);
@@ -257,7 +265,9 @@ public class RedisCache extends AbstractRedisCache<StatefulConnection<byte[], by
     @PreDestroy
     @Override
     public void close() {
-        connection.close();
+        if (ownsConnection) {
+            connection.close();
+        }
     }
 
     /**

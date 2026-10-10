@@ -36,6 +36,7 @@ import io.lettuce.core.pubsub.RedisPubSubReactiveCommandsImpl;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
+import io.micronaut.configuration.lettuce.RedisModuleConnections;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Replaces;
@@ -80,6 +81,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -132,6 +134,9 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
     private final byte[] activeSessionsSet;
     private final RedisHttpSessionConfiguration.WriteMode writeMode;
     private final StatefulConnection<byte[], byte[]> connection;
+    private final boolean ownsConnection;
+    private final StatefulRedisPubSubConnection<String, String> pubSubConnection;
+    private final ScheduledFuture<?> expiredSessionCheck;
     private final BaseRedisAsyncCommands<byte[], byte[]> baseRedisAsyncCommands;
     private final RedisServerCommands<byte[], byte[]> redisServerCommands;
     private final RedisSortedSetAsyncCommands<byte[], byte[]> redisSortedSetAsyncCommands;
@@ -169,14 +174,20 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
         this.eventPublisher = eventPublisher;
         this.sessionConfiguration = sessionConfiguration;
         this.charset = sessionConfiguration.getCharset();
-        StatefulRedisPubSubConnection<String, String> pubSubConnection = findRedisPubSubConnection(sessionConfiguration, beanLocator);
+        this.pubSubConnection = findRedisPubSubConnection(sessionConfiguration, beanLocator);
 
         this.expiryPrefix = sessionConfiguration.getNamespace() + "expiry:";
         this.sessionCreatedTopic = sessionConfiguration.getSessionCreatedTopic().getBytes(charset);
         this.activeSessionsSet = sessionConfiguration.getActiveSessionsKey().getBytes(charset);
         pubSubConnection.addListener(this);
 
-        this.connection = RedisConnectionUtil.openBytesRedisConnection(beanLocator, sessionConfiguration.getServerName(), "No Redis server configured to store sessions");
+        String errorMessage = "No Redis server configured to store sessions";
+        // the module connections hold the connection, so that development mode can keep it across a restart
+        Optional<RedisModuleConnections> moduleConnections = beanLocator.findBean(RedisModuleConnections.class);
+        this.ownsConnection = moduleConnections.isEmpty();
+        this.connection = moduleConnections
+                .map(connections -> connections.connection("sessions", beanLocator, sessionConfiguration.getServerName(), errorMessage))
+                .orElseGet(() -> RedisConnectionUtil.openBytesRedisConnection(beanLocator, sessionConfiguration.getServerName(), errorMessage));
         if (connection instanceof StatefulRedisConnection) {
             RedisCommands<byte[], byte[]> sync = ((StatefulRedisConnection<byte[], byte[]>) connection).sync();
             redisServerCommands = sync;
@@ -230,7 +241,7 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
         if (scheduledExecutorService instanceof ScheduledExecutorService) {
 
             long checkDelayMillis = sessionConfiguration.getExpiredSessionCheck().toMillis();
-            ((ScheduledExecutorService) scheduledExecutorService).scheduleAtFixedRate(
+            this.expiredSessionCheck = ((ScheduledExecutorService) scheduledExecutorService).scheduleAtFixedRate(
                     () -> {
                         long oneMinuteFromNow = Instant.now().plus(1, ChronoUnit.MINUTES).toEpochMilli();
                         long oneMinuteAgo = Instant.now().minus(1, ChronoUnit.MINUTES).toEpochMilli();
@@ -487,7 +498,12 @@ public class RedisSessionStore extends RedisPubSubAdapter<String, String> implem
     @PreDestroy
     @Override
     public void close() {
-        connection.close();
+        expiredSessionCheck.cancel(false);
+        // the Pub/Sub connection is a bean that can outlive the store: it no longer notifies it
+        pubSubConnection.removeListener(this);
+        if (ownsConnection) {
+            connection.close();
+        }
     }
 
     /**

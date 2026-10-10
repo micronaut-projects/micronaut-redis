@@ -140,16 +140,16 @@ final class DevelopmentRedisReloader implements BeanCreatedEventListener<RedisMo
         if (beanContext instanceof WatchableBeanContext watchable) {
             // by type and by stereotype, so that no other definition is loaded
             for (Class<?> resolved : cacheResolvedTypes) {
-                watchable.watchDefinitions(resolved, null, new DefinitionsWatcher<>(false));
+                watchable.definitions(resolved).watch(new DefinitionsWatcher<>(false));
             }
             if (processorType != null) {
-                watchable.watchDefinitions(Object.class, Qualifiers.byStereotype(REDIS_LISTENER), new DefinitionsWatcher<>(true));
+                watchable.definitions().qualifier(Qualifiers.byStereotype(REDIS_LISTENER)).watch(new DefinitionsWatcher<>(true));
                 if (exceptionHandlerType != null) {
-                    watchable.watchDefinitions(exceptionHandlerType, null, new DefinitionsWatcher<>(true));
+                    watchable.definitions(exceptionHandlerType).watch(new DefinitionsWatcher<>(true));
                 }
             }
             if (cacheType != null || processorType != null) {
-                watchable.watchClassChanges(new ClassWatcher());
+                watchable.classChanges().watch(new ClassWatcher());
             }
         }
     }

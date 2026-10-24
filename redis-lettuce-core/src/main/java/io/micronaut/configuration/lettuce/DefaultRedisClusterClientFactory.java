@@ -16,6 +16,7 @@
 package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection;
@@ -76,7 +77,10 @@ public class DefaultRedisClusterClientFactory<K, V> {
         if (mutators != null) {
             mutators.forEach(m -> m.mutate(builder, config));
         }
-        return RedisClusterClient.create(builder.build(), uris);
+        RedisClusterClient client = RedisClusterClient.create(builder.build(), uris);
+        config.getProtocolVersion().ifPresent(protocolVersion ->
+            client.setOptions(ClusterClientOptions.builder().protocolVersion(protocolVersion).build()));
+        return client;
     }
 
     /**

@@ -17,6 +17,7 @@ package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.metrics.MicrometerOptions;
 import io.lettuce.core.ReadFrom;
+import io.lettuce.core.protocol.ProtocolVersion;
 import io.lettuce.core.RedisURI;
 import io.micronaut.context.env.Environment;
 import org.jspecify.annotations.NonNull;
@@ -43,6 +44,7 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
     private Integer computationThreadPoolSize;
     private String name;
     private ReadFrom readFrom;
+    private ProtocolVersion protocolVersion;
 
     /**
      * Constructor.
@@ -201,6 +203,25 @@ public abstract class AbstractRedisConfiguration extends RedisURI implements Nam
      */
     public void setReadFrom(@NonNull String readFrom) {
         this.readFrom = ReadFrom.valueOf(readFrom);
+    }
+
+    /**
+     * @return The Redis protocol version the client uses, if set. Lettuce negotiates RESP3 with {@code HELLO} by default.
+     * @since 7.3.0
+     */
+    public Optional<ProtocolVersion> getProtocolVersion() {
+        return Optional.ofNullable(protocolVersion);
+    }
+
+    /**
+     * Sets the Redis protocol version the client uses: {@code RESP2} or {@code RESP3}. Set {@code RESP2} for servers
+     * that do not support the {@code HELLO} command, for example the Oracle AI Database Redis server.
+     *
+     * @param protocolVersion The protocol version, or {@code null} for the Lettuce default
+     * @since 7.3.0
+     */
+    public void setProtocolVersion(@Nullable ProtocolVersion protocolVersion) {
+        this.protocolVersion = protocolVersion;
     }
 
     /**

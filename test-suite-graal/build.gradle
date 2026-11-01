@@ -3,7 +3,7 @@ plugins {
 }
 
 micronaut {
-    version "5.2.2"
+    version "5.2.3"
     testRuntime "junit5"
     enableNativeImage false
     processing {

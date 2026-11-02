@@ -2,6 +2,7 @@ introduction: Introduction
 releaseHistory: Release History
 setup: Setting up the Redis Lettuce Driver
 config: Configuring the Redis Lettuce Driver
+oracleRedisServer: Oracle AI Database Redis Server
 testing: Redis and Testing
 pubsub: Redis Pub/Sub Messaging
 cache: Redis for Caching

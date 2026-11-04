@@ -58,7 +58,7 @@ class RedisClientFactorySpec extends RedisSpec {
                                                                         'redis.servers.bar.uri': RedisContainerUtils.getRedisPort("redis://localhost")])
         when:
         RedisClient clientFoo = applicationContext.getBean(RedisClient, Qualifiers.byName("foo"))
-        RedisURI innerRedisURI = clientFoo.@redisURI
+        RedisURI innerRedisURI = redisUriOf(clientFoo)
         RedisCommands<?,?> commandFoo = clientFoo.connect().sync()
 
         then:
@@ -70,7 +70,7 @@ class RedisClientFactorySpec extends RedisSpec {
 
         when:
         RedisClient clientBar = applicationContext.getBean(RedisClient, Qualifiers.byName("bar"))
-        RedisURI innerBarRedisURI = clientBar.@redisURI
+        RedisURI innerBarRedisURI = redisUriOf(clientBar)
         RedisCommands<?,?> commandBar = clientBar.connect().sync()
         then:
         commandBar.info().contains("tcp_port:$RedisContainerUtils.REDIS_PORT")
@@ -148,10 +148,27 @@ class RedisClientFactorySpec extends RedisSpec {
         ])
         when:
         RedisClient client = applicationContext.getBean(RedisClient)
-        RedisURI innerRedisURI = client.@redisURI
+        RedisURI innerRedisURI = redisUriOf(client)
 
         then:
         innerRedisURI.clientName == "test-name"
+
+        cleanup:
+        applicationContext.stop()
+    }
+
+    void "the client keeps the library name and version of the URI"() {
+        given:
+        ApplicationContext applicationContext = ApplicationContext.run([
+                'redis.uri': RedisContainerUtils.getRedisPort("redis://localhost") + "?libraryName=test-lib&libraryVersion=9.9.9"
+        ])
+
+        when:
+        RedisURI innerRedisURI = redisUriOf(applicationContext.getBean(RedisClient))
+
+        then:
+        innerRedisURI.libraryName == "test-lib"
+        innerRedisURI.libraryVersion == "9.9.9"
 
         cleanup:
         applicationContext.stop()
@@ -237,5 +254,15 @@ class RedisClientFactorySpec extends RedisSpec {
 
         cleanup:
         applicationContext.stop()
+    }
+
+    /**
+     * The URI a client connects to, read from the field of {@link io.lettuce.core.RedisClient}: the factories create
+     * a subclass of it, which owns its resources.
+     */
+    private static io.lettuce.core.RedisURI redisUriOf(io.lettuce.core.RedisClient client) {
+        def field = io.lettuce.core.RedisClient.getDeclaredField('redisURI')
+        field.accessible = true
+        return (io.lettuce.core.RedisURI) field.get(client)
     }
 }

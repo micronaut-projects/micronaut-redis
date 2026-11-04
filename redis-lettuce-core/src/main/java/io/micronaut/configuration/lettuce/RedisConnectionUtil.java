@@ -121,36 +121,44 @@ public class RedisConnectionUtil {
      * @throws ConfigurationException If the connection cannot be found
      */
     public static StatefulConnection<byte[], byte[]> openBytesRedisConnection(BeanLocator beanLocator, Optional<String> serverName, String errorMessage) {
+        return openBytesRedisConnection(beanLocator, findClient(beanLocator, serverName, errorMessage));
+    }
+
+    /**
+     * Opens a new bytes redis connection on the given client, with the read preference and the replicas of the
+     * default configuration.
+     *
+     * @param beanLocator The bean locator to find the default configuration with
+     * @param client The client, as {@link #findClient(BeanLocator, Optional, String)} finds it
+     * @return The connection
+     * @since 7.3.0
+     */
+    static StatefulConnection<byte[], byte[]> openBytesRedisConnection(BeanLocator beanLocator, AbstractRedisClient client) {
         Optional<DefaultRedisConfiguration> config = beanLocator.findBean(DefaultRedisConfiguration.class);
-        Optional<RedisClusterClient> redisClusterClient = findRedisClusterClient(beanLocator, serverName);
-        if (redisClusterClient.isPresent()) {
-            StatefulRedisClusterConnection<byte[], byte[]> conn = redisClusterClient.get().connect(ByteArrayCodec.INSTANCE);
+        if (client instanceof RedisClusterClient redisClusterClient) {
+            StatefulRedisClusterConnection<byte[], byte[]> conn = redisClusterClient.connect(ByteArrayCodec.INSTANCE);
             if (config.isPresent() && config.get().getReadFrom().isPresent()) {
                 conn.setReadFrom(config.get().getReadFrom().get());
             }
             return conn;
         }
-        Optional<RedisClient> redisClient = findRedisClient(beanLocator, serverName);
-        if (redisClient.isPresent()) {
-            if (config.isPresent() && config.get().getUri().isPresent() && !config.get().getReplicaUris().isEmpty()) {
-                List<RedisURI> uris = new ArrayList<>(config.get().getReplicaUris());
-                uris.add(config.get().getUri().get());
+        RedisClient redisClient = (RedisClient) client;
+        if (config.isPresent() && config.get().getUri().isPresent() && !config.get().getReplicaUris().isEmpty()) {
+            List<RedisURI> uris = new ArrayList<>(config.get().getReplicaUris());
+            uris.add(config.get().getUri().get());
 
-                StatefulRedisMasterReplicaConnection<byte[], byte[]> connection = MasterReplica.connect(
-                    redisClient.get(),
-                    ByteArrayCodec.INSTANCE,
-                    uris
-                );
-                if (config.get().getReadFrom().isPresent()) {
-                    connection.setReadFrom(config.get().getReadFrom().get());
-                }
-
-                return connection;
-            } else {
-                return redisClient.get().connect(ByteArrayCodec.INSTANCE);
+            StatefulRedisMasterReplicaConnection<byte[], byte[]> connection = MasterReplica.connect(
+                redisClient,
+                ByteArrayCodec.INSTANCE,
+                uris
+            );
+            if (config.get().getReadFrom().isPresent()) {
+                connection.setReadFrom(config.get().getReadFrom().get());
             }
+
+            return connection;
         }
-        throw new ConfigurationException(errorMessage);
+        return redisClient.connect(ByteArrayCodec.INSTANCE);
     }
 
     /**
@@ -163,15 +171,21 @@ public class RedisConnectionUtil {
      * @throws ConfigurationException If the connection cannot be found
      */
     public static StatefulRedisPubSubConnection<byte[], byte[]> openBytesRedisPubSubConnection(BeanLocator beanLocator, Optional<String> serverName, String errorMessage) {
-        Optional<RedisClusterClient> redisClusterClient = findRedisClusterClient(beanLocator, serverName);
-        if (redisClusterClient.isPresent()) {
-            return redisClusterClient.get().connectPubSub(ByteArrayCodec.INSTANCE);
+        return openBytesRedisPubSubConnection(findClient(beanLocator, serverName, errorMessage));
+    }
+
+    /**
+     * Opens a new bytes pub/sub redis connection on the given client.
+     *
+     * @param client The client, as {@link #findClient(BeanLocator, Optional, String)} finds it
+     * @return The pub/sub connection
+     * @since 7.3.0
+     */
+    static StatefulRedisPubSubConnection<byte[], byte[]> openBytesRedisPubSubConnection(AbstractRedisClient client) {
+        if (client instanceof RedisClusterClient redisClusterClient) {
+            return redisClusterClient.connectPubSub(ByteArrayCodec.INSTANCE);
         }
-        Optional<RedisClient> redisClient = findRedisClient(beanLocator, serverName);
-        if (redisClient.isPresent()) {
-            return redisClient.get().connectPubSub(ByteArrayCodec.INSTANCE);
-        }
-        throw new ConfigurationException(errorMessage);
+        return ((RedisClient) client).connectPubSub(ByteArrayCodec.INSTANCE);
     }
 
     private static Optional<RedisClusterClient> findRedisClusterClient(BeanLocator beanLocator, Optional<String> serverName) {

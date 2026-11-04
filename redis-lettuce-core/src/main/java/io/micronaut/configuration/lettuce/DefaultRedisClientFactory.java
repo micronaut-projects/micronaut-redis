@@ -27,6 +27,7 @@ import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Retain;
 
 import org.jspecify.annotations.Nullable;
 import jakarta.inject.Singleton;
@@ -53,6 +54,7 @@ public class DefaultRedisClientFactory<K, V> extends AbstractRedisClientFactory<
     }
 
     @Bean(preDestroy = "shutdown")
+    @Retain(invalidatedBy = RedisSetting.PREFIX)
     @Singleton
     @Primary
     @Override
@@ -69,6 +71,7 @@ public class DefaultRedisClientFactory<K, V> extends AbstractRedisClientFactory<
      * @since 6.5.0
      */
     @Bean(preDestroy = "close")
+    @Retain(invalidatedBy = RedisSetting.PREFIX)
     @Singleton
     @Primary
     public StatefulRedisConnection<K, V> redisConnection(@Primary RedisClient redisClient, AbstractRedisConfiguration config) {
@@ -110,6 +113,7 @@ public class DefaultRedisClientFactory<K, V> extends AbstractRedisClientFactory<
      * @return The {@link StatefulRedisPubSubConnection}
      */
     @Bean(preDestroy = "close")
+    @Retain(invalidatedBy = RedisSetting.PREFIX)
     @Singleton
     public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClient redisClient) {
         return super.redisPubSubConnection(redisClient, defaultCodec);

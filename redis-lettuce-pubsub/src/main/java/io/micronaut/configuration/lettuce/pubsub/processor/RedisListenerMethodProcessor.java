@@ -17,6 +17,7 @@ package io.micronaut.configuration.lettuce.pubsub.processor;
 
 import io.micronaut.configuration.lettuce.AbstractRedisConfiguration;
 import io.micronaut.configuration.lettuce.pubsub.RedisListenerMessage;
+import io.micronaut.configuration.lettuce.pubsub.RedisMessage;
 import io.micronaut.configuration.lettuce.pubsub.RedisMessageBodyHandler;
 import io.micronaut.configuration.lettuce.pubsub.RedisPubSubListenerRegistry;
 import io.micronaut.configuration.lettuce.pubsub.annotation.MessageChannel;
@@ -38,15 +39,21 @@ import io.micronaut.inject.ExecutableMethod;
 import io.micronaut.inject.qualifiers.Qualifiers;
 import io.micronaut.http.MediaType;
 import io.micronaut.scheduling.TaskExecutors;
+import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 /**
- * Registers Redis Pub/Sub listener methods.
+ * Registers Redis Pub/Sub listener methods. As it is destroyed it removes what it registered from the listener
+ * registry, which can outlive it, so that a processor created again, such as in development mode when a listener
+ * changes, registers the methods afresh rather than alongside the ones it replaces.
  *
  * @author Graeme Rocher
  * @since 7.0
@@ -59,6 +66,7 @@ public class RedisListenerMethodProcessor implements ExecutableMethodProcessor<M
     private final RedisBinderRegistry binderRegistry;
     private final RedisPubSubListenerRegistry listenerRegistry;
     private final RedisMessageBodyHandler messageBodyHandler;
+    private final List<Consumer<RedisMessage>> registered = new CopyOnWriteArrayList<>();
 
     /**
      * @param beanContext      The bean context
@@ -95,7 +103,7 @@ public class RedisListenerMethodProcessor implements ExecutableMethodProcessor<M
         MediaType mediaType = messageBodyHandler.resolveIncomingMediaType(method.getAnnotationMetadata(), beanDefinition.getAnnotationMetadata());
         RedisListenerExceptionHandler exceptionHandler = resolveExceptionHandler(messageChannel, method);
 
-        listenerRegistry.subscribe(connectionName, subscriptions, executor, message -> {
+        Consumer<RedisMessage> consumer = message -> {
             try {
                 BoundExecutable<B, ?> boundExecutable = executableBinder.bind(
                     method,
@@ -112,7 +120,22 @@ public class RedisListenerMethodProcessor implements ExecutableMethodProcessor<M
                     resolveChannelName(messageChannel)
                 ));
             }
-        });
+        };
+        registered.add(consumer);
+        listenerRegistry.subscribe(connectionName, subscriptions, executor, consumer);
+    }
+
+    /**
+     * Removes the listener methods this processor registered from the listener registry.
+     *
+     * @since 7.3.0
+     */
+    @PreDestroy
+    void unregister() {
+        for (Consumer<RedisMessage> consumer : registered) {
+            listenerRegistry.unsubscribe(consumer);
+        }
+        registered.clear();
     }
 
     private ExecutorService resolveExecutor(AnnotationValue<RedisListener> listener, ExecutableMethod<?, ?> method) {

@@ -158,6 +158,12 @@ abstract class RedisConfigurationWithUriSettings extends AbstractRedisConfigurat
 
         private RedisURI apply(RedisURI redisURI, String clientName) {
             RedisURI.Builder builder = RedisURI.builder(redisURI);
+            for (RedisURI sentinel : redisURI.getSentinels()) {
+                builder.withSentinel(sentinel);
+            }
+            if (redisURI.getSentinelMasterId() != null) {
+                builder.withSentinelMasterId(redisURI.getSentinelMasterId());
+            }
             if (credentialsProvider != null) {
                 builder.withAuthentication(credentialsProvider);
             }

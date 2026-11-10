@@ -50,9 +50,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Runs an application with a Redis Pub/Sub listener, a listener of its own on the Pub/Sub connection bean of a named
  * server, and a Redis cache through the development runtime, against a Redis server, and restarts it. Development mode
- * keeps the clients, their resources and their connections across the restart; the listeners of the stopped
- * generation are removed from the connections it kept, so that the next one receives each message once, and nothing of
- * the stopped generation stays reachable. A change under {@code redis} releases what was kept.
+ * keeps the clients, their resources and their connections across the restart, but not the Pub/Sub connection beans,
+ * which close with the listeners the stopped generation added to them; the module's own listeners are removed from the
+ * connection it kept, so that the next generation receives each message once, and nothing of the stopped generation
+ * stays reachable. A change under {@code redis} releases what was kept.
  */
 class RedisReloadTest {
 
@@ -211,7 +212,7 @@ class RedisReloadTest {
             assertReloadersPresent(second);
 
             // the clients, their resources and their connections are those of the first generation
-            for (Object retained : List.of(client, connection, namedClient, namedConnection, namedPubSubConnection, moduleConnections)) {
+            for (Object retained : List.of(client, connection, namedClient, namedConnection, moduleConnections)) {
                 ReloadTck.assertRetained(harness, retained);
             }
             assertSame(client, second.getBean(RedisClient.class));
@@ -219,7 +220,10 @@ class RedisReloadTest {
             assertSame(connection, second.getBean(StatefulRedisConnection.class));
             assertSame(namedClient, second.getBean(RedisClient.class, Qualifiers.byName("other")));
             assertSame(namedConnection, second.getBean(StatefulRedisConnection.class, Qualifiers.byName("other")));
-            assertSame(namedPubSubConnection, second.getBean(StatefulRedisPubSubConnection.class, Qualifiers.byName("other")));
+            // the Pub/Sub connection bean closed with the listener the first generation added to it
+            assertNotSame(namedPubSubConnection, second.getBean(StatefulRedisPubSubConnection.class, Qualifiers.byName("other")));
+            assertFalse(namedPubSubConnection.isOpen(), "the Pub/Sub connection of the stopped generation is closed");
+            namedPubSubConnection = null;
             assertTrue(connection.isOpen());
 
             // the cache is created again, from the serializers of the new generation, on the same connection

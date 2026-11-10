@@ -113,7 +113,6 @@ public class DefaultRedisClientFactory<K, V> extends AbstractRedisClientFactory<
      * @return The {@link StatefulRedisPubSubConnection}
      */
     @Bean(preDestroy = "close")
-    @Retain(invalidatedBy = RedisSetting.PREFIX)
     @Singleton
     public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClient redisClient) {
         return super.redisPubSubConnection(redisClient, defaultCodec);

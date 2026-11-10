@@ -139,7 +139,6 @@ public class DefaultRedisClusterClientFactory<K, V> {
      * @return connection
      */
     @Bean(preDestroy = "close")
-    @Retain(invalidatedBy = RedisSetting.PREFIX)
     @Singleton
     public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(@Primary RedisClusterClient redisClient) {
         return redisClient.connectPubSub(defaultCodec);

@@ -15,18 +15,14 @@
  */
 package io.micronaut.configuration.lettuce;
 
-import io.lettuce.core.pubsub.PubSubEndpoint;
-import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.micronaut.context.BeanContext;
 import io.micronaut.context.BeanRegistration;
 import io.micronaut.context.Qualifier;
 import io.micronaut.context.WatchableBeanContext;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.env.DevelopmentActive;
-import io.micronaut.context.event.ApplicationEventListener;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
-import io.micronaut.context.event.ShutdownEvent;
 import io.micronaut.context.reload.ClassChange;
 import io.micronaut.context.reload.ClassChangeEvent;
 import io.micronaut.context.reload.ReloadStrategy;
@@ -46,13 +42,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -62,15 +54,11 @@ import java.util.stream.Stream;
  * types are resolved by name, and followed only when their module is present.
  *
  * <p><b>Across a restart.</b> Development mode keeps the clients, with their resources, and their connections across a
- * restart of the application, until a change under {@code redis} releases them. The application adds listeners to a
- * {@link StatefulRedisPubSubConnection} bean and subscribes channels on it, which the connection would keep: the next
- * generation of the application would receive each message twice, once in the stopped one, whose classes the listeners
- * would keep reachable. As the context stops, this bean removes from the Pub/Sub connection beans the listeners that are
- * not Lettuce's own, and unsubscribes their channels, patterns and shard channels; the next generation adds its own
- * listeners and subscribes again, on the same connection. Lettuce offers no way to list the listeners of a connection,
- * so they are read from its endpoint. As the next generation adopts the {@link RedisModuleConnections} it kept, this
- * bean drops the connections that were closed with a client that was not kept, so that nothing of that client stays
- * reachable.</p>
+ * restart of the application, until a change under {@code redis} releases them. As the next generation adopts the
+ * {@link RedisModuleConnections} it kept, this bean drops the connections that were closed with a client that was not
+ * kept, so that nothing of that client stays reachable. The Pub/Sub connection beans are not kept: the application adds
+ * listeners to them, which Lettuce offers no way to list, so they are closed with the generation that added them,
+ * together with its listeners and subscriptions.</p>
  *
  * <p><b>In place.</b></p>
  * <ul>
@@ -100,7 +88,7 @@ import java.util.stream.Stream;
 @Internal
 @Context
 @DevelopmentActive
-final class DevelopmentRedisReloader implements BeanCreatedEventListener<RedisModuleConnections>, ApplicationEventListener<ShutdownEvent> {
+final class DevelopmentRedisReloader implements BeanCreatedEventListener<RedisModuleConnections> {
 
     private static final Logger LOG = LoggerFactory.getLogger(DevelopmentRedisReloader.class);
 
@@ -167,24 +155,6 @@ final class DevelopmentRedisReloader implements BeanCreatedEventListener<RedisMo
         RedisModuleConnections connections = event.getBean();
         connections.releaseClosed();
         return connections;
-    }
-
-    /**
-     * Removes the listeners and the subscriptions of the stopping application from the Pub/Sub connection beans.
-     *
-     * @param event The event
-     */
-    @Override
-    public void onApplicationEvent(ShutdownEvent event) {
-        Map<Object, Boolean> detached = new IdentityHashMap<>();
-        @SuppressWarnings({"rawtypes", "unchecked"})
-        Collection<BeanRegistration<StatefulRedisPubSubConnection>> registrations = (Collection) beanContext.getActiveBeanRegistrations(StatefulRedisPubSubConnection.class);
-        for (BeanRegistration<StatefulRedisPubSubConnection> registration : registrations) {
-            StatefulRedisPubSubConnection<?, ?> connection = registration.bean();
-            if (connection != null && detached.put(connection, Boolean.TRUE) == null) {
-                detach(connection);
-            }
-        }
     }
 
     private void onClassChange(ClassChangeEvent change) {
@@ -355,93 +325,6 @@ final class DevelopmentRedisReloader implements BeanCreatedEventListener<RedisMo
             changed.add(definition.getBeanType().getName());
         }
         return changed;
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void detach(StatefulRedisPubSubConnection connection) {
-        for (PubSubEndpoint<?, ?> endpoint : endpoints(connection)) {
-            removeApplicationListeners(endpoint);
-            if (!connection.isOpen()) {
-                continue;
-            }
-            try {
-                // not awaited: the connection sends them ahead of what the next generation subscribes
-                if (!endpoint.getChannels().isEmpty()) {
-                    connection.async().unsubscribe(endpoint.getChannels().toArray());
-                }
-                if (!endpoint.getPatterns().isEmpty()) {
-                    connection.async().punsubscribe(endpoint.getPatterns().toArray());
-                }
-                if (!endpoint.getShardChannels().isEmpty()) {
-                    connection.async().sunsubscribe(endpoint.getShardChannels().toArray());
-                }
-            } catch (RuntimeException e) {
-                LOG.debug("Failed to unsubscribe the Redis Pub/Sub connection {} of a stopping application", connection, e);
-            }
-        }
-    }
-
-    /**
-     * The endpoints of a connection, read from its fields: a cluster connection keeps its own besides the one of its
-     * super class.
-     */
-    private static List<PubSubEndpoint<?, ?>> endpoints(Object connection) {
-        List<PubSubEndpoint<?, ?>> endpoints = new ArrayList<>();
-        for (Object value : fieldValues(connection, Set.of("endpoint"))) {
-            if (value instanceof PubSubEndpoint<?, ?> endpoint && !containsSame(endpoints, endpoint)) {
-                endpoints.add(endpoint);
-            }
-        }
-        if (endpoints.isEmpty()) {
-            LOG.debug("Cannot read the endpoint of the Redis Pub/Sub connection {}: the listeners of the stopping application stay on it", connection);
-        }
-        return endpoints;
-    }
-
-    private static boolean containsSame(List<?> list, Object value) {
-        for (Object element : list) {
-            if (element == value) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Removes the listeners that are not Lettuce's own from the listener lists of an endpoint: those of a connection,
-     * and those of a cluster connection.
-     */
-    private static void removeApplicationListeners(PubSubEndpoint<?, ?> endpoint) {
-        for (Object value : fieldValues(endpoint, Set.of("listeners", "clusterListeners"))) {
-            if (value instanceof List<?> endpointListeners) {
-                int before = endpointListeners.size();
-                endpointListeners.removeIf(listener -> listener != null && !listener.getClass().getName().startsWith("io.lettuce."));
-                if (before != endpointListeners.size()) {
-                    LOG.debug("Removed {} listener(s) of the stopping application from the Redis Pub/Sub endpoint {}", before - endpointListeners.size(), endpoint);
-                }
-            }
-        }
-    }
-
-    private static List<Object> fieldValues(Object target, Set<String> names) {
-        List<Object> values = new ArrayList<>();
-        for (Class<?> type = target.getClass(); type != null && type != Object.class; type = type.getSuperclass()) {
-            for (Field field : type.getDeclaredFields()) {
-                if (!names.contains(field.getName())) {
-                    continue;
-                }
-                try {
-                    field.setAccessible(true);
-                    Object value = field.get(target);
-                    if (value != null) {
-                        values.add(value);
-                    }
-                } catch (RuntimeException | IllegalAccessException e) {
-                    LOG.debug("Cannot read the field {} of {}", field, target, e);
-                }
-            }
-        }
-        return values;
     }
 
     /**

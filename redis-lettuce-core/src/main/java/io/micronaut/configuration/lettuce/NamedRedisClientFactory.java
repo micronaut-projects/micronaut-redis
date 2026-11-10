@@ -177,9 +177,9 @@ public class NamedRedisClientFactory<K, V> extends AbstractRedisClientFactory<K,
 
     /**
      * Creates the {@link StatefulRedisPubSubConnection} from the {@link RedisClient}, with the codec of the server's
-     * name, or the default one. Development mode keeps it across a restart, until a change under {@code redis} releases
-     * it, when neither the codec nor anything else it holds is of the application; the listeners and subscriptions of
-     * the stopped application are removed from it as it stops.
+     * name, or the default one. Development mode does not keep it across a restart: Lettuce offers no way to list the
+     * listeners of a connection, so the listeners the application added could not be removed from a kept one. Closing
+     * it as the generation stops removes them, with its subscriptions.
      *
      * @param config The {@link NamedRedisServersConfiguration}
      * @param dependencies Resolves the client and the codec of the server's name, as dependencies of the connection
@@ -188,7 +188,6 @@ public class NamedRedisClientFactory<K, V> extends AbstractRedisClientFactory<K,
      */
     @Bean(preDestroy = "close")
     @EachBean(NamedRedisServersConfiguration.class)
-    @Retain(invalidatedBy = RedisSetting.PREFIX)
     public StatefulRedisPubSubConnection<K, V> redisPubSubConnection(NamedRedisServersConfiguration config, BeanDependencyResolver dependencies) {
         return super.redisPubSubConnection(dependencies.getBean(RedisClient.class, Qualifiers.byName(config.getName())), codec(dependencies, config));
     }

@@ -93,7 +93,8 @@ public abstract class AbstractRedisClientFactory<K, V> {
         }
         Optional<RedisURI> uri = config.getUri();
         if (resourceOwningClients != null) {
-            return resourceOwningClients.redisClient(clientResources, uri.orElse(config));
+            // the replicas a master/replica connection of the client connects to are checked with it
+            return resourceOwningClients.redisClient(clientResources, uri.orElse(config), config.getReplicaUris());
         }
         return uri.map(redisURI -> RedisClient.create(clientResources, redisURI))
             .orElseGet(() -> RedisClient.create(clientResources, config));

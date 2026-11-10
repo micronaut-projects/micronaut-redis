@@ -89,7 +89,23 @@ final class ResourceOwningClients implements BeanRetentionPolicy {
      * @return The client
      */
     RedisClient redisClient(ClientResources resources, RedisURI uri) {
-        return new OwningRedisClient(resources, copy(uri), applicationCredentials(List.of(uri)));
+        return redisClient(resources, uri, List.of());
+    }
+
+    /**
+     * Creates a standalone client that owns the resources.
+     *
+     * @param resources The resources built for the client
+     * @param uri The URI, copied
+     * @param replicas The URIs of the replicas the connections of the client may connect to, whose credentials count
+     * as the client's
+     * @return The client
+     */
+    RedisClient redisClient(ClientResources resources, RedisURI uri, List<RedisURI> replicas) {
+        List<RedisURI> uris = new ArrayList<>();
+        uris.add(uri);
+        uris.addAll(replicas);
+        return new OwningRedisClient(resources, copy(uri), applicationCredentials(uris));
     }
 
     /**

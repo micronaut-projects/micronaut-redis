@@ -97,11 +97,13 @@ class ClientResourcesOwnershipSpec extends Specification {
 
         when:
         RedisClient refused = clients.redisClient(resources, withApplicationCredentials)
+        RedisClient refusedForReplica = clients.redisClient(resources, withLibraryCredentials, [withApplicationCredentials])
         RedisClient kept = clients.redisClient(resources, withLibraryCredentials)
 
         then:
         provider.getClass().classLoader == application
         clients.decide(new BeanRegistration<>(BeanIdentifier.of('refused'), null, refused)) == BeanRetentionPolicy.Decision.REFUSE
+        clients.decide(new BeanRegistration<>(BeanIdentifier.of('replica'), null, refusedForReplica)) == BeanRetentionPolicy.Decision.REFUSE
         clients.decide(new BeanRegistration<>(BeanIdentifier.of('kept'), null, kept)) == BeanRetentionPolicy.Decision.ABSTAIN
         clients.decide(new BeanRegistration<>(BeanIdentifier.of('other'), null, 'other')) == BeanRetentionPolicy.Decision.ABSTAIN
 

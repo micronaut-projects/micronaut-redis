@@ -205,6 +205,8 @@ final class ResourceOwningClients implements BeanRetentionPolicy {
      */
     private static RedisURI copy(RedisURI uri) {
         RedisURI copy = new RedisURI();
+        // first: Lettuce applies the TLS settings of a URI to the sentinels it already has, which keep their own
+        copy.applySsl(uri);
         if (uri.getHost() != null) {
             copy.setHost(uri.getHost());
         }
@@ -232,7 +234,6 @@ final class ResourceOwningClients implements BeanRetentionPolicy {
         if (uri.getTimeout() != null) {
             copy.setTimeout(uri.getTimeout());
         }
-        copy.applySsl(uri);
         if (uri.getCredentialsProvider() != null) {
             copy.setCredentialsProvider(uri.getCredentialsProvider());
         }

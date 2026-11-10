@@ -20,6 +20,7 @@ import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import io.micronaut.configuration.lettuce.AbstractRedisConfiguration;
 import io.micronaut.configuration.lettuce.RedisConnectionUtil;
+import io.micronaut.configuration.lettuce.RedisModuleConnections;
 import io.micronaut.context.BeanLocator;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.runtime.graceful.GracefulShutdownCapable;
@@ -47,6 +48,10 @@ import java.util.function.Consumer;
 
 /**
  * Manages Redis Pub/Sub listener registrations.
+ *
+ * <p>The listeners of a connection share one Pub/Sub connection, which {@link RedisModuleConnections} holds, so that
+ * development mode can keep it across a restart: as the registry is destroyed it removes its listener from the
+ * connection and unsubscribes what it subscribed, and the next generation subscribes again on the same connection.</p>
  *
  * @author Graeme Rocher
  * @since 7.0
@@ -91,6 +96,17 @@ public class RedisPubSubListenerRegistry implements AutoCloseable, GracefulShutd
             new ManagedConnection(Optional.ofNullable(connectionName))
         );
         managedConnection.subscribe(subscriptions, executor, consumer);
+    }
+
+    /**
+     * Removes the registrations of a listener callback given to {@link #subscribe(String, Set, ExecutorService, Consumer)},
+     * so that it receives no more messages, and unsubscribes the channels and patterns no other callback listens to.
+     *
+     * @param consumer The listener callback
+     * @since 7.3.0
+     */
+    public void unsubscribe(Consumer<RedisMessage> consumer) {
+        managedConnections.values().forEach(managedConnection -> managedConnection.unsubscribe(consumer));
     }
 
     @Override
@@ -139,6 +155,7 @@ public class RedisPubSubListenerRegistry implements AutoCloseable, GracefulShutd
 
     private final class ManagedConnection extends RedisPubSubAdapter<byte[], byte[]> implements AutoCloseable {
         private final StatefulRedisPubSubConnection<byte[], byte[]> connection;
+        private final boolean owned;
         private final RedisPubSubCommands<byte[], byte[]> sync;
         private final Map<String, List<ListenerRegistration>> channels = new ConcurrentHashMap<>();
         private final Map<String, List<ListenerRegistration>> patterns = new ConcurrentHashMap<>();
@@ -148,11 +165,12 @@ public class RedisPubSubListenerRegistry implements AutoCloseable, GracefulShutd
         private final AtomicBoolean shutdownComplete = new AtomicBoolean();
 
         private ManagedConnection(Optional<String> connectionName) {
-            this.connection = RedisConnectionUtil.openBytesRedisPubSubConnection(
-                beanLocator,
-                connectionName,
-                "No Redis server configured for Pub/Sub listeners."
-            );
+            String errorMessage = "No Redis server configured for Pub/Sub listeners.";
+            Optional<RedisModuleConnections> moduleConnections = beanLocator.findBean(RedisModuleConnections.class);
+            this.owned = moduleConnections.isEmpty();
+            this.connection = moduleConnections
+                .map(connections -> connections.pubSubConnection("listeners:" + connectionName.orElse(DEFAULT_CONNECTION), beanLocator, connectionName, errorMessage))
+                .orElseGet(() -> RedisConnectionUtil.openBytesRedisPubSubConnection(beanLocator, connectionName, errorMessage));
             this.sync = connection.sync();
             this.connection.addListener(this);
         }
@@ -183,6 +201,41 @@ public class RedisPubSubListenerRegistry implements AutoCloseable, GracefulShutd
             if (!newPatterns.isEmpty()) {
                 sync.psubscribe(newPatterns.toArray(byte[][]::new));
             }
+        }
+
+        private synchronized void unsubscribe(Consumer<RedisMessage> consumer) {
+            List<byte[]> idleChannels = removeRegistrations(channels, subscribedChannels, consumer);
+            List<byte[]> idlePatterns = removeRegistrations(patterns, subscribedPatterns, consumer);
+            if (shutdownRequested.get() || !connection.isOpen()) {
+                return;
+            }
+            // not awaited: the connection sends the commands in order, ahead of any later subscription
+            try {
+                if (!idleChannels.isEmpty()) {
+                    connection.async().unsubscribe(idleChannels.toArray(byte[][]::new));
+                }
+                if (!idlePatterns.isEmpty()) {
+                    connection.async().punsubscribe(idlePatterns.toArray(byte[][]::new));
+                }
+            } catch (RuntimeException e) {
+                LOG.debug("Error while unsubscribing the Redis Pub/Sub channels no listener uses", e);
+            }
+        }
+
+        private static List<byte[]> removeRegistrations(Map<String, List<ListenerRegistration>> registrations,
+                                                        Set<String> subscribed,
+                                                        Consumer<RedisMessage> consumer) {
+            List<byte[]> idle = new ArrayList<>();
+            registrations.entrySet().removeIf(entry -> {
+                entry.getValue().removeIf(registration -> registration.consumer() == consumer);
+                if (entry.getValue().isEmpty()) {
+                    subscribed.remove(entry.getKey());
+                    idle.add(entry.getKey().getBytes(StandardCharsets.UTF_8));
+                    return true;
+                }
+                return false;
+            });
+            return idle;
         }
 
         @Override
@@ -257,9 +310,31 @@ public class RedisPubSubListenerRegistry implements AutoCloseable, GracefulShutd
         }
 
         @Override
-        public void close() {
+        public synchronized void close() {
             shutdownComplete.set(true);
-            connection.close();
+            if (owned) {
+                connection.close();
+                return;
+            }
+            // the connection outlives the registry: nothing more is dispatched to it, and what it subscribed is
+            // unsubscribed, unless a graceful shutdown did already
+            connection.removeListener(this);
+            channels.clear();
+            patterns.clear();
+            if (shutdownRequested.compareAndSet(false, true) && connection.isOpen()) {
+                try {
+                    if (!subscribedChannels.isEmpty()) {
+                        connection.async().unsubscribe(subscribedChannels.stream().map(v -> v.getBytes(StandardCharsets.UTF_8)).toArray(byte[][]::new));
+                    }
+                    if (!subscribedPatterns.isEmpty()) {
+                        connection.async().punsubscribe(subscribedPatterns.stream().map(v -> v.getBytes(StandardCharsets.UTF_8)).toArray(byte[][]::new));
+                    }
+                } catch (RuntimeException e) {
+                    LOG.debug("Error while unsubscribing the Redis Pub/Sub listeners of a closed registry", e);
+                }
+            }
+            subscribedChannels.clear();
+            subscribedPatterns.clear();
         }
     }
 

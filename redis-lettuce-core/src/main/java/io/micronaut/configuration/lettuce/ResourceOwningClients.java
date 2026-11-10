@@ -16,12 +16,18 @@
 package io.micronaut.configuration.lettuce;
 
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisCredentialsProvider;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.resource.ClientResources;
+import io.micronaut.context.BeanRegistration;
 import io.micronaut.context.env.DevelopmentActive;
+import io.micronaut.context.reload.BeanRetentionPolicy;
 import io.micronaut.core.annotation.Internal;
 import jakarta.inject.Singleton;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +50,36 @@ import java.util.concurrent.TimeUnit;
  * a {@link RedisURI} too: a client that development mode keeps across a restart holds no configuration of the
  * stopped application.</p>
  *
+ * <p>A URI can carry a {@link RedisCredentialsProvider} that the application set on the configuration, which the
+ * context does not see, since it is not injected. As the {@link BeanRetentionPolicy} of these clients, this bean
+ * refuses to keep a client whose URIs carry a credentials provider of a class of the application: the client would
+ * keep asking the stopped application for credentials, and keep it reachable.</p>
+ *
  * @author graemerocher
  * @since 7.3.0
  */
 @Internal
 @Singleton
 @DevelopmentActive
-final class ResourceOwningClients {
+final class ResourceOwningClients implements BeanRetentionPolicy {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceOwningClients.class);
+
+    @Override
+    public Decision decide(BeanRegistration<?> registration) {
+        Object bean = registration.bean();
+        String credentials = null;
+        if (bean instanceof OwningRedisClient client) {
+            credentials = client.applicationCredentials;
+        } else if (bean instanceof OwningRedisClusterClient client) {
+            credentials = client.applicationCredentials;
+        }
+        if (credentials == null) {
+            return Decision.ABSTAIN;
+        }
+        LOG.debug("The Redis client [{}] is not retained across the restart: its credentials provider {} is a class of the application", bean, credentials);
+        return Decision.REFUSE;
+    }
 
     /**
      * Creates a standalone client that owns the resources.
@@ -60,7 +89,7 @@ final class ResourceOwningClients {
      * @return The client
      */
     RedisClient redisClient(ClientResources resources, RedisURI uri) {
-        return new OwningRedisClient(resources, copy(uri));
+        return new OwningRedisClient(resources, copy(uri), applicationCredentials(List.of(uri)));
     }
 
     /**
@@ -75,7 +104,38 @@ final class ResourceOwningClients {
         for (RedisURI uri : uris) {
             copies.add(copy(uri));
         }
-        return new OwningRedisClusterClient(resources, copies);
+        return new OwningRedisClusterClient(resources, copies, applicationCredentials(copies));
+    }
+
+    /**
+     * The class of the first credentials provider of the URIs, and of their sentinels, that is a class of the
+     * application: one loaded by neither the class loader of Lettuce nor one of its parents.
+     */
+    private static @Nullable String applicationCredentials(Iterable<RedisURI> uris) {
+        for (RedisURI uri : uris) {
+            RedisCredentialsProvider provider = uri.getCredentialsProvider();
+            if (provider != null && isApplicationClass(provider.getClass())) {
+                return provider.getClass().getName();
+            }
+            String sentinel = applicationCredentials(uri.getSentinels());
+            if (sentinel != null) {
+                return sentinel;
+            }
+        }
+        return null;
+    }
+
+    private static boolean isApplicationClass(Class<?> type) {
+        ClassLoader loader = type.getClassLoader();
+        if (loader == null) {
+            return false;
+        }
+        for (ClassLoader library = RedisClient.class.getClassLoader(); library != null; library = library.getParent()) {
+            if (library == loader) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -186,10 +246,12 @@ final class ResourceOwningClients {
      */
     private static final class OwningRedisClient extends RedisClient {
         private final ClientResources resources;
+        private final @Nullable String applicationCredentials;
 
-        OwningRedisClient(ClientResources resources, RedisURI uri) {
+        OwningRedisClient(ClientResources resources, RedisURI uri, @Nullable String applicationCredentials) {
             super(resources, uri);
             this.resources = resources;
+            this.applicationCredentials = applicationCredentials;
         }
 
         @Override
@@ -203,10 +265,12 @@ final class ResourceOwningClients {
      */
     private static final class OwningRedisClusterClient extends RedisClusterClient {
         private final ClientResources resources;
+        private final @Nullable String applicationCredentials;
 
-        OwningRedisClusterClient(ClientResources resources, Iterable<RedisURI> uris) {
+        OwningRedisClusterClient(ClientResources resources, Iterable<RedisURI> uris, @Nullable String applicationCredentials) {
             super(resources, uris);
             this.resources = resources;
+            this.applicationCredentials = applicationCredentials;
         }
 
         @Override

@@ -243,6 +243,41 @@ class RedisConfigurationSpec extends Specification {
         client.shutdown()
     }
 
+    void "test uri copying preserves Sentinel settings when creating a RedisClient"() {
+        given:
+        applicationContext = ApplicationContext.run([
+                'redis.uri': uri,
+                'redis.timeout': '100ms'
+        ])
+
+        when:
+        DefaultRedisConfiguration configuration = applicationContext.getBean(DefaultRedisConfiguration)
+        RedisURI configuredUri = configuration.getUri().orElseThrow()
+        RedisClient client = applicationContext.getBean(RedisClient)
+
+        then:
+        configuredUri.sentinels*.host == hosts
+        configuredUri.sentinels*.port == ports
+        configuredUri.sentinelMasterId == masterId
+        configuredUri.host == host
+        configuredUri.timeout == Duration.ofMillis(100)
+        client.@redisURI.sentinels*.host == hosts
+        client.@redisURI.sentinels*.port == ports
+        client.@redisURI.sentinelMasterId == masterId
+        client.@redisURI.host == host
+        client.@redisURI.timeout == Duration.ofMillis(100)
+        configuration.getUri().orElseThrow().sentinels*.host == hosts
+
+        cleanup:
+        client?.shutdown()
+
+        where:
+        uri                                                           | hosts                      | ports          | masterId   | host
+        'redis-sentinel://localhost:26379/0#mymaster'                 | ['localhost']              | [26379]        | 'mymaster' | null
+        'redis-sentinel://sentinel1:26379,sentinel2:26380/0#mymaster' | ['sentinel1', 'sentinel2'] | [26379, 26380] | 'mymaster' | null
+        'redis://localhost:6379'                                      | []                         | []             | null       | 'localhost'
+    }
+
     private static String passwordOf(AbstractRedisConfiguration configuration) {
         return passwordOf((RedisURI) configuration)
     }

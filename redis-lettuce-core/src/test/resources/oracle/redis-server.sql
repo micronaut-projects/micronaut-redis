@@ -1,0 +1,8 @@
+-- runs on every start of the Oracle Free container: enables the Redis protocol endpoint on port 6379
+ALTER SYSTEM SET SHARED_SERVERS = 2 SCOPE = MEMORY;
+ALTER SYSTEM SET DISPATCHERS = '(ADDRESS=(PROTOCOL=tcp)(HOST=0.0.0.0)(PORT=6379))(SERVICE=FREEPDB1)(PRE=REDIS)' SCOPE = MEMORY;
+ALTER SESSION SET CONTAINER = FREEPDB1;
+CREATE TABLE test.book (id NUMBER PRIMARY KEY, title VARCHAR2(100), pages NUMBER);
+INSERT INTO test.book VALUES (1, 'The Stand', 1153);
+INSERT INTO test.book VALUES (2, 'Dune', 412);
+COMMIT;

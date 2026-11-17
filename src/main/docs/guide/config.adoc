@@ -13,6 +13,18 @@ redis:
 
 When `redis.uri` is present, you can still provide password authentication separately with either `redis.authentication` or `redis.password`, or embed credentials directly in the URI.
 
+=== Protocol Version
+
+Lettuce negotiates RESP3 with the `HELLO` command by default. Set `redis.protocol-version` to `RESP2` or `RESP3` to use a fixed protocol version, for example for a server that does not support `HELLO`:
+
+.Using RESP2
+[configuration]
+----
+redis:
+    uri: redis://localhost
+    protocol-version: RESP2
+----
+
 === Configuring Lettuce Command Latency Metrics
 
 If Micrometer is on the classpath, the Lettuce command latency recorder is enabled automatically. Histogram metrics remain enabled by default for compatibility, but you can now customize them in configuration:

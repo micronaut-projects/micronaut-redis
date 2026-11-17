@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.lettuce;
 
+import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
@@ -53,8 +54,8 @@ public abstract class AbstractRedisClientFactory<K, V> {
      */
     public RedisClient redisClient(AbstractRedisConfiguration config) {
         Optional<RedisURI> uri = config.getUri();
-        return uri.map(RedisClient::create)
-            .orElseGet(() -> RedisClient.create(config));
+        return applyClientOptions(uri.map(RedisClient::create)
+            .orElseGet(() -> RedisClient.create(config)), config);
     }
 
     /**
@@ -73,8 +74,14 @@ public abstract class AbstractRedisClientFactory<K, V> {
             return redisClient(config);
         }
         Optional<RedisURI> uri = config.getUri();
-        return uri.map(redisURI -> RedisClient.create(clientResources, redisURI))
-            .orElseGet(() -> RedisClient.create(clientResources, config));
+        return applyClientOptions(uri.map(redisURI -> RedisClient.create(clientResources, redisURI))
+            .orElseGet(() -> RedisClient.create(clientResources, config)), config);
+    }
+
+    private static RedisClient applyClientOptions(RedisClient client, AbstractRedisConfiguration config) {
+        config.getProtocolVersion().ifPresent(protocolVersion ->
+            client.setOptions(ClientOptions.builder().protocolVersion(protocolVersion).build()));
+        return client;
     }
 
     /**

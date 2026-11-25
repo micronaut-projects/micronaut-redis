@@ -1,0 +1,27 @@
+Oracle AI Database can serve table rows over the Redis protocol. A dispatcher with `PRE=REDIS` accepts Redis connections, authenticates them as database users, and maps each key to a row: `[schema.]table:column=value`. For example, `hr.employees:employee_id=100` reads the row of `HR.EMPLOYEES` whose `EMPLOYEE_ID` is 100. See https://docs.oracle.com/en/database/oracle/oracle-database/26/odbtc/using-oracle-true-cache-redis-server.html[Using Oracle True Cache as a Redis Server] for setting up the dispatcher.
+
+The server differs from Redis in ways that need client configuration:
+
+* It speaks RESP2 only and does not support `HELLO`, which Lettuce sends by default to negotiate RESP3.
+* It answers only the first of several commands that arrive together, so the connection metadata Lettuce sends after authenticating (`CLIENT SETINFO` for the library name and version) never completes.
+
+Configure the connection with separate properties rather than `redis.uri`, so that the library name and version can be cleared:
+
+.Connecting to the Oracle AI Database Redis server
+[configuration]
+----
+redis:
+    host: dbhost
+    port: 6379
+    username: hr
+    password: hr_password
+    protocol-version: RESP2
+    library-name: ''
+    library-version: ''
+----
+
+The server only reads rows. Use `GET`, `MGET`, `HGET`, `HMGET`, `HGETALL` or `JSON.GET` through the `StatefulRedisConnection` bean: `GET` returns the column values separated by colons, the hash commands return the columns as fields, and `JSON.GET` returns the row as a JSON object. `SET`, `MSET`, `HSET` and `JSON.SET` return `OK` without changing anything, and other commands are rejected, so <<cache, caching>>, <<sessions, session state>> and <<pubsub, Pub/Sub>> do not work against it.
+
+Because commands sent together are not answered, use a connection from one thread at a time and do not pipeline: commands issued concurrently on the shared `StatefulRedisConnection`, or batched with the asynchronous or reactive APIs, wait until they time out.
+
+NOTE: In production, configure the dispatcher with `PROTOCOL=tcps` and set `ssl: true`.
